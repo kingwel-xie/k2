@@ -1,0 +1,34 @@
+package models
+
+import (
+	"github.com/kingwel-xie/k2/common/models"
+
+     {{- $bb := false -}}
+     {{- range .Columns -}}
+     {{- if eq .GoType "time.Time"}}{{- $bb = true -}}{{- end -}}
+     {{- end -}}
+     {{- if eq $bb true }}
+     "time"
+     {{- end }}
+)
+
+type {{.ClassName}} struct {
+    {{- range .Columns -}}
+    {{$x := .IsPk}}
+    {{- if ($x) }}
+    {{.GoField}}    {{.GoType}} `json:"{{.JsonField}}" gorm:"{{- if ne .GormTag "" -}}{{.GormTag}};{{end -}}column:{{.ColumnName}};primaryKey;{{- if (.AutoInc) -}}autoIncrement;{{end -}}comment:{{- if eq .ColumnComment "" -}}{{.GoField}}{{- else -}}{{.ColumnComment}}{{end -}}"`
+    {{- else if eq .GoField "CreatedAt" -}}
+    {{- else if eq .GoField "UpdatedAt" -}}
+    {{- else if eq .GoField "DeletedAt" -}}
+    {{- else if eq .GoField "CreateBy" -}}
+    {{- else if eq .GoField "UpdateBy" -}}
+    {{- else }}
+    {{.GoField}}    {{.GoType}} `json:"{{.JsonField}}" gorm:"{{- if ne .GormTag "" -}}{{.GormTag}};{{end -}}column:{{.ColumnName}};comment:{{- if eq .ColumnComment "" -}}{{.GoField}}{{- else -}}{{.ColumnComment}}{{end -}}"`{{ end -}}
+    {{- end }}
+    models.ControlBy
+    models.ModelTime{{- if (.HardDelete) -}}HardDelete{{- end }}
+}
+
+func ({{.ClassName}}) TableName() string {
+    return "{{.TBName}}"
+}

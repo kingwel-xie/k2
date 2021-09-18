@@ -1,0 +1,25 @@
+package router
+
+import (
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
+	"github.com/kingwel-xie/k2/app/{{.PackageName}}/apis"
+	"github.com/kingwel-xie/k2/common/middleware"
+)
+
+func init() {
+	routerCheckRole = append(routerCheckRole, register{{.ClassName}}Router)
+}
+
+// register{{.ClassName}}Router
+func register{{.ClassName}}Router(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+	api := apis.{{.ClassName}}{}
+	r := v1.Group("/{{.ModuleName}}").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole())
+	{
+		r.GET("", api.GetPage)
+		r.GET("/:{{.PkJsonField}}", api.Get)
+		r.POST("", api.Insert)
+		r.PUT("/:{{.PkJsonField}}", api.Update)
+		r.DELETE("", api.Delete)
+	}
+}

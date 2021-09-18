@@ -1,0 +1,58 @@
+{
+	"packageName": "admin",
+	"moduleName": "country",
+	"className": "TbxCountry",
+	"tableComment": "国家编码",
+
+	"isAuth": true,
+	"columns": [
+		{
+			"goField": "Code",
+			"goType": "string",
+			"columnComment": "编码",
+			"gormTag": "size:4",
+			"isPk": true,
+			"queryable": true,
+			"sortable": true
+		},
+		{
+			"goField": "CName",
+			"goType": "string",
+			"columnComment": "中文名称",
+			"gormTag": "size:64;unique",
+			"validator": "@:len($)>0; msg:'中文名不能为空'",
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true
+		},
+		{
+			"goField": "EName",
+			"goType": "string",
+			"columnComment": "English Name",
+			"gormTag": "size:64;unique",
+			"validator": "@:len($)>0; msg:'English Name is empty'",
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true
+		},
+		{
+			"goField": "EName2",
+			"goType": "string",
+			"columnComment": "English Name 2",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "Code2",
+			"goType": "string",
+			"columnComment": "编码2",
+			"gormTag": "size:4;unique"
+		},
+		{
+			"goField": "Code3",
+			"goType": "string",
+			"columnComment": "编码3",
+			"gormTag": "size:4;unique",
+			"notOnList": true
+		}
+	]
+}

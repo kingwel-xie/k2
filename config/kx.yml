@@ -1,0 +1,38 @@
+settings:
+  application:
+    # dev开发环境 test测试环境 prod线上环境
+    mode: dev
+    # 服务器ip，默认使用 0.0.0.0
+    host: 0.0.0.0
+    # 服务名称
+    name: kxWeb
+    # 端口号
+    port: 9877 # 服务端口号
+    readtimeout: 1
+    writertimeout: 2
+  logger:
+    level: debug  # debug|info|warn|error|dpanic|panic|fatal
+    format: nocolor   # color|nocolor|json
+    # file:
+    # url:
+    output: stderr # stdout|stderr|file combine multiple values with '+'
+    # labels:  # comma-separated key-value pairs, i.e. "app=example_app,dc=sjc-1"
+    # 数据库日志开关
+    log-db: false
+  jwt:
+    # token 密钥，生产环境时及的修改
+    secret: k2
+    # token 过期时间 单位：秒
+    timeout: 3600
+  database:
+    driver: sqlite
+    source: kx.db
+  extend: # 扩展项使用说明
+    demo:
+      name: data
+  cache:
+    memory: ''
+  queue:
+    memory:
+  locker:
+    redis:

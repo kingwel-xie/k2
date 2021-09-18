@@ -1,0 +1,57 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k2
+  labels:
+    app: k2
+    service: k2
+spec:
+  ports:
+  - port: 8000
+    name: http
+    protocol: TCP
+  selector:
+    app: k2
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k2-v1
+  labels:
+    app: k2
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k2
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: k2
+        version: v1
+    spec:
+      containers:
+      - name: k2
+        image: registry.cn-shanghai.aliyuncs.com/go-admin-team/go-admin
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: k2
+          mountPath: /temp
+        - name: k2
+          mountPath: /static
+        - name: k2-config
+          mountPath: /config/
+          readOnly: true
+      volumes:
+      - name: k2
+        persistentVolumeClaim:
+          claimName: k2
+      - name: k2-config
+        configMap:
+          name: settings-admin
+---
