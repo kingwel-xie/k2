@@ -2,15 +2,14 @@ package version
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/kingwel-xie/k2/common/global"
+	"github.com/spf13/cobra"
 )
 
 var (
 	StartCmd = &cobra.Command{
 		Use:     "version",
-		Short:   "Get version info",
-		Example: "github.com/kingwel-xie/k2 version",
+		Short:   "Show version info",
 		PreRun: func(cmd *cobra.Command, args []string) {
 
 		},

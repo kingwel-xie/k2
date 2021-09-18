@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/kingwel-xie/k2/common"
-	"github.com/kingwel-xie/k2/pkg/casbin"
 )
 
 func main() {

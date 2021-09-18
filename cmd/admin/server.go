@@ -29,8 +29,8 @@ var (
 	apiCheck  bool
 	StartCmd  = &cobra.Command{
 		Use:          "admin",
-		Short:        "Start API server",
-		Example:      "github.com/kingwel-xie/k2 admin -c config/settings.yml",
+		Short:        "Start admin API server",
+		Example:      "admin -c config/settings.yml",
 		SilenceUsage: true,
 		PreRun: func(cmd *cobra.Command, args []string) {
 			setup()

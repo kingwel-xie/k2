@@ -13,20 +13,19 @@ import (
 	_ "github.com/kingwel-xie/k2/cmd/migrate/migration/version"
 	_ "github.com/kingwel-xie/k2/cmd/migrate/migration/version-local"
 	"github.com/kingwel-xie/k2/common"
+	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/common/database"
 	"github.com/kingwel-xie/k2/common/models"
-	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
 var (
 	configYml string
 	generate  bool
-	goAdmin   bool
 	StartCmd  = &cobra.Command{
 		Use:     "migrate",
 		Short:   "Initialize the database",
-		Example: "github.com/kingwel-xie/k2 migrate -c config/settings.yml",
+		Example: "migrate -c config/settings.yml",
 		Run: func(cmd *cobra.Command, args []string) {
 			run()
 		},
@@ -37,7 +36,6 @@ var (
 func init() {
 	StartCmd.PersistentFlags().StringVarP(&configYml, "config", "c", "config/settings.yml", "Start server with provided configuration file")
 	StartCmd.PersistentFlags().BoolVarP(&generate, "generate", "g", false, "generate migration file")
-	StartCmd.PersistentFlags().BoolVarP(&goAdmin, "goAdmin", "a", false, "generate k2 migration file")
 }
 
 func run() {
@@ -86,15 +84,10 @@ func genFile() error {
 	m := map[string]string{}
 	m["GenerateTime"] = strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
 	m["Package"] = "version_local"
-	if goAdmin {
-		m["Package"] = "version"
-	}
+
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, m)
-	if goAdmin {
-		utils.FileCreate(b1, "./cmd/migrate/migration/version/"+m["GenerateTime"]+"_migrate.go")
-	} else {
-		utils.FileCreate(b1, "./cmd/migrate/migration/version-local/"+m["GenerateTime"]+"_migrate.go")
-	}
+	utils.FileCreate(b1, "./cmd/migrate/migration/version-local/"+m["GenerateTime"]+"_migrate.go")
+
 	return nil
 }

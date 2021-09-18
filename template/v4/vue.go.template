@@ -17,7 +17,7 @@
             </el-select>
             {{- else -}}
               {{- if eq .DictType "" -}}
-            <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="queryParams.{{.JsonField}}" placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
+            <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="queryParams.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
               {{- else -}}
             <el-select v-model="queryParams.{{.JsonField}}" placeholder="{{$tableComment}}{{.ColumnComment}}" clearable size="small">
               <el-option v-for="dict in {{.JsonField}}Options" :key="dict.dictValue" :label="dict.dictLabel" :value="dict.dictValue" />
@@ -111,7 +111,7 @@
               {{- else -}}
             <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
               {{ if eq "input" .HtmlType -}}
-              <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="form.{{.JsonField}}" placeholder="{{.ColumnComment}}" {{if (.NotOnUpdate) -}}:disabled="isEdit"{{- end }} />
+              <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="form.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="{{.ColumnComment}}" {{if (.NotOnUpdate) -}}:disabled="isEdit"{{- end }} />
               {{- else if eq "select" .HtmlType -}}
                 {{- if ne .FkTableName "" -}}
               <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{if (.NotOnUpdate) -}} :disabled="isEdit" {{- end }}>

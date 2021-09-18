@@ -12,9 +12,9 @@ var (
 	fileName  string
 	StartCmd = &cobra.Command{
 		Use:     "generate",
-		Short:   "Generate code",
+		Short:   "Generate code skeleton",
 		Long:    "Use when you need to generate sample code for your data model",
-		Example: "github.com/kingwel-xie/k2 generate -f sample.json",
+		Example: "generate -f sample.json",
 		Run: func(cmd *cobra.Command, args []string) {
 			run()
 		},

@@ -4,18 +4,18 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/kingwel-xie/k2/core/utils"
+	"github.com/spf13/cobra"
 	"text/template"
 )
 
 var (
 	appName  string
 	StartCmd = &cobra.Command{
-		Use:     "createapp",
+		Use:     "create-app",
 		Short:   "Create a new app",
 		Long:    "Use when you need to create a new app",
-		Example: "github.com/kingwel-xie/k2 createapp -n admin",
+		Example: "create-app -n myapp",
 		Run: func(cmd *cobra.Command, args []string) {
 			run()
 		},
