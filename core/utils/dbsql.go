@@ -1,4 +1,4 @@
-package models
+package utils
 
 import (
 	"fmt"
@@ -9,11 +9,11 @@ import (
 
 func InitDb(db *gorm.DB) (err error) {
 	filePath := fmt.Sprintf("config/%s.sql", db.Dialector.Name())
-	return ExecSql(db, filePath)
+	return execSql(db, filePath)
 }
 
-func ExecSql(db *gorm.DB, filePath string) error {
-	sql, err := Ioutil(filePath)
+func execSql(db *gorm.DB, filePath string) error {
+	sql, err := ioReadFile(filePath)
 	if err != nil {
 		fmt.Println("数据库基础数据初始化脚本读取失败！原因:", err.Error())
 		return err
@@ -24,7 +24,7 @@ func ExecSql(db *gorm.DB, filePath string) error {
 			fmt.Println(sqlList[i])
 			continue
 		}
-		sql := strings.Replace(sqlList[i]+";", "\n", "", 0)
+		sql := strings.Replace(sqlList[i]+";", "\n", "", 1)
 		sql = strings.TrimSpace(sql)
 		if err = db.Exec(sql).Error; err != nil {
 			fmt.Printf("%v : %s", err, sql)
@@ -36,7 +36,7 @@ func ExecSql(db *gorm.DB, filePath string) error {
 	return nil
 }
 
-func Ioutil(filePath string) (string, error) {
+func ioReadFile(filePath string) (string, error) {
 	if contents, err := ioutil.ReadFile(filePath); err == nil {
 		//因为contents是[]byte类型，直接转换成string类型后会多一行空格,需要使用strings.Replace替换换行符
 		result := strings.Replace(string(contents), "\n", "", 1)

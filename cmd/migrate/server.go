@@ -9,13 +9,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/kingwel-xie/k2/cmd/migrate/migration"
-	_ "github.com/kingwel-xie/k2/cmd/migrate/migration/version"
-	_ "github.com/kingwel-xie/k2/cmd/migrate/migration/version-local"
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/common/database"
 	"github.com/kingwel-xie/k2/common/models"
+	"github.com/kingwel-xie/k2/core/migration"
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
