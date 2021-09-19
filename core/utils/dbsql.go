@@ -7,12 +7,7 @@ import (
 	"strings"
 )
 
-func InitDb(db *gorm.DB) (err error) {
-	filePath := fmt.Sprintf("config/%s.sql", db.Dialector.Name())
-	return execSql(db, filePath)
-}
-
-func execSql(db *gorm.DB, filePath string) error {
+func ExecSql(db *gorm.DB, filePath string) error {
 	sql, err := ioReadFile(filePath)
 	if err != nil {
 		fmt.Println("数据库基础数据初始化脚本读取失败！原因:", err.Error())
