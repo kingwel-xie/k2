@@ -2,13 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/kingwel-xie/k2/cmd/app"
 	"github.com/kingwel-xie/k2/cmd/gen"
 	"github.com/kingwel-xie/k2/cmd/version"
-	"os"
-
 	"github.com/kingwel-xie/k2/common/global"
-	"github.com/kingwel-xie/k2/core/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -38,7 +37,7 @@ func Init(name string, cmds... *cobra.Command) {
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(args) < 1 {
 				tip()
-				return fmt.Errorf(utils.Red("requires at least one arg"))
+				return fmt.Errorf("requires at least one arg")
 			}
 			return nil
 		},

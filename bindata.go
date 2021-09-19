@@ -1,4 +1,4 @@
-package gen
+package main
 
 import (
 	"bytes"
@@ -30,7 +30,7 @@ var _template_api_migrate_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x0
 func template_api_migrate_template() ([]byte, error) {
 	return bindata_read(
 		_template_api_migrate_template,
-		"../../template/api_migrate.template",
+		"template/api_migrate.template",
 	)
 }
 
@@ -39,7 +39,7 @@ var _template_cmd_api_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xf
 func template_cmd_api_template() ([]byte, error) {
 	return bindata_read(
 		_template_cmd_api_template,
-		"../../template/cmd_api.template",
+		"template/cmd_api.template",
 	)
 }
 
@@ -48,7 +48,7 @@ var _template_migrate_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xf
 func template_migrate_template() ([]byte, error) {
 	return bindata_read(
 		_template_migrate_template,
-		"../../template/migrate.template",
+		"template/migrate.template",
 	)
 }
 
@@ -57,7 +57,7 @@ var _template_router_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff
 func template_router_template() ([]byte, error) {
 	return bindata_read(
 		_template_router_template,
-		"../../template/router.template",
+		"template/router.template",
 	)
 }
 
@@ -66,7 +66,7 @@ var _template_v4_apis_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00
 func template_v4_apis_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_apis_go_template,
-		"../../template/v4/apis.go.template",
+		"template/v4/apis.go.template",
 	)
 }
 
@@ -75,7 +75,7 @@ var _template_v4_dto_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\
 func template_v4_dto_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_dto_go_template,
-		"../../template/v4/dto.go.template",
+		"template/v4/dto.go.template",
 	)
 }
 
@@ -84,7 +84,7 @@ var _template_v4_js_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\x
 func template_v4_js_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_js_go_template,
-		"../../template/v4/js.go.template",
+		"template/v4/js.go.template",
 	)
 }
 
@@ -93,7 +93,7 @@ var _template_v4_model_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x0
 func template_v4_model_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_model_go_template,
-		"../../template/v4/model.go.template",
+		"template/v4/model.go.template",
 	)
 }
 
@@ -102,7 +102,7 @@ var _template_v4_router_check_role_go_template = []byte("\x1f\x8b\x08\x00\x00\x0
 func template_v4_router_check_role_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_router_check_role_go_template,
-		"../../template/v4/router_check_role.go.template",
+		"template/v4/router_check_role.go.template",
 	)
 }
 
@@ -111,7 +111,7 @@ var _template_v4_router_no_check_role_go_template = []byte("\x1f\x8b\x08\x00\x00
 func template_v4_router_no_check_role_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_router_no_check_role_go_template,
-		"../../template/v4/router_no_check_role.go.template",
+		"template/v4/router_no_check_role.go.template",
 	)
 }
 
@@ -120,7 +120,7 @@ var _template_v4_service_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\
 func template_v4_service_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_service_go_template,
-		"../../template/v4/service.go.template",
+		"template/v4/service.go.template",
 	)
 }
 
@@ -129,7 +129,7 @@ var _template_v4_vue_go_template = []byte("\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\
 func template_v4_vue_go_template() ([]byte, error) {
 	return bindata_read(
 		_template_v4_vue_go_template,
-		"../../template/v4/vue.go.template",
+		"template/v4/vue.go.template",
 	)
 }
 
@@ -155,18 +155,18 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() ([]byte, error){
-	"../../template/api_migrate.template": template_api_migrate_template,
-	"../../template/cmd_api.template": template_cmd_api_template,
-	"../../template/migrate.template": template_migrate_template,
-	"../../template/router.template": template_router_template,
-	"../../template/v4/apis.go.template": template_v4_apis_go_template,
-	"../../template/v4/dto.go.template": template_v4_dto_go_template,
-	"../../template/v4/js.go.template": template_v4_js_go_template,
-	"../../template/v4/model.go.template": template_v4_model_go_template,
-	"../../template/v4/router_check_role.go.template": template_v4_router_check_role_go_template,
-	"../../template/v4/router_no_check_role.go.template": template_v4_router_no_check_role_go_template,
-	"../../template/v4/service.go.template": template_v4_service_go_template,
-	"../../template/v4/vue.go.template": template_v4_vue_go_template,
+	"template/api_migrate.template": template_api_migrate_template,
+	"template/cmd_api.template": template_cmd_api_template,
+	"template/migrate.template": template_migrate_template,
+	"template/router.template": template_router_template,
+	"template/v4/apis.go.template": template_v4_apis_go_template,
+	"template/v4/dto.go.template": template_v4_dto_go_template,
+	"template/v4/js.go.template": template_v4_js_go_template,
+	"template/v4/model.go.template": template_v4_model_go_template,
+	"template/v4/router_check_role.go.template": template_v4_router_check_role_go_template,
+	"template/v4/router_no_check_role.go.template": template_v4_router_no_check_role_go_template,
+	"template/v4/service.go.template": template_v4_service_go_template,
+	"template/v4/vue.go.template": template_v4_vue_go_template,
 }
 // AssetDir returns the file names below a certain
 // directory embedded in the file by go-bindata.
@@ -208,28 +208,28 @@ type _bintree_t struct {
 	Children map[string]*_bintree_t
 }
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
-	"../../template/api_migrate.template": &_bintree_t{template_api_migrate_template, map[string]*_bintree_t{
+	"template/api_migrate.template": &_bintree_t{template_api_migrate_template, map[string]*_bintree_t{
 	}},
-	"../../template/cmd_api.template": &_bintree_t{template_cmd_api_template, map[string]*_bintree_t{
+	"template/cmd_api.template": &_bintree_t{template_cmd_api_template, map[string]*_bintree_t{
 	}},
-	"../../template/migrate.template": &_bintree_t{template_migrate_template, map[string]*_bintree_t{
+	"template/migrate.template": &_bintree_t{template_migrate_template, map[string]*_bintree_t{
 	}},
-	"../../template/router.template": &_bintree_t{template_router_template, map[string]*_bintree_t{
+	"template/router.template": &_bintree_t{template_router_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/apis.go.template": &_bintree_t{template_v4_apis_go_template, map[string]*_bintree_t{
+	"template/v4/apis.go.template": &_bintree_t{template_v4_apis_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/dto.go.template": &_bintree_t{template_v4_dto_go_template, map[string]*_bintree_t{
+	"template/v4/dto.go.template": &_bintree_t{template_v4_dto_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/js.go.template": &_bintree_t{template_v4_js_go_template, map[string]*_bintree_t{
+	"template/v4/js.go.template": &_bintree_t{template_v4_js_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/model.go.template": &_bintree_t{template_v4_model_go_template, map[string]*_bintree_t{
+	"template/v4/model.go.template": &_bintree_t{template_v4_model_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/router_check_role.go.template": &_bintree_t{template_v4_router_check_role_go_template, map[string]*_bintree_t{
+	"template/v4/router_check_role.go.template": &_bintree_t{template_v4_router_check_role_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/router_no_check_role.go.template": &_bintree_t{template_v4_router_no_check_role_go_template, map[string]*_bintree_t{
+	"template/v4/router_no_check_role.go.template": &_bintree_t{template_v4_router_no_check_role_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/service.go.template": &_bintree_t{template_v4_service_go_template, map[string]*_bintree_t{
+	"template/v4/service.go.template": &_bintree_t{template_v4_service_go_template, map[string]*_bintree_t{
 	}},
-	"../../template/v4/vue.go.template": &_bintree_t{template_v4_vue_go_template, map[string]*_bintree_t{
+	"template/v4/vue.go.template": &_bintree_t{template_v4_vue_go_template, map[string]*_bintree_t{
 	}},
 }}
