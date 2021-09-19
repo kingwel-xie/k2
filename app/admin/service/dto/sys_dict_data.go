@@ -96,7 +96,7 @@ func (s *SysDictDataGetReq) GetId() interface{} {
 }
 
 type SysDictDataDeleteReq struct {
-	Ids              []int `json:"ids"`
+	Ids []int `json:"ids"`
 }
 
 func (s *SysDictDataDeleteReq) GetId() interface{} {

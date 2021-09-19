@@ -5,7 +5,7 @@ const (
 	// Directory 目录
 	Directory string = "M"
 	// Menu 菜单
-	Menu      string = "C"
+	Menu string = "C"
 	// Button 按钮
-	Button    string = "F"
+	Button string = "F"
 )

@@ -27,7 +27,7 @@ type SysPost struct {
 // @Security Bearer
 func (e SysPost) GetPage(c *gin.Context) {
 	s := service.SysPost{}
-	req :=dto.SysPostPageReq{}
+	req := dto.SysPostPageReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.Form).
 		MakeService(&s.Service).
@@ -59,7 +59,7 @@ func (e SysPost) GetPage(c *gin.Context) {
 // @Security Bearer
 func (e SysPost) Get(c *gin.Context) {
 	s := service.SysPost{}
-	req :=dto.SysPostGetReq{}
+	req := dto.SysPostGetReq{}
 	err := e.MakeContext(c).
 		Bind(&req, nil).
 		MakeService(&s.Service).
@@ -91,7 +91,7 @@ func (e SysPost) Get(c *gin.Context) {
 // @Security Bearer
 func (e SysPost) Insert(c *gin.Context) {
 	s := service.SysPost{}
-	req :=dto.SysPostInsertReq{}
+	req := dto.SysPostInsertReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON).
 		MakeService(&s.Service).
@@ -122,7 +122,7 @@ func (e SysPost) Insert(c *gin.Context) {
 // @Security Bearer
 func (e SysPost) Update(c *gin.Context) {
 	s := service.SysPost{}
-	req :=dto.SysPostUpdateReq{}
+	req := dto.SysPostUpdateReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON, nil).
 		MakeService(&s.Service).
@@ -151,7 +151,7 @@ func (e SysPost) Update(c *gin.Context) {
 // @Security Bearer
 func (e SysPost) Delete(c *gin.Context) {
 	s := service.SysPost{}
-	req :=dto.SysPostDeleteReq{}
+	req := dto.SysPostDeleteReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON).
 		MakeService(&s.Service).

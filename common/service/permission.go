@@ -3,8 +3,8 @@ package service
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"github.com/kingwel-xie/k2/core/utils"
+	"gorm.io/gorm"
 )
 
 type AuthIdentity struct {

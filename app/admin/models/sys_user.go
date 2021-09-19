@@ -1,9 +1,9 @@
 package models
 
 import (
+	"github.com/kingwel-xie/k2/common/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"github.com/kingwel-xie/k2/common/models"
 )
 
 type SysUser struct {

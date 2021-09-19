@@ -55,4 +55,3 @@ func (l gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 		log.Debugf("SQL: elapsed=%f, %s, rows=%d", float64(elapsed.Nanoseconds())/1e6, sql, rows)
 	}
 }
-

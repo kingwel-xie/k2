@@ -37,7 +37,7 @@ func setupSimpleDatabase(c *config.Database) {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
-		Logger: &gormLogger{ SlowThreshold: 200 * time.Millisecond },
+		Logger: &gormLogger{SlowThreshold: 200 * time.Millisecond},
 	}, open)
 
 	if err != nil {

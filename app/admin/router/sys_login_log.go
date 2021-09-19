@@ -1,10 +1,10 @@
 package router
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/kingwel-xie/k2/app/admin/apis"
 	"github.com/kingwel-xie/k2/common/middleware"
-	jwt "github.com/appleboy/gin-jwt/v2"
 )
 
 func init() {

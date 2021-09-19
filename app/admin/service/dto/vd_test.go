@@ -9,10 +9,10 @@ import (
 
 func TestResolve(t *testing.T) {
 	var update = TbxCountryUpdateReq{
-		CName: "1",
-		EName: "ename",
+		CName:  "1",
+		EName:  "ename",
 		EName2: "2",
-		Code2: "2",
+		Code2:  "2",
 	}
 
 	//vd.SetErrorFactory(func(failPath, msg string) error {
@@ -22,4 +22,3 @@ func TestResolve(t *testing.T) {
 		fmt.Println(err)
 	}
 }
-

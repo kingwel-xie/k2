@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/shirou/gopsutil/host"
 	"github.com/kingwel-xie/k2/core/utils"
+	"github.com/shirou/gopsutil/host"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -21,7 +21,6 @@ const (
 	MB = 1024 * KB
 	GB = 1024 * MB
 )
-
 
 //获取相差时间
 func GetHourDiffer(startTime, endTime string) int64 {
@@ -98,14 +97,14 @@ func ServerInfo(c *gin.Context) {
 			}
 		}
 	}
-	data := map[string]interface{} {
+	data := map[string]interface{}{
 		"requestId": utils.GenerateMsgIDFromContext(c),
-		"code": 200,
-		"os":   osDic,
-		"mem":  memDic,
-		"cpu":  cpuDic,
-		"disk": diskDic,
-		"diskList": disklist,
+		"code":      200,
+		"os":        osDic,
+		"mem":       memDic,
+		"cpu":       cpuDic,
+		"disk":      diskDic,
+		"diskList":  disklist,
 	}
 	c.Set("result", data)
 	c.AbortWithStatusJSON(http.StatusOK, data)

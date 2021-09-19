@@ -8,8 +8,8 @@
 package queue
 
 import (
-	"github.com/kingwel-xie/k2/core/storage"
 	json "github.com/json-iterator/go"
+	"github.com/kingwel-xie/k2/core/storage"
 	"github.com/nsqio/go-nsq"
 )
 

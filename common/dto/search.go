@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"gorm.io/gorm"
 	"github.com/kingwel-xie/k2/core/tools/search"
+	"gorm.io/gorm"
 )
 
 type GeneralDelDto struct {

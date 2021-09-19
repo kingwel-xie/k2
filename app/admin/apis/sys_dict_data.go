@@ -191,5 +191,5 @@ func (e SysDictData) GetAll(c *gin.Context) {
 		l = append(l, d)
 	}
 
-	e.OK(l,"查询成功")
+	e.OK(l, "查询成功")
 }

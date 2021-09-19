@@ -28,7 +28,7 @@ type SysDictType struct {
 // @Security Bearer
 func (e SysDictType) GetPage(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeGetPageReq{}
+	req := dto.SysDictTypeGetPageReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.Form).
 		MakeService(&s.Service).
@@ -57,7 +57,7 @@ func (e SysDictType) GetPage(c *gin.Context) {
 // @Security Bearer
 func (e SysDictType) Get(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeGetReq{}
+	req := dto.SysDictTypeGetReq{}
 	err := e.MakeContext(c).
 		Bind(&req, nil).
 		MakeService(&s.Service).
@@ -87,7 +87,7 @@ func (e SysDictType) Get(c *gin.Context) {
 // @Security Bearer
 func (e SysDictType) Insert(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeInsertReq{}
+	req := dto.SysDictTypeInsertReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON).
 		MakeService(&s.Service).
@@ -99,7 +99,7 @@ func (e SysDictType) Insert(c *gin.Context) {
 
 	err = s.Insert(&req)
 	if err != nil {
-		e.Error(500, err,fmt.Sprintf(" 创建字典类型失败，详情：%s", err.Error()))
+		e.Error(500, err, fmt.Sprintf(" 创建字典类型失败，详情：%s", err.Error()))
 		return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -118,7 +118,7 @@ func (e SysDictType) Insert(c *gin.Context) {
 // @Security Bearer
 func (e SysDictType) Update(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeUpdateReq{}
+	req := dto.SysDictTypeUpdateReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON, nil).
 		MakeService(&s.Service).
@@ -146,7 +146,7 @@ func (e SysDictType) Update(c *gin.Context) {
 // @Security Bearer
 func (e SysDictType) Delete(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeDeleteReq{}
+	req := dto.SysDictTypeDeleteReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.JSON, nil).
 		MakeService(&s.Service).
@@ -176,7 +176,7 @@ func (e SysDictType) Delete(c *gin.Context) {
 // @Security Bearer
 func (e SysDictType) GetAll(c *gin.Context) {
 	s := service.SysDictType{}
-	req :=dto.SysDictTypeGetPageReq{}
+	req := dto.SysDictTypeGetPageReq{}
 	err := e.MakeContext(c).
 		Bind(&req, binding.Form).
 		MakeService(&s.Service).

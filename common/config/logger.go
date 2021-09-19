@@ -11,13 +11,13 @@ import (
 )
 
 type Logger struct {
-	Level  string `mapstructure:"level" json:"level" yaml:"level"`    // 级别
-	Format string `mapstructure:"format" json:"format" yaml:"format"` // 输出
-	File   string `mapstructure:"file" json:"file"  yaml:"file"`      // 日志文件
-	URL    string `mapstructure:"url" json:"url"  yaml:"url"`         // url that will be processed by sink in the zap
-	Output string `mapstructure:"output" json:"output" yaml:"output"` // possible values: stdout|stderr|file combine multiple values with '+'
-	Labels string `mapstructure:"labels" json:"labels" yaml:"labels"` // comma-separated key-value pairs, i.e. "app=example_app,dc=sjc-1"
-	EnabledDB bool `mapstructure:"log-db" json:"log-db" yaml:"log-db"` // log输出到数据库
+	Level     string `mapstructure:"level" json:"level" yaml:"level"`    // 级别
+	Format    string `mapstructure:"format" json:"format" yaml:"format"` // 输出
+	File      string `mapstructure:"file" json:"file"  yaml:"file"`      // 日志文件
+	URL       string `mapstructure:"url" json:"url"  yaml:"url"`         // url that will be processed by sink in the zap
+	Output    string `mapstructure:"output" json:"output" yaml:"output"` // possible values: stdout|stderr|file combine multiple values with '+'
+	Labels    string `mapstructure:"labels" json:"labels" yaml:"labels"` // comma-separated key-value pairs, i.e. "app=example_app,dc=sjc-1"
+	EnabledDB bool   `mapstructure:"log-db" json:"log-db" yaml:"log-db"` // log输出到数据库
 }
 
 var LoggerConfig = new(Logger)

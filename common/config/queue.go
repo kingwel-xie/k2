@@ -2,9 +2,9 @@ package config
 
 import (
 	"github.com/go-redis/redis/v7"
-	"github.com/robinjoseph08/redisqueue/v2"
 	"github.com/kingwel-xie/k2/core/storage"
 	"github.com/kingwel-xie/k2/core/storage/queue"
+	"github.com/robinjoseph08/redisqueue/v2"
 	"time"
 )
 
@@ -30,7 +30,6 @@ type QueueNSQ struct {
 }
 
 var QueueConfig = new(Queue)
-
 
 // Setup 启用顺序 redis > 其他 > memory
 func (e Queue) Setup() (storage.AdapterQueue, error) {

@@ -8,15 +8,14 @@ import (
 )
 
 type WxCache struct {
-	prefix string
+	prefix          string
 	wxTokenStoreKey string
-	store storage.AdapterCache
+	store           storage.AdapterCache
 }
 
 const (
 	intervalTenant = "/"
 )
-
 
 // Token 获取微信oauth2 token
 func (e WxCache) Token() (token *oauth2.Token, err error) {

@@ -14,7 +14,7 @@ import (
 var rootCmd *cobra.Command
 
 func tip() {
-	usageStr := `欢迎使用 ` + `k2 `+global.Version + ` 可以使用 ` + `-h` + ` 查看命令`
+	usageStr := `欢迎使用 ` + `k2 ` + global.Version + ` 可以使用 ` + `-h` + ` 查看命令`
 	fmt.Printf("%s\n", usageStr)
 }
 
@@ -28,7 +28,7 @@ func Execute() {
 	}
 }
 
-func Init(name string, cmds... *cobra.Command) {
+func Init(name string, cmds ...*cobra.Command) {
 	rootCmd = &cobra.Command{
 		Use:          name,
 		Short:        name,

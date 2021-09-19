@@ -134,7 +134,6 @@ func GetType(p string) (string, error) {
 	return filetype, nil
 }
 
-
 func PathCreate(dir string) error {
 	return os.MkdirAll(dir, os.ModePerm)
 }

@@ -1,10 +1,9 @@
 package jwtauth
 
 import (
-	"gorm.io/gorm"
 	"github.com/kingwel-xie/k2/common/models"
+	"gorm.io/gorm"
 )
-
 
 type SysUser struct {
 	UserId   int    `gorm:"primaryKey;autoIncrement;comment:编码"  json:"userId"`
@@ -35,7 +34,6 @@ func (e *SysUser) AfterFind(_ *gorm.DB) error {
 	e.RoleIds = []int{e.RoleId}
 	return nil
 }
-
 
 type SysRole struct {
 	RoleId    int    `json:"roleId" gorm:"primaryKey;autoIncrement"` // 角色编码

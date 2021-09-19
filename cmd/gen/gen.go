@@ -203,6 +203,7 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 
 	fmt.Println("Code generated successfully！")
 }
+
 //
 //func (e Gen) ActionsGen(c *gin.Context, tab tools.SysTables) {
 //
@@ -263,8 +264,6 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 //	utils.FileCreate(b6, "./app/"+tab.PackageName+"/service/dto/"+tab.TBName+".go")
 //}
 //
-
-
 
 //func (e Gen) GenMenuAndApi(c *gin.Context) {
 //	s:=service.SysMenu{}

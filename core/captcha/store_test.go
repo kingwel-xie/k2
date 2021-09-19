@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mojocn/base64Captcha"
 	"github.com/kingwel-xie/k2/core/storage"
 	"github.com/kingwel-xie/k2/core/storage/cache"
+	"github.com/mojocn/base64Captcha"
 )
 
 var _expiration = 6000

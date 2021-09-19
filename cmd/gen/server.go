@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	fileName  string
+	fileName string
 	StartCmd = &cobra.Command{
 		Use:     "generate",
 		Short:   "Generate code skeleton",
@@ -63,7 +63,6 @@ func run() {
 		os.Exit(-2)
 	}
 
-	var gen = Gen {}
+	var gen = Gen{}
 	gen.GenCode(&tab)
 }
-

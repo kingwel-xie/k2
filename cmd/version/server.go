@@ -8,8 +8,8 @@ import (
 
 var (
 	StartCmd = &cobra.Command{
-		Use:     "version",
-		Short:   "Show version info",
+		Use:   "version",
+		Short: "Show version info",
 		PreRun: func(cmd *cobra.Command, args []string) {
 
 		},

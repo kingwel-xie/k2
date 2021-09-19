@@ -9,7 +9,6 @@ var (
 	DefaultLogger *logging.ZapEventLogger
 )
 
-
 type KLogger struct {
 	logging.ZapEventLogger
 }
@@ -70,4 +69,3 @@ func Fatal(args ...interface{}) {
 func Fatalf(template string, args ...interface{}) {
 	DefaultLogger.Panicf(template, args...)
 }
-

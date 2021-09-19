@@ -64,4 +64,3 @@ func GenerateMsgIDFromContext(c *gin.Context) string {
 	}
 	return requestId
 }
-

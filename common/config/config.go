@@ -12,8 +12,8 @@ var (
 
 // Settings 兼容原先的配置结构
 type Settings struct {
-	Settings  Config 			`yaml:"settings"`
-	Extend      interface{}		`yaml:"extend"`
+	Settings  Config      `yaml:"settings"`
+	Extend    interface{} `yaml:"extend"`
 	callbacks []func()
 }
 
@@ -40,14 +40,14 @@ func (e *Settings) init() {
 
 // Config 配置集合
 type Config struct {
-	Application *Application          `yaml:"application"`
-	Ssl         *Ssl                  `yaml:"ssl"`
-	Logger      *Logger               `yaml:"logger"`
-	Jwt         *Jwt                  `yaml:"jwt"`
-	Database    *Database             `yaml:"database"`
-	Cache       *Cache                `yaml:"cache"`
-	Queue       *Queue                `yaml:"queue"`
-	Locker      *Locker               `yaml:"locker"`
+	Application *Application `yaml:"application"`
+	Ssl         *Ssl         `yaml:"ssl"`
+	Logger      *Logger      `yaml:"logger"`
+	Jwt         *Jwt         `yaml:"jwt"`
+	Database    *Database    `yaml:"database"`
+	Cache       *Cache       `yaml:"cache"`
+	Queue       *Queue       `yaml:"queue"`
+	Locker      *Locker      `yaml:"locker"`
 }
 
 // Setup 载入配置文件
@@ -64,7 +64,7 @@ func Setup(configFile string,
 			Queue:       QueueConfig,
 			Locker:      LockerConfig,
 		},
-		Extend:      ExtendConfig,
+		Extend:    ExtendConfig,
 		callbacks: fs,
 	}
 	v := viper.New()

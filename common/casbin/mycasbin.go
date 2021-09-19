@@ -48,7 +48,6 @@ func Setup(db *gorm.DB) *casbin.SyncedEnforcer {
 	return e
 }
 
-
 // Logger is the implementation for a Logger using golang log.
 type Logger struct {
 	enable int32

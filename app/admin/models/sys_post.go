@@ -12,7 +12,7 @@ type SysPost struct {
 	models.ControlBy
 	models.ModelTime
 
-	Params    string `gorm:"-" json:"params"`
+	Params string `gorm:"-" json:"params"`
 }
 
 func (SysPost) TableName() string {

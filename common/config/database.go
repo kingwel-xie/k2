@@ -18,5 +18,5 @@ type DBResolverConfig struct {
 }
 
 var (
-	DatabaseConfig  = new(Database)
+	DatabaseConfig = new(Database)
 )

@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"text/template"
 
-	k2template "github.com/kingwel-xie/k2/template"
 	"github.com/kingwel-xie/k2/core/utils"
+	k2template "github.com/kingwel-xie/k2/template"
 	"github.com/spf13/cobra"
-
 )
 
 var (
@@ -98,7 +97,7 @@ func genFile() error {
 	m["appName"] = appName
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, m)
-	utils.FileCreate(b1, entryPath + "server.go")
+	utils.FileCreate(b1, entryPath+"server.go")
 
 	c2, err := k2template.Asset("router.template")
 	if err != nil {
@@ -107,7 +106,7 @@ func genFile() error {
 	t2, err := template.New("router.template").Parse(string(c2))
 	var b2 bytes.Buffer
 	err = t2.Execute(&b2, nil)
-	utils.FileCreate(b2, routerPath + "router.go")
+	utils.FileCreate(b2, routerPath+"router.go")
 
 	c3, err := k2template.Asset("config.template")
 	if err != nil {
@@ -116,6 +115,6 @@ func genFile() error {
 	t3, err := template.New("config.template").Parse(string(c3))
 	var b3 bytes.Buffer
 	err = t3.Execute(&b3, nil)
-	utils.FileCreate(b3, configPath + "extend.go")
+	utils.FileCreate(b3, configPath+"extend.go")
 	return nil
 }

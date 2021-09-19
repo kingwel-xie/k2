@@ -29,7 +29,7 @@ func (m *SysConfigGetPageReq) GetNeedSearch() interface{} {
 }
 
 type SysConfigGetToSysAppReq struct {
-	IsFrontend     int    `form:"isFrontend" search:"type:exact;column:is_frontend;table:sys_config"`
+	IsFrontend int `form:"isFrontend" search:"type:exact;column:is_frontend;table:sys_config"`
 }
 
 func (m *SysConfigGetToSysAppReq) GetNeedSearch() interface{} {

@@ -11,7 +11,7 @@ type SysApiGetPageReq struct {
 	Title          string `form:"title"  search:"type:contains;column:title;table:sys_api" comment:"标题"`
 	Path           string `form:"path"  search:"type:contains;column:path;table:sys_api" comment:"地址"`
 	Action         string `form:"action"  search:"type:exact;column:action;table:sys_api" comment:"类型"`
-	Type   		   string `form:"type" search:"type:exact;column:type;table:sys_api" comment:"类别"`
+	Type           string `form:"type" search:"type:exact;column:type;table:sys_api" comment:"类别"`
 	SysApiOrder
 }
 
@@ -81,7 +81,6 @@ func (s *SysApiGetReq) GetId() interface{} {
 	return s.Id
 }
 
-
 // SysApiDeleteReq 功能删除请求参数
 type SysApiDeleteReq struct {
 	Ids []int `json:"ids"`
@@ -90,4 +89,3 @@ type SysApiDeleteReq struct {
 func (s *SysApiDeleteReq) GetId() interface{} {
 	return s.Ids
 }
-

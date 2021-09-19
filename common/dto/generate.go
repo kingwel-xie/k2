@@ -4,6 +4,7 @@ type ObjectById struct {
 	Id  int   `uri:"id"`
 	Ids []int `json:"ids"`
 }
+
 //
 //func (s *ObjectById) Bind(ctx *gin.Context) error {
 //	var err error

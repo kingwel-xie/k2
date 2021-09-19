@@ -62,7 +62,6 @@ func GetLocaHonst() string {
 	return ""
 }
 
-
 func GetClientIP(c *gin.Context) string {
 	ClientIP := c.ClientIP()
 	//fmt.Println("ClientIP:", ClientIP)

@@ -27,24 +27,24 @@ type TbxCountry struct {
 // @Router /api/v1/country [get]
 // @Security Bearer
 func (e TbxCountry) GetPage(c *gin.Context) {
-    s := service.TbxCountry{}
-    req := dto.TbxCountryGetPageReq{}
-    err := e.MakeContext(c).
-        Bind(&req, binding.Form).
-        MakeService(&s.Service).
-        Errors
-   	if err != nil {
-        e.Error(400, err, err.Error())
-        return
-   	}
+	s := service.TbxCountry{}
+	req := dto.TbxCountryGetPageReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.Form).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(400, err, err.Error())
+		return
+	}
 
 	list := make([]models.TbxCountry, 0)
 	var count int64
 
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-        e.Error(500, err, "查询失败")
-        return
+		e.Error(500, err, "查询失败")
+		return
 	}
 
 	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
@@ -61,20 +61,20 @@ func (e TbxCountry) GetPage(c *gin.Context) {
 func (e TbxCountry) Get(c *gin.Context) {
 	s := service.TbxCountry{}
 	req := dto.TbxCountryGetReq{}
-    err := e.MakeContext(c).
-        Bind(&req, nil).
-        MakeService(&s.Service).
-        Errors
+	err := e.MakeContext(c).
+		Bind(&req, nil).
+		MakeService(&s.Service).
+		Errors
 	if err != nil {
-        e.Error(400, err, err.Error())
-        return
+		e.Error(400, err, err.Error())
+		return
 	}
 
 	var object models.TbxCountry
 	err = s.Get(&req, &object)
 	if err != nil {
-        e.Error(500, err, "查询失败")
-        return
+		e.Error(500, err, "查询失败")
+		return
 	}
 
 	e.OK(object, "查询成功")
@@ -91,20 +91,20 @@ func (e TbxCountry) Get(c *gin.Context) {
 // @Router /api/v1/country [post]
 // @Security Bearer
 func (e TbxCountry) Insert(c *gin.Context) {
-    s := service.TbxCountry{}
-    req := dto.TbxCountryInsertReq{}
-    err := e.MakeContext(c).
-        Bind(&req, binding.JSON).
-        MakeService(&s.Service).
-        Errors
-    if err != nil {
-        e.Error(400, err, err.Error())
-        return
-    }
+	s := service.TbxCountry{}
+	req := dto.TbxCountryInsertReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.JSON).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(400, err, err.Error())
+		return
+	}
 	err = s.Insert(&req)
 	if err != nil {
-        e.Error(500, err, "创建失败")
-        return
+		e.Error(500, err, "创建失败")
+		return
 	}
 	e.OK(req.GetId(), "创建成功")
 }
@@ -121,20 +121,20 @@ func (e TbxCountry) Insert(c *gin.Context) {
 // @Router /api/v1/country/{code} [put]
 // @Security Bearer
 func (e TbxCountry) Update(c *gin.Context) {
-    s := service.TbxCountry{}
-    req := dto.TbxCountryUpdateReq{}
-    err := e.MakeContext(c).
-        Bind(&req, binding.JSON, nil).
-        MakeService(&s.Service).
-        Errors
-    if err != nil {
-        e.Error(400, err, err.Error())
-        return
-    }
+	s := service.TbxCountry{}
+	req := dto.TbxCountryUpdateReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.JSON, nil).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(400, err, err.Error())
+		return
+	}
 	err = s.Update(&req)
 	if err != nil {
-	    e.Error(500, err, "更新失败")
-        return
+		e.Error(500, err, "更新失败")
+		return
 	}
 	e.OK(req.GetId(), "更新成功")
 }
@@ -148,21 +148,21 @@ func (e TbxCountry) Update(c *gin.Context) {
 // @Router /api/v1/country [delete]
 // @Security Bearer
 func (e TbxCountry) Delete(c *gin.Context) {
-    s := service.TbxCountry{}
-    req := dto.TbxCountryDeleteReq{}
-    err := e.MakeContext(c).
-        Bind(&req, binding.JSON).
-        MakeService(&s.Service).
-        Errors
-    if err != nil {
-        e.Error(400, err, err.Error())
-        return
-    }
+	s := service.TbxCountry{}
+	req := dto.TbxCountryDeleteReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.JSON).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(400, err, err.Error())
+		return
+	}
 
 	err = s.Remove(&req)
 	if err != nil {
-        e.Error(500, err, "删除失败")
-        return
+		e.Error(500, err, "删除失败")
+		return
 	}
 	e.OK(req.GetId(), "删除成功")
 }

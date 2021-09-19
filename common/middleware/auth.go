@@ -22,18 +22,18 @@ func AuthInit() (*jwt.GinJWTMiddleware, error) {
 		}
 	}
 	return jwt.New(&jwt.GinJWTMiddleware{
-		Realm:           "kobh zone",
-		Key:             []byte(config.ApplicationConfig.JwtSecret),
-		Timeout:         timeout,
-		MaxRefresh:      time.Hour,
-		PayloadFunc:     jwtauth.PayloadFunc,
-		Authenticator:   jwtauth.Authenticator,
-		Authorizator:    jwtauth.Authorizator,
-		Unauthorized:    jwtauth.Unauthorized,
-		LogoutResponse:  jwtauth.LogoutResponse,
-		TokenLookup:     "header: Authorization, query: token, cookie: jwt",
-		TokenHeadName:   "Bearer",
-		TimeFunc:        time.Now,
-		SendCookie:      sendCookie,
+		Realm:          "kobh zone",
+		Key:            []byte(config.ApplicationConfig.JwtSecret),
+		Timeout:        timeout,
+		MaxRefresh:     time.Hour,
+		PayloadFunc:    jwtauth.PayloadFunc,
+		Authenticator:  jwtauth.Authenticator,
+		Authorizator:   jwtauth.Authorizator,
+		Unauthorized:   jwtauth.Unauthorized,
+		LogoutResponse: jwtauth.LogoutResponse,
+		TokenLookup:    "header: Authorization, query: token, cookie: jwt",
+		TokenHeadName:  "Bearer",
+		TimeFunc:       time.Now,
+		SendCookie:     sendCookie,
 	})
 }
