@@ -3,6 +3,7 @@ package gen
 import (
 	"bytes"
 	"fmt"
+	k2template "github.com/kingwel-xie/k2/template"
 	"strconv"
 	"strings"
 	"text/template"
@@ -108,7 +109,7 @@ func (e Gen) GenCode(tab *SysTables) {
 		return
 	}
 
-	basePath := "template/v4/"
+	basePath := "v4/"
 
 	routerFile := basePath
 	if tab.IsAuth {
@@ -117,46 +118,46 @@ func (e Gen) GenCode(tab *SysTables) {
 		routerFile += "router_no_check_role.go.template"
 	}
 
-	t1, err := template.ParseFiles(basePath + "model.go.template")
+	t1, err := parseByName(basePath + "model.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t2, err := template.ParseFiles(basePath + "apis.go.template")
+	t2, err := parseByName(basePath + "apis.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t3, err := template.ParseFiles(routerFile)
+	t3, err := parseByName(routerFile)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t4, err := template.ParseFiles(basePath + "js.go.template")
+	t4, err := parseByName(basePath + "js.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t5, err := template.ParseFiles(basePath + "vue.go.template")
+	t5, err := parseByName(basePath + "vue.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t6, err := template.ParseFiles(basePath + "dto.go.template")
+	t6, err := parseByName(basePath + "dto.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t7, err := template.ParseFiles(basePath + "service.go.template")
+	t7, err := parseByName(basePath + "service.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	_ = utils.PathCreate("./app/" + tab.PackageName + "/apis/")
-	_ = utils.PathCreate("./app/" + tab.PackageName + "/models/")
-	_ = utils.PathCreate("./app/" + tab.PackageName + "/router/")
-	_ = utils.PathCreate("./app/" + tab.PackageName + "/service/dto/")
+	_ = utils.PathCreate(tab.PackageName + "/apis/")
+	_ = utils.PathCreate(tab.PackageName + "/models/")
+	_ = utils.PathCreate(tab.PackageName + "/router/")
+	_ = utils.PathCreate(tab.PackageName + "/service/dto/")
 	_ = utils.PathCreate(FrontPath + "/api/")
 	_ = utils.PathCreate(FrontPath + "/views/" + tab.ModuleFrontName)
 
@@ -174,22 +175,19 @@ func (e Gen) GenCode(tab *SysTables) {
 	err = t6.Execute(&b6, tab)
 	var b7 bytes.Buffer
 	err = t7.Execute(&b7, tab)
-	utils.FileCreate(b1, "./app/"+tab.PackageName+"/models/"+tab.TBName+".go")
-	utils.FileCreate(b2, "./app/"+tab.PackageName+"/apis/"+tab.TBName+".go")
-	utils.FileCreate(b3, "./app/"+tab.PackageName+"/router/"+tab.TBName+".go")
+	utils.FileCreate(b1, tab.PackageName+"/models/"+tab.TBName+".go")
+	utils.FileCreate(b2, tab.PackageName+"/apis/"+tab.TBName+".go")
+	utils.FileCreate(b3, tab.PackageName+"/router/"+tab.TBName+".go")
 	utils.FileCreate(b4, FrontPath+"/api/"+tab.ModuleFrontName+".js")
 	utils.FileCreate(b5, FrontPath+"/views/"+tab.ModuleFrontName+"/index.vue")
-	utils.FileCreate(b6, "./app/"+tab.PackageName+"/service/dto/"+tab.TBName+".go")
-	utils.FileCreate(b7, "./app/"+tab.PackageName+"/service/"+tab.TBName+".go")
+	utils.FileCreate(b6, tab.PackageName+"/service/dto/"+tab.TBName+".go")
+	utils.FileCreate(b7, tab.PackageName+"/service/"+tab.TBName+".go")
 
 	fmt.Println("Code generated successfully！")
 }
 
 func (e Gen) GenApiToFile(tab *SysTables) {
-
-	basePath := "template/"
-
-	t1, err := template.ParseFiles(basePath + "api_migrate.template")
+	t1, err := parseByName("api_migrate.template")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -201,7 +199,7 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 		GenerateTime string
 	}{*tab, i})
 
-	utils.FileCreate(b1, "./cmd/migrate/migration/version-local/"+i+"_migrate.go")
+	utils.FileCreate(b1, "migrate/version-local/"+i+"_migrate.go")
 
 	fmt.Println("Code generated successfully！")
 }
@@ -392,3 +390,11 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 //
 //	fmt.Println("数据生成成功！")
 //}
+
+func parseByName(name string) (*template.Template, error) {
+	p, err := k2template.Asset(name)
+	if err != nil {
+		return nil, err
+	}
+	return template.New(name).Parse(string(p))
+}

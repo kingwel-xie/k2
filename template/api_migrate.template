@@ -5,10 +5,10 @@ import (
 	"runtime"
     "time"
 
-	"github.com/kingwel-xie/k2/pkg"
-
-	"github.com/kingwel-xie/k2/cmd/migrate/migration"
 	common "github.com/kingwel-xie/k2/common/models"
+	"github.com/kingwel-xie/k2/core/migration"
+	"github.com/kingwel-xie/k2/core/utils"
+	"gorm.io/gorm"
 )
 
 type Menu struct {
@@ -47,7 +47,7 @@ func init() {
 func _{{.GenerateTime}}Test(db *gorm.DB, version string) error {
 	return db.Transaction(func(tx *gorm.DB) error {
 
-        timeNow := pkg.GetCurrentTime()
+        timeNow := utils.GetCurrentTime()
         Mmenu := Menu{}
         Mmenu.MenuName = "{{.TBName}}Manage"
         Mmenu.Title = "{{.TableComment}}"
