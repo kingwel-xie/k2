@@ -27,7 +27,7 @@ func InitRouter() {
 	}
 
 	// the jwt middleware
-	authMiddleware, err := middleware.AuthInit("")
+	authMiddleware, err := middleware.AuthInit()
 	if err != nil {
 		log.Fatalf("JWT Init Error, %s", err.Error())
 	}

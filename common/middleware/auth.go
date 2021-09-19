@@ -10,10 +10,7 @@ import (
 )
 
 // AuthInit jwt验证new
-func AuthInit(prefix string) (*jwt.GinJWTMiddleware, error) {
-	// set the preix to allow using different user+role tables
-	jwtauth.SetTablePrefix(prefix)
-
+func AuthInit() (*jwt.GinJWTMiddleware, error) {
 	timeout := time.Hour
 	sendCookie := false
 	if config.ApplicationConfig.Mode == "dev" {
@@ -25,7 +22,7 @@ func AuthInit(prefix string) (*jwt.GinJWTMiddleware, error) {
 		}
 	}
 	return jwt.New(&jwt.GinJWTMiddleware{
-		Realm:           "github.com/kingwel-xie/k2 zone",
+		Realm:           "kobh zone",
 		Key:             []byte(config.ApplicationConfig.JwtSecret),
 		Timeout:         timeout,
 		MaxRefresh:      time.Hour,

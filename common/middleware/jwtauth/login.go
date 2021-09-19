@@ -1,8 +1,8 @@
 package jwtauth
 
 import (
-	"gorm.io/gorm"
 	"github.com/kingwel-xie/k2/core/utils"
+	"gorm.io/gorm"
 )
 
 type Login struct {
@@ -12,9 +12,9 @@ type Login struct {
 	UUID     string `form:"UUID" json:"uuid" binding:"required"`
 }
 
-func (u *Login) GetUser(tx *gorm.DB, prefix string) (user SysUser, role SysRole, err error) {
-	userTableName := prefix + "sys_user"
-	roleTableName := prefix + "sys_role"
+func (u *Login) GetUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
+	userTableName := "sys_user"
+	roleTableName := "sys_role"
 	err = tx.Table(userTableName).Where("username = ?  and status = 2", u.Username).First(&user).Error
 	if err != nil {
 		return

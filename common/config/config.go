@@ -6,12 +6,14 @@ import (
 )
 
 var (
+	ExtendConfig interface{}
 	_cfg         *Settings
 )
 
 // Settings 兼容原先的配置结构
 type Settings struct {
-	Settings  Config `yaml:"settings"`
+	Settings  Config 			`yaml:"settings"`
+	Extend      interface{}		`yaml:"extend"`
 	callbacks []func()
 }
 
@@ -62,6 +64,7 @@ func Setup(configFile string,
 			Queue:       QueueConfig,
 			Locker:      LockerConfig,
 		},
+		Extend:      ExtendConfig,
 		callbacks: fs,
 	}
 	v := viper.New()

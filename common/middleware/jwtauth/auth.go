@@ -17,14 +17,7 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
-// customized table prefix for SysUser & SysRole
-var tableNamePrefix string
-
-func SetTablePrefix(p string) {
-	tableNamePrefix = p
-}
-
-var ErrInvalidVerificationode = errors.New("invalid verification code")
+var ErrInvalidVerificationCode = errors.New("invalid verification code")
 
 func PayloadFunc(data interface{}) jwt.MapClaims {
 	if v, ok := data.(map[string]interface{}); ok {
@@ -87,10 +80,10 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 			status = "1"
 			log.Warnw(msg, "user", username)
 
-			return nil, ErrInvalidVerificationode
+			return nil, ErrInvalidVerificationCode
 		}
 	}
-	user, role, e := loginVals.GetUser(db, tableNamePrefix)
+	user, role, e := loginVals.GetUser(db)
 	if e == nil {
 		username = loginVals.Username
 		msg = "登录成功"

@@ -37,7 +37,6 @@ func init() {
 }
 
 func run() {
-
 	if !generate {
 		fmt.Println(`start init`)
 		//1. 读取配置
