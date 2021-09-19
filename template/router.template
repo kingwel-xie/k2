@@ -9,7 +9,7 @@ import (
 
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/middleware"
-	log "github.com/kingwel-xie/k2/core/logger"
+	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
@@ -30,7 +30,7 @@ func InitRouter() {
 	case *gin.Engine:
 		r = h.(*gin.Engine)
 	default:
-		log.Fatal("not support other engine")
+		logger.Fatal("not support other engine")
 		os.Exit(-1)
 	}
 
@@ -39,7 +39,7 @@ func InitRouter() {
 	// the jwt middleware
 	authMiddleware, err := middleware.AuthInit()
 	if err != nil {
-		log.Fatalf("JWT Init Error, %s", err.Error())
+		logger.Fatalf("JWT Init Error, %s", err.Error())
 	}
 
 	// 注册业务路由
