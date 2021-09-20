@@ -61,6 +61,9 @@ func preprocessTable(tab *SysTables) error {
 		if len(v.GoField) == 0 {
 			return fmt.Errorf("column %d no GoField specified", index)
 		}
+		if len(v.GoType) == 0 {
+			return fmt.Errorf("column %d no GoType specified", index)
+		}
 
 		// set ColumnName if not specified
 		if len(v.ColumnName) == 0 {
@@ -70,13 +73,17 @@ func preprocessTable(tab *SysTables) error {
 		if len(v.JsonField) == 0 {
 			tab.Columns[index].JsonField = toLowerFirstChar(v.GoField)
 		}
-		// set to EQ if not specified
+		// set HtmlType if not specified
+		if len(v.HtmlType) == 0 {
+			if strings.Contains(v.GoType, "time.Time") {
+				tab.Columns[index].HtmlType = "datetime"
+			} else {
+				tab.Columns[index].HtmlType = "input"
+			}
+		}
+		// set QueryType to EQ if not specified
 		if len(v.QueryType) == 0 {
 			tab.Columns[index].QueryType = "EQ"
-		}
-		// set to input if not specified
-		if len(v.HtmlType) == 0 {
-			tab.Columns[index].HtmlType = "input"
 		}
 
 		// set FkTableName if not specified
