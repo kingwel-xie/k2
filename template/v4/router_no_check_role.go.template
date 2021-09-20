@@ -3,7 +3,8 @@ package router
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/apis"
+
+	"{{.PackageName}}/apis"
 )
 
 func init() {

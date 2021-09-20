@@ -3,11 +3,11 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/models"
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/service"
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/service/dto"
 	"github.com/kingwel-xie/k2/common/api"
+
+	"{{.PackageName}}/models"
+	"{{.PackageName}}/service"
+	"{{.PackageName}}/service/dto"
 )
 
 type {{.ClassName}} struct {
