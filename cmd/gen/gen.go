@@ -102,7 +102,7 @@ func preprocessTable(tab *SysTables) error {
 			tab.PkComment = tab.Columns[index].ColumnComment
 			tab.PkGoType = tab.Columns[index].GoType
 			tab.PkColumn = tab.Columns[index].ColumnName
-			tab.PkJsonField = tab.Columns[index].ColumnName
+			tab.PkJsonField = tab.Columns[index].JsonField
 		}
 	}
 

@@ -46,7 +46,7 @@
           </el-col>
           {{ if (.HasExport) -}}
           <el-col :span="1.5">
-            <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:export']" type="warning" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
+            <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:list']" type="warning" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
           </el-col>
           {{- end }}
         </el-row>
@@ -373,11 +373,10 @@ export default {
     {{- if (.HasExport) -}},
     /** 导出按钮操作 */
     handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有参数数据项?', '警告', {
+      this.$confirm('是否导出满足当前查询条件的数据项（最多10000条）?', '请确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning'
+        type: 'info'
       }).then(() => {
         this.downloadLoading = true
         import('@/vendor/Export2Excel').then(excel => {
@@ -393,20 +392,24 @@ export default {
             '{{.JsonField}}',
             {{- end -}}
             {{- end }}]
-          const list = this.configList
-          const data = formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: '参数设置',
-            autoWidth: true, // Optional
-            bookType: 'xlsx' // Optional
+          const params = this.queryParams
+          params.pageSize = 10000
+          list{{.ClassName}}(this.addDateRange(params, this.dateRange)).then(response => {
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '{{.TableComment}}',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.downloadLoading = false
+          }).catch(() => {
           })
-          this.downloadLoading = false
         })
       })
     }
-    {{- end -}}
+    {{- end }}
   }
 }
 </script>
