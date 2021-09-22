@@ -5,12 +5,11 @@ import (
 	"github.com/alibaba/sentinel-golang/core/system"
 	"github.com/alibaba/sentinel-golang/logging"
 	"github.com/gin-gonic/gin"
-	log "github.com/kingwel-xie/k2/core/logger"
 )
 
 // Sentinel 限流
 func Sentinel() gin.HandlerFunc {
-	logging.ResetGlobalLogger(log.DefaultLogger)
+	logging.ResetGlobalLogger(log)
 	if _, err := system.LoadRules([]*system.Rule{
 		{
 			MetricType:   system.InboundQPS,

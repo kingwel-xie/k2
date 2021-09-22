@@ -31,13 +31,3 @@ func (m *Message) SetStream(stream string) {
 func (m *Message) SetValues(values map[string]interface{}) {
 	m.Values = values
 }
-
-func (m *Message) GetPrefix() (prefix string) {
-	if m.Values == nil {
-		return
-	}
-	return ""
-}
-
-func (m *Message) SetPrefix(prefix string) {
-}

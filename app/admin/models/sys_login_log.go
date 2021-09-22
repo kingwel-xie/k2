@@ -37,7 +37,7 @@ func SaveLoginLog(message storage.Messager) (err error) {
 	db := common.Runtime.GetDb()
 	if db == nil {
 		err = errors.New("db not exist")
-		log.Errorf("host[%s]'s %s", message.GetPrefix(), err.Error())
+		log.Errorf("%s", err.Error())
 		return err
 	}
 	var rb []byte

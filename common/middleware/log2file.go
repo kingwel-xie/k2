@@ -28,7 +28,6 @@ func LoggerToFile() gin.HandlerFunc {
 			return
 		}
 
-		log := api.MustGetLogger(c)
 		// 开始时间
 		startTime := time.Now()
 		// 处理请求

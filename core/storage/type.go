@@ -33,8 +33,6 @@ type Messager interface {
 	GetID() string
 	GetStream() string
 	GetValues() map[string]interface{}
-	GetPrefix() string
-	SetPrefix(string)
 }
 
 type ConsumerFunc func(Messager) error
