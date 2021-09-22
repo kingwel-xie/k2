@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/kingwel-xie/k2/core/logger"
 	"os"
 	"strings"
 
-	logging "github.com/ipfs/go-log/v2"
 	"github.com/mattn/go-isatty"
+
+	"github.com/kingwel-xie/k2/core/logger"
 )
 
 type Logger struct {
@@ -25,17 +25,15 @@ var LoggerConfig = new(Logger)
 // Setup 设置logger
 func (e Logger) Setup() {
 	cfg := toLoggerConfig(e)
-	logging.SetupLogging(cfg)
-
-	logger.DefaultLogger = logging.Logger("main")
+	logger.SetupLogging(cfg)
 }
 
-func toLoggerConfig(log Logger) logging.Config {
-	cfg := logging.Config{
-		Format:          logging.ColorizedOutput,
+func toLoggerConfig(log Logger) logger.Config {
+	cfg := logger.Config{
+		Format:          logger.ColorizedOutput,
 		Stderr:          true,
-		Level:           logging.LevelInfo,
-		SubsystemLevels: map[string]logging.LogLevel{},
+		Level:           logger.LevelInfo,
+		SubsystemLevels: map[string]logger.LogLevel{},
 		Labels:          map[string]string{},
 	}
 
@@ -43,11 +41,11 @@ func toLoggerConfig(log Logger) logging.Config {
 	var noExplicitFormat bool
 	switch log.Format {
 	case "color":
-		cfg.Format = logging.ColorizedOutput
+		cfg.Format = logger.ColorizedOutput
 	case "nocolor":
-		cfg.Format = logging.PlaintextOutput
+		cfg.Format = logger.PlaintextOutput
 	case "json":
-		cfg.Format = logging.JSONOutput
+		cfg.Format = logger.JSONOutput
 	default:
 		if log.Format != "" {
 			fmt.Fprintf(os.Stderr, "ignoring unrecognized log format '%s'\n", log.Format)
@@ -59,7 +57,7 @@ func toLoggerConfig(log Logger) logging.Config {
 	if log.Level != "" {
 		for _, kvs := range strings.Split(log.Level, ",") {
 			kv := strings.SplitN(kvs, "=", 2)
-			lvl, err := logging.LevelFromString(kv[len(kv)-1])
+			lvl, err := logger.LevelFromString(kv[len(kv)-1])
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "error setting log level %q: %s\n", kvs, err)
 				continue
@@ -74,7 +72,7 @@ func toLoggerConfig(log Logger) logging.Config {
 	}
 
 	cfg.File = log.File
-	// Disable stderr logging when a file is specified
+	// Disable stderr logger when a file is specified
 	// https://github.com/ipfs/go-log/issues/83
 	if cfg.File != "" {
 		cfg.Stderr = false
@@ -105,7 +103,7 @@ func toLoggerConfig(log Logger) logging.Config {
 	if noExplicitFormat &&
 		(!cfg.Stdout || !isTerm(os.Stdout)) &&
 		(!cfg.Stderr || !isTerm(os.Stderr)) {
-		cfg.Format = logging.PlaintextOutput
+		cfg.Format = logger.PlaintextOutput
 	}
 
 	// labels

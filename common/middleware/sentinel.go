@@ -9,7 +9,7 @@ import (
 
 // Sentinel 限流
 func Sentinel() gin.HandlerFunc {
-	logging.ResetGlobalLogger(log)
+	_ = logging.ResetGlobalLogger(log.WithCallerSkip(1))
 	if _, err := system.LoadRules([]*system.Rule{
 		{
 			MetricType:   system.InboundQPS,
