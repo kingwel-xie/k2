@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/storage"
 )
 
@@ -80,12 +81,11 @@ func (m *Memory) Register(name string, f storage.ConsumerFunc) {
 		m.queue.Store(name, q)
 	}
 	go func(out queue, gf storage.ConsumerFunc) {
-		var err error
 		for message := range q {
-			err = gf(message)
+			err := gf(message)
 			if err != nil {
-				out <- message
-				err = nil
+				//errorCh <- message
+				logger.Errorf("run queue=%s failed, err=%v", name, err)
 			}
 		}
 	}(q, f)

@@ -2,9 +2,9 @@ package queue
 
 import (
 	"github.com/go-redis/redis/v7"
-	"github.com/robinjoseph08/redisqueue/v2"
-
+	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/storage"
+	"github.com/robinjoseph08/redisqueue/v2"
 )
 
 // NewRedis redis模式
@@ -22,6 +22,13 @@ func NewRedis(
 	if err != nil {
 		return nil, err
 	}
+
+	go func() {
+		for {
+			err := <-r.consumer.Errors
+			logger.Errorf("run redis queue failed, err=%v", err)
+		}
+	}()
 	return r, nil
 }
 
