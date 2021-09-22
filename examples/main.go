@@ -17,6 +17,6 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	cmd.Init("hsh")
+	cmd.Init("test")
 	cmd.Execute()
 }
