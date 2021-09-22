@@ -1,0 +1,51 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kobh-ui
+  labels:
+    app: kobh-ui
+    service: go-admim-ui
+spec:
+  ports:
+    - port: 80
+      name: http
+      protocol: TCP
+  selector:
+    app: kobh-ui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kobh-ui-v1
+  labels:
+    app: kobh-ui
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kobh-ui
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: kobh-ui
+        version: v1
+    spec:
+      containers:
+        - name: kobh-ui
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: frontendconf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+      volumes:
+        - name: frontendconf
+          configMap:
+            name: nginx-frontend
+---
