@@ -13,6 +13,4 @@ config/settings.dev.*.yml.log
 temp/logs
 config/settings.dev.yml.log
 config/settings.b.dev.yml
-# go sum
 go.sum
-config/settings.deva.yml
