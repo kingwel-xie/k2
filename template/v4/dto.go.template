@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/models"
 	"github.com/kingwel-xie/k2/common/dto"
+
+	"{{.PackageName}}/models"
 
 	 {{- $bb := false -}}
      {{- range .Columns -}}

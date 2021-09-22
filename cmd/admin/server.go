@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 
-	"github.com/kingwel-xie/k2/app/admin/models"
-	"github.com/kingwel-xie/k2/app/admin/router"
+	"admin/models"
+	"admin/router"
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/common/database"

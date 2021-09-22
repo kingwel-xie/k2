@@ -21,6 +21,7 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/ipfs/go-log/v2 v2.3.0
 	github.com/json-iterator/go v1.1.11
+	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/mattn/go-isatty v0.0.13
 	github.com/mojocn/base64Captcha v1.3.4
 	github.com/mssola/user_agent v0.5.2

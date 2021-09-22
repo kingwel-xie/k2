@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/models"
-	"github.com/kingwel-xie/k2/app/{{.PackageName}}/service/dto"
 	cDto "github.com/kingwel-xie/k2/common/dto"
 	"github.com/kingwel-xie/k2/common/service"
+
+	"{{.PackageName}}/models"
+	"{{.PackageName}}/service/dto"
 )
 
 type {{.ClassName}} struct {
