@@ -21,13 +21,12 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/ipfs/go-log/v2 v2.3.0
 	github.com/json-iterator/go v1.1.11
-	github.com/jteeuwen/go-bindata v3.0.7+incompatible // indirect
 	github.com/mattn/go-isatty v0.0.13
 	github.com/mojocn/base64Captcha v1.3.4
 	github.com/mssola/user_agent v0.5.2
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/opentracing/opentracing-go v1.1.0
-	github.com/prometheus/client_golang v1.11.0
+	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/robinjoseph08/redisqueue/v2 v2.1.0
 	github.com/shamsher31/goimgext v1.0.0
@@ -38,10 +37,7 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
-	github.com/swaggo/gin-swagger v1.2.0
-	github.com/swaggo/swag v1.6.7
 	github.com/tklauser/go-sysconf v0.3.6 // indirect
-	github.com/ucloud/ucloud-sdk-go v0.21.18 // indirect
 	github.com/unrolled/secure v1.0.8
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
