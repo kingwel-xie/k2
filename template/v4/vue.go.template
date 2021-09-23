@@ -392,7 +392,8 @@ export default {
             '{{.JsonField}}',
             {{- end -}}
             {{- end }}]
-          const params = this.queryParams
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
           params.pageSize = 10000
           list{{.ClassName}}(this.addDateRange(params, this.dateRange)).then(response => {
             const data = formatJson(filterVal, response.data.list)
