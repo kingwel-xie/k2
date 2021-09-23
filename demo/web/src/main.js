@@ -105,6 +105,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+Element.Dialog.props.closeOnClickModal.default = false
 
 new Vue({
   el: '#app',
