@@ -20,7 +20,7 @@
             <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="queryParams.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
               {{- else -}}
             <el-select v-model="queryParams.{{.JsonField}}" placeholder="{{$tableComment}}{{.ColumnComment}}" clearable size="small">
-              <el-option v-for="dict in {{.JsonField}}Options" :key="dict.dictValue" :label="dict.dictLabel" :value="dict.dictValue" />
+              <el-option v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label" :value="dict.value" />
             </el-select>
             {{- end }}
           {{- end }}
@@ -113,12 +113,12 @@
               </el-select>
                 {{- else -}}
               <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{if (.NotOnUpdate) -}} :disabled="isEdit" {{- end }}>
-                <el-option v-for="dict in {{.JsonField}}Options" :key="dict.dictValue" :label="dict.dictLabel" :value="dict.dictValue" />
+                <el-option v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
                 {{- end -}}
               {{- else if eq "radio" .HtmlType -}}
               <el-radio-group v-model="form.{{.JsonField}}">
-                <el-radio v-for="dict in {{.JsonField}}Options" :key="dict.dictValue" :label="dict.dictValue">{{"{{"}} dict.dictLabel {{"}}"}}</el-radio>
+                <el-radio v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label">{{"{{"}} dict.label {{"}}"}}</el-radio>
               </el-radio-group>
               {{- else if eq "file" .HtmlType -}}
               <el-input v-model="form.{{.JsonField}}" placeholder="图片" />
