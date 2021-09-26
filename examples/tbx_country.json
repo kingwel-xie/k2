@@ -1,5 +1,5 @@
 {
-	"packageName": "admin",
+	"packageName": "kobh",
 	"moduleName": "country",
 	"className": "TbxCountry",
 	"tableComment": "国家编码",

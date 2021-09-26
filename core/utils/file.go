@@ -149,7 +149,12 @@ func PathExist(addr string) bool {
 }
 
 func FileCreate(content bytes.Buffer, name string) {
-	file, err := os.Create(name)
+	file, err := os.Open(name)
+	if err == nil {
+		log.Printf("file %s already existed, will create a new file with timestamp suffix", name)
+		name += fmt.Sprintf(".%d", time.Now().Unix())
+	}
+	file, err = os.Create(name)
 	if err != nil {
 		log.Println(err)
 	}
@@ -158,6 +163,7 @@ func FileCreate(content bytes.Buffer, name string) {
 		log.Println(err)
 	}
 	file.Close()
+	log.Printf("file %s generated.", name)
 }
 
 type ReplaceHelper struct {

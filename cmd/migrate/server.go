@@ -80,11 +80,11 @@ func genFile() error {
 	}
 	m := map[string]string{}
 	m["GenerateTime"] = strconv.FormatInt(time.Now().UnixNano()/1e6, 10)
-	m["Package"] = "version_local"
+	m["Package"] = "version"
 
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, m)
-	utils.FileCreate(b1, "./cmd/migrate/migration/version-local/"+m["GenerateTime"]+"_migrate.go")
+	utils.FileCreate(b1, "./cmd/migrate/migration/version/"+m["GenerateTime"]+"_migrate.go")
 
 	return nil
 }

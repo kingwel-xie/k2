@@ -42,6 +42,9 @@ func InitRouter() {
 		logger.Fatalf("JWT Init Error, %s", err.Error())
 	}
 
+	// 注册系统路由, check demo/admin/router/sys_router.go for more details
+	// InitSysRouter(r, authMiddleware)
+
 	// 注册业务路由
 	InitBusinessRouter(r, authMiddleware)
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	k2template "github.com/kingwel-xie/k2/template"
+	"path"
 	"strconv"
 	"strings"
 	"text/template"
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	FrontPath string = "front"
+	BasePath string = "."
 )
 
 type Gen struct {
@@ -110,7 +111,6 @@ func preprocessTable(tab *SysTables) error {
 }
 
 func (e Gen) GenCode(tab *SysTables) {
-
 	if err := preprocessTable(tab); err != nil {
 		fmt.Println(err)
 		return
@@ -161,12 +161,26 @@ func (e Gen) GenCode(tab *SysTables) {
 		return
 	}
 
-	_ = utils.PathCreate(tab.PackageName + "/apis/")
-	_ = utils.PathCreate(tab.PackageName + "/models/")
-	_ = utils.PathCreate(tab.PackageName + "/router/")
-	_ = utils.PathCreate(tab.PackageName + "/service/dto/")
-	_ = utils.PathCreate(FrontPath + "/api/")
-	_ = utils.PathCreate(FrontPath + "/views/" + tab.ModuleFrontName)
+	var apiPath = path.Join(BasePath, "apis")
+	var modelPath = path.Join(BasePath, "models")
+	var routerPath = path.Join(BasePath, "router")
+	var servicePath = path.Join(BasePath, "service")
+	var dtoPath = path.Join(BasePath, "service", "dto")
+	var jsPath = path.Join(BasePath, "web", "src", "api", tab.PackageName)
+	var vuePath = path.Join(BasePath, "web", "src", "views", tab.PackageName, tab.ModuleFrontName)
+
+	_ = utils.PathCreate(apiPath)
+	_ = utils.PathCreate(modelPath)
+	_ = utils.PathCreate(routerPath)
+	_ = utils.PathCreate(servicePath)
+	_ = utils.PathCreate(dtoPath)
+	_ = utils.PathCreate(jsPath)
+	_ = utils.PathCreate(vuePath)
+	//_ = utils.PathCreate(tab.PackageName + "/models/")
+	//_ = utils.PathCreate(tab.PackageName + "/router/")
+	//_ = utils.PathCreate(tab.PackageName + "/service/dto/")
+	//_ = utils.PathCreate(FrontPath + "/api/" + tab.PackageName)
+	//_ = utils.PathCreate(FrontPath + "/views/" + tab.PackageName + "/" + tab.ModuleFrontName)
 
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, tab)
@@ -182,13 +196,13 @@ func (e Gen) GenCode(tab *SysTables) {
 	err = t6.Execute(&b6, tab)
 	var b7 bytes.Buffer
 	err = t7.Execute(&b7, tab)
-	utils.FileCreate(b1, tab.PackageName+"/models/"+tab.TBName+".go")
-	utils.FileCreate(b2, tab.PackageName+"/apis/"+tab.TBName+".go")
-	utils.FileCreate(b3, tab.PackageName+"/router/"+tab.TBName+".go")
-	utils.FileCreate(b4, FrontPath+"/api/"+tab.ModuleFrontName+".js")
-	utils.FileCreate(b5, FrontPath+"/views/"+tab.ModuleFrontName+"/index.vue")
-	utils.FileCreate(b6, tab.PackageName+"/service/dto/"+tab.TBName+".go")
-	utils.FileCreate(b7, tab.PackageName+"/service/"+tab.TBName+".go")
+	utils.FileCreate(b1, path.Join(modelPath, tab.TBName+".go"))
+	utils.FileCreate(b2, path.Join(apiPath, tab.TBName+".go"))
+	utils.FileCreate(b3, path.Join(routerPath, tab.TBName+".go"))
+	utils.FileCreate(b4, path.Join(jsPath, tab.ModuleFrontName+".js"))
+	utils.FileCreate(b5, path.Join(vuePath, "index.vue"))
+	utils.FileCreate(b6, path.Join(dtoPath, tab.TBName+".go"))
+	utils.FileCreate(b7, path.Join(servicePath, tab.TBName+".go"))
 
 	fmt.Println("Code generated successfully！")
 }
@@ -206,7 +220,7 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 		GenerateTime string
 	}{*tab, i})
 
-	utils.FileCreate(b1, "migrate/version-local/"+i+"_migrate.go")
+	utils.FileCreate(b1, "migrate/version/"+i+"_migrate.go")
 
 	fmt.Println("Code generated successfully！")
 }
