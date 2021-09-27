@@ -51,7 +51,7 @@
           {{- end }}
         </el-row>
 
-        <el-table v-loading="loading" :data="{{.BusinessName}}List" stripe border @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="{{.BusinessName}}List" stripe border @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           {{ range .Columns -}}
           {{- $x := .NotOnList -}}
@@ -88,7 +88,7 @@
         <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageIndex" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
         <!-- 添加或修改对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="500px">
+        <el-dialog :title="title" :visible.sync="open" v-loading="saving" element-loading-text="更新数据..." element-loading-spinner="el-icon-loading" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             {{ range .Columns -}}
             {{- $isNumber := false -}}
@@ -163,6 +163,7 @@ export default {
     return {
       // 遮罩层
       loading: true,
+      saving: false,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -262,12 +263,6 @@ export default {
     }
       this.resetForm('form')
     },
-    getImgList: function() {
-      this.form[this.fileIndex] = this.$refs['fileChoose'].resultList[0].fullUrl
-    },
-    fileClose: function() {
-      this.fileOpen = false
-    },
     {{range .Columns}}
     {{- if ne .DictType "" -}}
     {{.JsonField}}Format(row) {
@@ -327,29 +322,40 @@ export default {
     handleUpdate(row) {
       this.reset()
       const {{.PkJsonField}} = row.{{.PkJsonField}} || this.ids
+      this.loading = true
       get{{.ClassName}}({{.PkJsonField}}).then(response => {
         this.form = response.data
         this.open = true
         this.title = '修改{{.TableComment}}'
         this.isEdit = true
-      }).catch(() => {})
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+      })
     },
     /** 提交按钮 */
     submitForm: function() {
       this.$refs['form'].validate(valid => {
+        this.saving = true
         if (valid) {
           if (this.isEdit) {
             update{{.ClassName}}(this.form).then(response => {
               this.msgSuccess(response.msg)
               this.open = false
+              this.saving = false
               this.getList()
-            }).catch(() => {})
+            }).catch(() => {
+              this.saving = false
+            })
           } else {
             add{{.ClassName}}(this.form).then(response => {
               this.msgSuccess(response.msg)
               this.open = false
+              this.saving = false
               this.getList()
-            }).catch(() => {})
+            }).catch(() => {
+              this.saving = false
+            })
           }
         }
       })
@@ -378,7 +384,6 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
-        this.downloadLoading = true
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = [
             {{- range .Columns -}}
@@ -395,7 +400,9 @@ export default {
           const params = Object.assign({}, this.queryParams)
           params.pageIndex = 1
           params.pageSize = 10000
+          this.loading = true
           list{{.ClassName}}(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
             const data = formatJson(filterVal, response.data.list)
             excel.export_json_to_excel({
               header: tHeader,
@@ -404,8 +411,8 @@ export default {
               autoWidth: true, // Optional
               bookType: 'xlsx' // Optional
             })
-            this.downloadLoading = false
           }).catch(() => {
+            this.loading = false
           })
         })
       })
