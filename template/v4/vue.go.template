@@ -127,6 +127,8 @@
               <el-date-picker v-model="form.{{.JsonField}}" type="datetime" placeholder="选择日期"></el-date-picker>
               {{- else if eq "textarea" .HtmlType -}}
               <el-input v-model="form.{{.JsonField}}" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
+              {{- else if eq "switch" .HtmlType -}}
+              <el-switch v-model="form.{{.JsonField}}" active-text="是" inactive-text="否" />
               {{- end }}
             </el-form-item>
               {{- end }}

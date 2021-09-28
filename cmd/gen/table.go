@@ -42,7 +42,7 @@ type SysColumns struct {
 	NotOnUpdate   bool   `json:"notOnUpdate"`   // dto, 可以更新 UpdateReq 参数, vue Update dialog
 	NotOnInsert   bool   `json:"notOnInsert"`   // dto, 不出现于 InsertReq, vue 不出现于 insert dialog
 	NotOnList     bool   `json:"notOnList"`     // vue, 列表不显示
-	HtmlType      string `json:"htmlType"`      // vue, datetime/file/radio/select/input/textarea, 缺省 input
+	HtmlType      string `json:"htmlType"`      // vue, datetime/file/radio/select/input/textarea/switch, 缺省 input
 	DictType      string `json:"dictType"`      // vue, 字典類型
 	//Sort               int          `gorm:"column:sort;" json:"sort"`								// ?
 	FkClassName       string `json:"fkClassName"`       // vue, 外键类名 TbxCountry, 由此生成 FkTableName+FkModuleFrontName

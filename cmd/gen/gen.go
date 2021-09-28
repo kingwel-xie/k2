@@ -76,7 +76,9 @@ func preprocessTable(tab *SysTables) error {
 		}
 		// set HtmlType if not specified
 		if len(v.HtmlType) == 0 {
-			if strings.Contains(v.GoType, "time.Time") {
+			if v.GoType == "bool" {
+				tab.Columns[index].HtmlType = "switch"
+			} else if strings.Contains(v.GoType, "time.Time") {
 				tab.Columns[index].HtmlType = "datetime"
 			} else {
 				tab.Columns[index].HtmlType = "input"
