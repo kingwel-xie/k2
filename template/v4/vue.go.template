@@ -88,7 +88,7 @@
         <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageIndex" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
         <!-- 添加或修改对话框 -->
-        <el-dialog :title="title" :visible.sync="open" v-loading="saving" element-loading-text="更新数据..." element-loading-spinner="el-icon-loading" width="500px">
+        <el-dialog :title="title" :visible.sync="open" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             {{ range .Columns -}}
             {{- $isNumber := false -}}
@@ -134,7 +134,7 @@
           {{- end -}}
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
             <el-button @click="cancel">取 消</el-button>
           </div>
         </el-dialog>
@@ -336,8 +336,8 @@ export default {
     /** 提交按钮 */
     submitForm: function() {
       this.$refs['form'].validate(valid => {
-        this.saving = true
         if (valid) {
+          this.saving = true
           if (this.isEdit) {
             update{{.ClassName}}(this.form).then(response => {
               this.msgSuccess(response.msg)
