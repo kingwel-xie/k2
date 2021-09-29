@@ -28,7 +28,8 @@ type SysTables struct {
 type SysColumns struct {
 	GoField       string `json:"goField"`       // go 字段名，由此生成 ColumnName+JsonField
 	GoType        string `json:"goType"`        // go 数据类型, string/int/...
-	ColumnComment string `json:"columnComment"` // 注释
+	ColumnComment string `json:"columnComment"` // 列字段注释，简短描述，一般不超过5个汉字
+	Comment 	  string `json:"comnent"` 		// 注释，不影响生成代码
 	ColumnName    string `json:"columnName"`    // gorm 数据库字段名, 缺省由GoField 生成
 	JsonField     string `json:"jsonField"`     // json 字段名, 缺省由GoField 生成
 	GormTag       string `json:"gormTag"`       // gorm tag, 类型+约束, f.g., size:64;unique;index;unique_index;not null;default;
