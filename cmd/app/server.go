@@ -15,21 +15,20 @@ var (
 	appName  string
 	StartCmd = &cobra.Command{
 		Use:     "create-app",
+		Aliases: []string {"cr", "create"},
 		Short:   "Create a new app",
 		Long:    "Use when you need to create a new app",
-		Example: "create-app -n myapp",
+		Example: "create-app myapp",
+		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			appName = args[0]
 			run()
 		},
 	}
 )
 
-func init() {
-	StartCmd.PersistentFlags().StringVarP(&appName, "name", "n", "", "Start server with provided configuration file")
-}
-
 func run() {
-	fmt.Println(`Generating skeletons...`)
+	fmt.Println(`Generating app skeletons...`)
 	if err := genFile(); err != nil {
 		fmt.Println(`Generating failed`, err)
 	}
@@ -97,7 +96,7 @@ func genFile() error {
 	m["appName"] = appName
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, m)
-	utils.FileCreate(b1, entryPath+"server.go")
+	utils.FileCreate(b1, entryPath+"server.go", false)
 
 	c2, err := k2template.Asset("router.template")
 	if err != nil {
@@ -106,7 +105,7 @@ func genFile() error {
 	t2, err := template.New("router.template").Parse(string(c2))
 	var b2 bytes.Buffer
 	err = t2.Execute(&b2, nil)
-	utils.FileCreate(b2, routerPath+"router.go")
+	utils.FileCreate(b2, routerPath+"router.go", false)
 
 	c3, err := k2template.Asset("config.template")
 	if err != nil {
@@ -115,6 +114,6 @@ func genFile() error {
 	t3, err := template.New("config.template").Parse(string(c3))
 	var b3 bytes.Buffer
 	err = t3.Execute(&b3, nil)
-	utils.FileCreate(b3, configPath+"extend.go")
+	utils.FileCreate(b3, configPath+"extend.go", false)
 	return nil
 }

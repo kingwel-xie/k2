@@ -10,19 +10,23 @@ import (
 
 var (
 	fileName string
+	bOverwrite bool
 	StartCmd = &cobra.Command{
 		Use:     "generate",
-		Short:   "Generate code skeleton",
+		Aliases: []string {"g", "gen"},
+		Short:   "Generate code skeleton from JSON file",
 		Long:    "Use when you need to generate sample code for your data model",
-		Example: "generate -f sample.json",
+		Example: "generate sample.json -o",
+		Args:    cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			fileName = args[0]
 			run()
 		},
 	}
 )
 
 func init() {
-	StartCmd.PersistentFlags().StringVarP(&fileName, "file", "f", "", "Generate source code files from json")
+	StartCmd.PersistentFlags().BoolVarP(&bOverwrite, "overwrite", "o", false, "Overwrite when the file is already there")
 }
 
 func run() {
@@ -30,7 +34,7 @@ func run() {
 
 	data, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		fmt.Printf("can not read from %s, %v\n", fileName, err)
+		fmt.Printf("can not read from json file '%s', %v\n", fileName, err)
 		os.Exit(-1)
 	}
 

@@ -11,7 +11,6 @@ var (
 		Use:   "version",
 		Short: "Show version info",
 		PreRun: func(cmd *cobra.Command, args []string) {
-
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return run()

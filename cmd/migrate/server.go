@@ -84,7 +84,7 @@ func genFile() error {
 
 	var b1 bytes.Buffer
 	err = t1.Execute(&b1, m)
-	utils.FileCreate(b1, "./cmd/migrate/migration/version/"+m["GenerateTime"]+"_migrate.go")
+	utils.FileCreate(b1, "./cmd/migrate/migration/version/"+m["GenerateTime"]+"_migrate.go", false)
 
 	return nil
 }

@@ -198,13 +198,13 @@ func (e Gen) GenCode(tab *SysTables) {
 	err = t6.Execute(&b6, tab)
 	var b7 bytes.Buffer
 	err = t7.Execute(&b7, tab)
-	utils.FileCreate(b1, path.Join(modelPath, tab.TBName+".go"))
-	utils.FileCreate(b2, path.Join(apiPath, tab.TBName+".go"))
-	utils.FileCreate(b3, path.Join(routerPath, tab.TBName+".go"))
-	utils.FileCreate(b4, path.Join(jsPath, tab.ModuleFrontName+".js"))
-	utils.FileCreate(b5, path.Join(vuePath, "index.vue"))
-	utils.FileCreate(b6, path.Join(dtoPath, tab.TBName+".go"))
-	utils.FileCreate(b7, path.Join(servicePath, tab.TBName+".go"))
+	utils.FileCreate(b1, path.Join(modelPath, tab.TBName+".go"), bOverwrite)
+	utils.FileCreate(b2, path.Join(apiPath, tab.TBName+".go"), bOverwrite)
+	utils.FileCreate(b3, path.Join(routerPath, tab.TBName+".go"), bOverwrite)
+	utils.FileCreate(b4, path.Join(jsPath, tab.ModuleFrontName+".js"), bOverwrite)
+	utils.FileCreate(b5, path.Join(vuePath, "index.vue"), bOverwrite)
+	utils.FileCreate(b6, path.Join(dtoPath, tab.TBName+".go"), bOverwrite)
+	utils.FileCreate(b7, path.Join(servicePath, tab.TBName+".go"), bOverwrite)
 
 	fmt.Println("Code generated successfully！")
 }
@@ -222,7 +222,7 @@ func (e Gen) GenApiToFile(tab *SysTables) {
 		GenerateTime string
 	}{*tab, i})
 
-	utils.FileCreate(b1, "migrate/version/"+i+"_migrate.go")
+	utils.FileCreate(b1, "migrate/version/"+i+"_migrate.go", bOverwrite)
 
 	fmt.Println("Code generated successfully！")
 }
