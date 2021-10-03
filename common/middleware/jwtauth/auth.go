@@ -121,9 +121,9 @@ func Unauthorized(c *gin.Context, code int, message string) {
 
 // LoginLogToDB Write log to database
 func LoginLogToDB(c *gin.Context, status string, msg string, username string) {
-	//if !config.LoggerConfig.EnabledDB {
-	//	return
-	//}
+	if !config.LoggerConfig.EnabledDB {
+		return
+	}
 
 	log := api.MustGetLogger(c)
 	l := make(map[string]interface{})
