@@ -23,7 +23,7 @@ type SysConfig struct {
 // @Param isFrontend query int false "是否前端"
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
-// @Success 200 {object} response.Response{data=response.Page{list=[]models.SysApi}} "{"code": 200, "data": [...]}"
+// @Success 200 {object} response.Response{data=response.Page{list=[]models.SysConfig}} "{"code": 200, "data": [...]}"
 // @Router /api/v1/config [get]
 // @Security Bearer
 func (e SysConfig) GetPage(c *gin.Context) {

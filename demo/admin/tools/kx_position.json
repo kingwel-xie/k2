@@ -1,0 +1,49 @@
+{
+	"tableComment": "持仓",
+	"className": "TbPosition",
+	"packageName": "kx",
+	"moduleName": "position",
+	"isAuth": true,
+	"dataScope": true,
+	"columns": [
+		{
+			"goType": "int",
+			"goField": "Id",
+			"columnComment": "编号",
+			"gormTag": "size:12",
+			"isPk": true,
+			"autoInc": true,
+			"queryable": true
+		},
+		{
+			"goType": "string",
+			"goField": "SecurityId",
+			"columnComment": "代码",
+			"gormTag": "index;size:12",
+			"queryable": true,
+			"sortable": true,
+			"notOnUpdate": true
+		},
+		{
+			"goType": "string",
+			"goField": "SecurityName",
+			"columnComment": "名称",
+			"gormTag": "index;size:16",
+			"queryable": true,
+			"sortable": true,
+			"notOnUpdate": true
+		},
+		{
+			"goType": "float64",
+			"goField": "CostPrice",
+			"columnComment": "成本价",
+			"gormTag": "size:24"
+		},
+		{
+			"goType": "int",
+			"goField": "Amount",
+			"columnComment": "数量",
+			"gormTag": "size:24"
+		}
+	]
+}

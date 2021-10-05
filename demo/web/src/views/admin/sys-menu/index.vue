@@ -58,7 +58,7 @@
                 >
                   <el-table-column
                     prop="title"
-                    label="title"
+                    label="API 名称"
                     width="260px"
                   >
                     <template slot-scope="scope">
@@ -70,7 +70,7 @@
                   </el-table-column>
                   <el-table-column
                     prop="path"
-                    label="path"
+                    label="URL 及方法"
                     width="270px"
                   >
                     <template slot-scope="scope">
@@ -148,28 +148,11 @@
           :visible.sync="open"
           direction="rtl"
           custom-class="demo-drawer"
-          size="830px"
+          size="840px"
         >
           <div class="demo-drawer__content">
             <el-form ref="form" :model="form" :rules="rules" label-position="top" label-width="106px">
               <el-row>
-                <el-col :span="24">
-                  <el-form-item prop="parentId">
-                    <span slot="label">
-                      上级菜单
-                      <el-tooltip content="指当前菜单停靠的菜单归属" placement="top">
-                        <i class="el-icon-question" />
-                      </el-tooltip>
-                    </span>
-                    <treeselect
-                      v-model="form.parentId"
-                      :options="menuOptions"
-                      :normalizer="normalizer"
-                      :show-count="true"
-                      placeholder="选择上级菜单"
-                    />
-                  </el-form-item>
-                </el-col>
                 <el-col :span="12">
                   <el-form-item prop="title">
                     <span slot="label">
@@ -192,23 +175,26 @@
                     <el-input-number v-model="form.sort" controls-position="right" :min="0" />
                   </el-form-item>
                 </el-col>
-
-                <el-col :span="24">
-                  <el-form-item prop="menuType">
+              </el-row>
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item prop="parentId">
                     <span slot="label">
-                      菜单类型
-                      <el-tooltip content="包含目录：以及菜单或者菜单组，菜单：具体对应某一个页面，按钮：功能才做按钮；" placement="top">
+                      上级菜单
+                      <el-tooltip content="指当前菜单停靠的菜单归属" placement="top">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>
-                    <el-radio-group v-model="form.menuType">
-                      <el-radio label="M">目录</el-radio>
-                      <el-radio label="C">菜单</el-radio>
-                      <el-radio label="F">按钮</el-radio>
-                    </el-radio-group>
+                    <treeselect
+                      v-model="form.parentId"
+                      :options="menuOptions"
+                      :normalizer="normalizer"
+                      :show-count="true"
+                      placeholder="选择上级菜单"
+                    />
                   </el-form-item>
                 </el-col>
-                <el-col :span="24">
+                <el-col :span="12">
                   <el-form-item label="菜单图标">
                     <el-popover
                       placement="bottom-start"
@@ -230,73 +216,28 @@
                     </el-popover>
                   </el-form-item>
                 </el-col>
+              </el-row>
+              <el-row>
                 <el-col :span="12">
-                  <el-form-item v-if="form.menuType == 'M' || form.menuType == 'C'" prop="menuName">
+                  <el-form-item prop="menuType">
                     <span slot="label">
-                      路由名称
-                      <el-tooltip content="需要和页面name保持一致，对应页面即可选择缓存" placement="top">
+                      菜单类型
+                      <el-tooltip content="包含目录：以及菜单或者菜单组，菜单：具体对应某一个页面，按钮：功能才做按钮；" placement="top">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>
-                    <el-input v-model="form.menuName" placeholder="请输入路由名称" />
-                  </el-form-item>
-                </el-col>
-
-                <el-col v-if="form.menuType == 'M' || form.menuType == 'C'" :span="12">
-                  <el-form-item prop="component">
-                    <span slot="label">
-                      组件路径
-                      <el-tooltip content="菜单对应的具体vue页面文件路径views的下级路径/admin/sys-api/index；目录类型：填写Layout，如何有二级目录请参照日志目录填写；" placement="top">
-                        <i class="el-icon-question" />
-                      </el-tooltip>
-                    </span>
-                    <el-input v-model="form.component" placeholder="请输入组件路径" />
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="12">
-                  <el-form-item v-if="form.menuType == 'M' || form.menuType == 'C'">
-                    <span slot="label">
-                      是否外链
-                      <el-tooltip content="可以通过iframe打开指定地址" placement="top">
-                        <i class="el-icon-question" />
-                      </el-tooltip>
-                    </span>
-                    <el-radio-group v-model="form.isFrame">
-                      <el-radio label="0">是</el-radio>
-                      <el-radio label="1">否</el-radio>
+                    <el-radio-group v-model="form.menuType">
+                      <el-radio label="M">目录</el-radio>
+                      <el-radio label="C">菜单</el-radio>
+                      <el-radio label="F">按钮</el-radio>
                     </el-radio-group>
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="12">
-                  <el-form-item v-if="form.menuType != 'F'" prop="path">
-                    <span slot="label">
-                      路由地址
-                      <el-tooltip content="访问此页面自定义的url地址，建议/开头书写，例如 /app-name/menu-name" placement="top">
-                        <i class="el-icon-question" />
-                      </el-tooltip>
-                    </span>
-                    <el-input v-model="form.path" placeholder="请输入路由地址" />
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="12">
-                  <el-form-item v-if="form.menuType == 'F' || form.menuType == 'C'">
-                    <span slot="label">
-                      权限标识
-                      <el-tooltip content="前端权限控制按钮是否显示" placement="top">
-                        <i class="el-icon-question" />
-                      </el-tooltip>
-                    </span>
-                    <el-input v-model="form.permission" placeholder="请权限标识" maxlength="50" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item v-if="form.menuType != 'F'">
                     <span slot="label">
                       菜单状态
-                      <el-tooltip content="需要显示在菜单列表的菜单设置为显示，否则设置为隐藏" placement="top">
+                      <el-tooltip content="出现在菜单列表的菜单项设置为显示，否则设置为隐藏" placement="top">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>
@@ -309,11 +250,83 @@
                     </el-radio-group>
                   </el-form-item>
                 </el-col>
+              </el-row>
+              <el-row v-if="form.menuType == 'M' || form.menuType == 'C'">
+                <el-col :span="6">
+                  <el-form-item prop="menuName">
+                    <span slot="label">
+                      路由名称
+                      <el-tooltip content="需要和页面name保持一致，对应页面即可选择缓存" placement="top">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </span>
+                    <el-input v-model="form.menuName" placeholder="请输入路由名称" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item prop="path">
+                    <span slot="label">
+                      路由地址
+                      <el-tooltip content="访问此页面自定义的url地址，建议以 / 开头书写，例如 /app-name/menu-name" placement="top">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </span>
+                    <el-input v-model="form.path" placeholder="请输入路由地址" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item prop="component">
+                    <span slot="label">
+                      组件路径
+                      <el-tooltip content="菜单对应的具体vue页面文件路径views的下级路径，如：/admin/sys-api/index；目录类型：请填写Layout，如何有二级目录请参照日志目录填写；" placement="top">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </span>
+                    <el-input v-model="form.component" placeholder="请输入组件路径" />
+                  </el-form-item>
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item>
+                    <span slot="label">
+                      是否外链
+                      <el-tooltip content="可以通过iframe打开指定地址" placement="top">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </span>
+                    <el-switch
+                      v-model="form.isFrame"
+                      active-value="0"
+                      inactive-value="1"
+                      active-text="是"
+                      inactive-text="否"
+                    />
+                    <!--                    <el-radio-group v-model="form.isFrame">-->
+                    <!--                      <el-radio label="0">是</el-radio>-->
+                    <!--                      <el-radio label="1">否</el-radio>-->
+                    <!--                    </el-radio-group>-->
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row v-if="form.menuType == 'F'">
+                <el-col :span="12">
+                  <el-form-item>
+                    <span slot="label">
+                      权限标识
+                      <el-tooltip content="前端权限控制按钮是否显示" placement="top">
+                        <i class="el-icon-question" />
+                      </el-tooltip>
+                    </span>
+                    <el-input v-model="form.permission" placeholder="请输入权限标识" maxlength="50" />
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <el-row />
+              <el-row>
                 <el-col :span="24">
                   <el-form-item v-if="form.menuType == 'F' || form.menuType == 'C'">
                     <span slot="label">
                       api权限
-                      <el-tooltip content="配置在这个才做上需要使用到的接口，否则在设置用户角色时，接口将无权访问。" placement="top">
+                      <el-tooltip content="配置此条目需要使用到的API接口，否则在设置用户角色时，接口将无权访问。" placement="top">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>

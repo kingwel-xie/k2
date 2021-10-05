@@ -1,0 +1,122 @@
+{
+	"tableComment": "转债",
+	"className": "TbCB",
+	"packageName": "kx",
+	"moduleName": "cb",
+	"isAuth": true,
+	"hasExport": true,
+	"columns": [
+		{
+			"goField": "SecurityId",
+			"goType": "string",
+			"columnComment": "转债代码",
+			"gormTag": "unique;size:32",
+			"validator": "@:len($)>0; msg:'代码不能为空'",
+			"isPk": true,
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true
+		},
+		{
+			"goField": "SecurityName",
+			"goType": "string",
+			"columnComment": "转债名称",
+			"gormTag": "size:32",
+			"validator": "@:len($)>0; msg:'名称不能为空'",
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true
+		},
+		{
+			"goField": "StockSecurityId",
+			"goType": "string",
+			"columnComment": "正股代码",
+			"gormTag": "size:32",
+			"validator": "@:len($)>0; msg:'代码不能为空'"
+		},
+		{
+			"goField": "StockSecurityName",
+			"goType": "string",
+			"columnComment": "正股名称",
+			"gormTag": "size:32",
+			"validator": "@:len($)>0; msg:'名称不能为空'"
+		},
+		{
+			"goField": "RedeemFlag",
+			"goType": "bool",
+			"columnComment": "强赎标志",
+			"gormTag": "size:2"
+		},
+		{
+			"goField": "RedeemDate",
+			"goType": "*time.Time",
+			"columnComment": "强赎日期"
+		},
+		{
+			"goField": "ConvertPrice",
+			"goType": "float64",
+			"columnComment": "转股价",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "RemainAmount",
+			"goType": "float64",
+			"columnComment": "剩余数量",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "RemainTerm",
+			"goType": "float64",
+			"columnComment": "剩余期限",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "Ytm",
+			"goType": "float64",
+			"columnComment": "到期年化收益",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "Price",
+			"goType": "float64",
+			"columnComment": "价格",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "PremiumRate",
+			"goType": "float64",
+			"columnComment": "溢价率",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "DoubleLow",
+			"goType": "float64",
+			"columnComment": "双低",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "VolatilityRate",
+			"goType": "float64",
+			"columnComment": "正股波动率",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "AtmRatio",
+			"goType": "float64",
+			"columnComment": "转债占比",
+			"gormTag": "size:64"
+		},
+		{
+			"goField": "Grade",
+			"goType": "string",
+			"columnComment": "评级",
+			"gormTag": "size:8"
+		},
+		{
+			"goField": "Remark",
+			"goType": "string",
+			"columnComment": "备注",
+			"gormTag": "size:64"
+		}
+	]
+}

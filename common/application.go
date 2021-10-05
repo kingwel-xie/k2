@@ -3,6 +3,8 @@ package common
 import (
 	"net/http"
 	"sync"
+	"sort"
+	"strings"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
@@ -30,6 +32,8 @@ type Application struct {
 type Router struct {
 	HttpMethod, RelativePath, Handler string
 }
+
+
 
 type Routers struct {
 	List []Router
@@ -71,6 +75,12 @@ func (e *Application) GetEngine() http.Handler {
 	return e.engine
 }
 
+type routerSlice []Router
+
+func (x routerSlice) Len() int           { return len(x) }
+func (x routerSlice) Less(i, j int) bool { return strings.Compare(x[i].Handler, x[j].Handler) < 0 }
+func (x routerSlice) Swap(i, j int)      { x[i], x[j] = x[j], x[i] }
+
 // GetRouter 获取路由表
 func (e *Application) GetRouter() []Router {
 	switch e.engine.(type) {
@@ -80,7 +90,9 @@ func (e *Application) GetRouter() []Router {
 			e.routers = append(e.routers, Router{RelativePath: router.Path, Handler: router.Handler, HttpMethod: router.Method})
 		}
 	}
-	return e.routers
+	s := routerSlice(e.routers)
+	sort.Sort(s)
+	return s
 }
 
 // NewApplication 默认值

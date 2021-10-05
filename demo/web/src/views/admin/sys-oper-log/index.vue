@@ -119,7 +119,6 @@
           >
             <template slot-scope="scope">
               <el-button
-                v-permisaction="['admin:sysOperLog:query']"
                 size="mini"
                 type="text"
                 icon="el-icon-view"

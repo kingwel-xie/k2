@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.6.4
+	github.com/bytedance/go-tagexpr/v2 v2.7.12
 	github.com/gin-gonic/gin v1.7.4
 	github.com/google/uuid v1.3.0
 	github.com/kingwel-xie/k2 latest

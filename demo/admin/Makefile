@@ -12,4 +12,4 @@ docs:
 
 #.PHONY: docker
 #docker:
-#	docker build . -t go-admin:latest
+#	docker build . -t admin:latest

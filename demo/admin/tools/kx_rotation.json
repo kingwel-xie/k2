@@ -1,0 +1,77 @@
+{
+	"tableComment": "轮动策略",
+	"className": "TbRotation",
+	"packageName": "kx",
+	"moduleName": "rotation",
+	"hardDelete": true,
+	"isAuth": true,
+	"dataScope": true,
+	"columns": [
+		{
+			"goField": "Id",
+			"goType": "int",
+			"columnComment": "编号",
+			"gormTag": "size:12",
+			"validator": "",
+			"isPk": true,
+			"autoInc": true,
+			"queryable": true
+		},
+		{
+			"goField": "Name",
+			"goType": "string",
+			"columnComment": "名称",
+			"gormTag": "size:64;unique",
+			"validator": "@:len($)>0; msg:'名称不能为空'",
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true,
+			"notOnUpdate": true
+		},
+		{
+			"goField": "CandidatePoolCode",
+			"goType": "string",
+			"columnComment": "轮动池标识",
+			"gormTag": "size:16",
+			"htmlType": "select",
+			"fkClassName": "TbCandidatePool",
+			"fkLabelId": "code",
+			"fkLabelName": "name",
+			"notOnUpdate": true
+		},
+		{
+			"goField": "ClassName",
+			"goType": "string",
+			"columnComment": "策略classname",
+			"gormTag": "size:64;index",
+			"validator": "@:len($)>0; msg:'策略classname不能为空'",
+			"notOnUpdate": true,
+			"notOnList": true
+		},
+		{
+			"goField": "PoolSize",
+			"goType": "int",
+			"columnComment": "标的个数",
+			"gormTag": "size:12"
+		},
+		{
+			"goField": "ItemLimit",
+			"goType": "int",
+			"columnComment": "每标的数量",
+			"gormTag": "size:12"
+		},
+		{
+			"goField": "CommissionRate",
+			"goType": "float64",
+			"columnComment": "交易费率",
+			"gormTag": "size:24"
+		},
+		{
+			"goField": "RankingAlgo",
+			"goType": "int",
+			"columnComment": "算法",
+			"gormTag": "size:4",
+			"notOnUpdate": true
+		}
+	]
+}

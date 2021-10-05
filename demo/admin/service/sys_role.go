@@ -51,9 +51,10 @@ func (e *SysRole) Insert(c *dto.SysRoleInsertReq) error {
 	if err != nil {
 		return err
 	}
-	c.SysMenu = dataMenu
+
 	c.Generate(&data)
 	data.SetCreateBy(e.Identity.UserId)
+	c.SysMenu = dataMenu
 
 	tx := e.Orm.Begin()
 
@@ -106,26 +107,30 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq) error {
 			tx.Commit()
 		}
 	}()
+
+	// first, load the role and its []SysMenu according to the given RoleId
 	var model = models.SysRole{}
 	err = tx.Preload("SysMenu").First(&model, c.GetId()).Error
 	if err != nil {
 		return err
 	}
-	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
-
+	// second, delete all associations []SysMenu
 	err = tx.Model(&model).Association("SysMenu").Delete(model.SysMenu)
 	if err != nil {
 		return err
 	}
 
+	// then, construct the new []SysMenu
 	var mlist = make([]models.SysMenu, 0)
 	err = tx.Preload("SysApi").Where("menu_id in ?", c.MenuIds).Find(&mlist).Error
 	if err != nil {
 		return err
 	}
-	model.SysMenu = &mlist
 
+	// last, save all of them
+	c.Generate(&model)
+	model.SetUpdateBy(e.Identity.UserId)
+	model.SysMenu = &mlist
 	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 	if db.Error != nil {
 		return db.Error
@@ -174,12 +179,16 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 	return nil
 }
 
-// GetRoleMenuId 获取角色对应的菜单ids
+// GetRoleMenuId 获取角色对应的菜单ids。仅返回 button 类型，适配于 tree.setChecked
 func (e *SysRole) GetRoleMenuId(roleId int) ([]int, error) {
 	menuIds := make([]int, 0)
 	model := models.SysRole{}
 	model.RoleId = roleId
-	if err := e.Orm.Model(&model).Preload("SysMenu").First(&model).Error; err != nil {
+	// load all menu.button, all these Ids will be used by tree.setChecked()
+	// the tree
+	if err := e.Orm.Model(&model).Preload("SysMenu", func(db *gorm.DB) *gorm.DB {
+		return db.Where("menu_type in ('F')")
+	}).First(&model).Error; err != nil {
 		return nil, err
 	}
 	l := *model.SysMenu
@@ -201,25 +210,29 @@ func (e *SysRole) UpdateDataScope(c *dto.RoleDataScopeReq) error {
 		}
 	}()
 
+	// first, load the role and its []SysDept according to the given RoleId
 	var model = models.SysRole{}
 	err = tx.Preload("SysDept").First(&model, c.RoleId).Error
 	if err != nil {
 		return err
 	}
-	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
 
+	// second, delete the old []SysDept
 	err = tx.Model(&model).Association("SysDept").Delete(model.SysDept)
 	if err != nil {
 		return err
 	}
 
+	// then, construct the new []SysDept
 	var dlist = make([]models.SysDept, 0)
 	err = tx.Where("dept_id in ?", c.DeptIds).Find(&dlist).Error
 	if err != nil {
 		return err
 	}
 
+	// last, save all the changes
+	c.Generate(&model)
+	model.SetUpdateBy(e.Identity.UserId)
 	model.SysDept = dlist
 	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 	if db.Error != nil {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <BasicLayout>
       <template #wrapper>
         <el-row :gutter="10" class="mb10">
@@ -124,6 +124,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       info: {}
     }
   },
@@ -134,6 +135,7 @@ export default {
     getServerInfo() {
       getServer().then(ret => {
         if (ret.code === 200) {
+          this.loading = false
           this.info = ret
         }
       })

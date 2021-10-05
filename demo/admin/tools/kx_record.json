@@ -1,0 +1,101 @@
+{
+	"tableName": "tb_record",
+	"tableComment": "交易记录",
+	"className": "TbRecord",
+	"packageName": "kx",
+	"moduleName": "record",
+	"isAuth": true,
+	"dataScope": true,
+	"columns": [
+		{
+			"goType": "int",
+			"goField": "Id",
+			"columnComment": "编号",
+			"gormTag": "size:16",
+			"isPk": true,
+			"autoInc": true
+		},
+		{
+			"goType": "string",
+			"goField": "SecurityId",
+			"columnComment": "代码",
+			"gormTag": "index;size:12",
+			"queryable": true,
+			"sortable": true,
+			"notOnUpdate": true
+		},
+		{
+			"goType": "string",
+			"goField": "SecurityName",
+			"columnComment": "名称",
+			"gormTag": "index;size:16",
+			"queryable": true,
+			"sortable": true,
+			"notOnUpdate": true
+		},
+		{
+			"goType": "string",
+			"goField": "SecurityType",
+			"columnComment": "证券类别",
+			"gormTag": "size:16",
+			"notOnList": true
+		},
+		{
+			"goType": "time.Time",
+			"goField": "OpTime",
+			"columnComment": "操作时间",
+			"gormTag": "index"
+		},
+		{
+			"goType": "string",
+			"goField": "DetailType",
+			"columnComment": "????",
+			"gormTag": "size:16",
+			"notOnList": true
+		},
+		{
+			"goType": "float64",
+			"goField": "TradePrice",
+			"columnComment": "价格",
+			"gormTag": "size:24"
+		},
+		{
+			"goType": "int",
+			"goField": "TradeAmount",
+			"columnComment": "数量",
+			"gormTag": "size:24"
+		},
+		{
+			"goType": "int",
+			"goField": "NewAmount",
+			"columnComment": "新数量",
+			"gormTag": "size:24",
+			"NotOnInsert": true
+		},
+		{
+			"goType": "float64",
+			"goField": "TradeFee",
+			"columnComment": "交易费用",
+			"gormTag": "size:24"
+		},
+		{
+			"goType": "string",
+			"goField": "FeeType",
+			"columnComment": "费用类型",
+			"gormTag": "size:24"
+		},
+		{
+			"goType": "string",
+			"goField": "Notes",
+			"columnComment": "备注",
+			"gormTag": "size:64"
+		},
+		{
+			"goType": "string",
+			"goField": "Tag",
+			"columnComment": "Tag",
+			"gormTag": "size:64",
+			"notOnList": true
+		}
+	]
+}

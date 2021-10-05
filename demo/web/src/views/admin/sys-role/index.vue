@@ -194,8 +194,8 @@
                 show-checkbox
                 node-key="id"
                 :empty-text="menuOptionsAlert"
-                style="height:171px;overflow-y:auto;overflow-x:hidden;"
               />
+              <!-- if want a fixed size 'tree'           style="height:220px;overflow-y:auto;overflow-x:hidden;"-->
             </el-form-item>
             <el-form-item label="备注">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -385,7 +385,7 @@ export default {
       const halfCheckedKeys = this.$refs.menuTree.getCheckedKeys()
       console.log('半选中的菜单节点', halfCheckedKeys)
       // checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys)
-      return halfCheckedKeys
+      return halfCheckedKeys.concat(checkedKeys)
     },
     // 所有部门节点数据
     getDeptAllCheckedKeys() {

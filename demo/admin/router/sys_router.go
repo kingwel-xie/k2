@@ -29,17 +29,22 @@ func InitSysRouter(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) *gin.Rou
 	}
 	// 需要认证
 	sysCheckRoleRouterInit(g, authMiddleware)
+
+	r.NoRoute(func(context *gin.Context) {
+		context.Redirect(302, "/site/")
+	})
 	return g
 }
 
 func sysBaseRouter(r *gin.RouterGroup) {
-
 	go ws.WebsocketManager.Start()
 	go ws.WebsocketManager.SendService()
 	go ws.WebsocketManager.SendAllService()
-
 	if config.ApplicationConfig.Mode != "prod" {
-		r.GET("/", apis.Kobh)
+		//r.GET("/", func(c *gin.Context) {
+		//	c.Redirect(302, "/site/")
+		//	//c.Status(http.StatusOK)
+		//})
 	}
 	r.GET("/info", middleware.Ping)
 
@@ -55,6 +60,7 @@ func sysStaticFileRouter(r *gin.RouterGroup) {
 	if err != nil {
 		return
 	}
+	r.Static("/site", "./site")
 	r.Static("/static", "./static")
 	if config.ApplicationConfig.Mode != "prod" {
 		r.Static("/form-generator", "./static/form-generator")

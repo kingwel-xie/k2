@@ -1,0 +1,52 @@
+{
+	"packageName": "kobh",
+	"moduleName": "country",
+	"className": "TbxCountry",
+	"tableComment": "国家编码",
+	"hasExport": true,
+	"isAuth": true,
+	"columns": [
+		{
+			"goField": "Code",
+			"goType": "string",
+			"columnComment": "编码",
+			"gormTag": "unique",
+			"isPk": true,
+			"queryable": true
+		},
+		{
+			"goField": "Code2",
+			"goType": "string",
+			"columnComment": "编码2",
+			"notOnList": true,
+			"notOnInsert": true,
+			"notOnUpdate": true
+		},
+		{
+			"goField": "NameCN",
+			"goType": "string",
+			"columnComment": "中文名称",
+			"gormTag": "size:64;unique",
+			"validator": "@:len($)>0; msg:'中文名不能为空'",
+			"queryable": true,
+			"queryType": "LIKE"
+		},
+		{
+			"goField": "NameEN",
+			"goType": "string",
+			"columnComment": "English Name",
+			"gormTag": "size:64;unique",
+			"validator": "@:len($)>0; msg:'English Name is empty'",
+			"queryable": true,
+			"queryType": "LIKE"
+		},
+		{
+			"goField": "Alias",
+			"goType": "string",
+			"columnComment": "描述",
+			"queryable": true,
+			"queryType": "LIKE",
+			"htmlType": "textarea"
+		}
+	]
+}

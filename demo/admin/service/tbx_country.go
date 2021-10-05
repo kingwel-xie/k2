@@ -1,10 +1,11 @@
 package service
 
 import (
-	"admin/models"
-	"admin/service/dto"
 	cDto "github.com/kingwel-xie/k2/common/dto"
 	"github.com/kingwel-xie/k2/common/service"
+
+	"admin/models"
+	"admin/service/dto"
 )
 
 type TbxCountry struct {
@@ -27,48 +28,50 @@ func (e *TbxCountry) GetPage(c *dto.TbxCountryGetPageReq, list *[]models.TbxCoun
 
 // Get 获取TbxCountry对象
 func (e *TbxCountry) Get(d *dto.TbxCountryGetReq, model *models.TbxCountry) error {
-	var data models.TbxCountry
-	err := e.Orm.Model(&data).First(model, "code = ?", d.GetId()).Error
+	err := e.Orm.
+        First(model, "code = ?", d.GetId()).Error
 	return err
 }
 
 // Insert 创建TbxCountry对象
 func (e *TbxCountry) Insert(c *dto.TbxCountryInsertReq) error {
-	var data models.TbxCountry
-	c.Generate(&data)
-	data.SetCreateBy(e.Identity.UserId)
+    var data models.TbxCountry
+    c.Generate(&data)
+    data.SetCreateBy(e.Identity.UserId)
 
 	err := e.Orm.Create(&data).Error
 	if err == nil {
-		c.Code = data.Code
+	    c.Code = data.Code
 	}
 	return err
 }
 
 // Update 修改TbxCountry对象
 func (e *TbxCountry) Update(c *dto.TbxCountryUpdateReq) error {
-	var data = models.TbxCountry{}
-	err := e.Orm.First(&data, "code = ?", c.GetId()).Error
-	if err != nil {
-		return err
+    var data = models.TbxCountry{}
+    err := e.Orm.
+        First(&data, "code = ?", c.GetId()).Error
+    if err != nil {
+    	return err
 	}
-	c.Generate(&data)
-	data.SetUpdateBy(e.Identity.UserId)
+    c.Generate(&data)
+    data.SetUpdateBy(e.Identity.UserId)
 
-	db := e.Orm.Save(&data)
+    db := e.Orm.Save(&data)
 	if db.Error != nil {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
 		return service.ErrPermissionDenied
 	}
-	return nil
+    return nil
 }
 
 // Remove 删除TbxCountry
 func (e *TbxCountry) Remove(d *dto.TbxCountryDeleteReq) error {
 	var data models.TbxCountry
-	db := e.Orm.Model(&data).Delete(&data, "code in ?", d.GetId())
+	db := e.Orm.
+	    Delete(&data, "code in ?", d.GetId())
 	if db.Error != nil {
 		return db.Error
 	}

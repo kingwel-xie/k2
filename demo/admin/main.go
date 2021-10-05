@@ -4,16 +4,16 @@ import (
 	"github.com/kingwel-xie/k2/cmd"
 	"github.com/kingwel-xie/k2/cmd/migrate"
 
-	"kx/entry"
-	_ "kx/migrate/version"
+	"admin/entry"
+	_ "admin/migrate/version"
 )
 
 //go:generate swag init --parseDependency --parseDepth=6
 
-// @title KX Web Backend
+// @title admin Web Backend
 // @version 1.0.0
-// @description KX Web Backend
-// @description KX
+// @description admin Web Backend
+// @description admin
 // @license.name MIT
 // @license.url https://github.com/...
 
@@ -21,6 +21,6 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	cmd.Init("kx", entry.StartCmd, migrate.StartCmd)
+	cmd.Init("admin", entry.StartCmd, migrate.StartCmd)
 	cmd.Execute()
 }

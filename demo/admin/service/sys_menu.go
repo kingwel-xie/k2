@@ -78,9 +78,7 @@ func (e *SysMenu) Insert(c *dto.SysMenuInsertReq) error {
 		if err = tx.Create(&data).Error; err != nil {
 			return
 		}
-
 		var paths string
-
 		if data.ParentId == 0 {
 			paths = fmt.Sprintf("/0/%d", data.MenuId)
 		} else {
@@ -118,22 +116,22 @@ func (e *SysMenu) initPaths(menu *models.SysMenu) error {
 // Update 修改SysMenu对象
 func (e *SysMenu) Update(c *dto.SysMenuUpdateReq) error {
 	return e.Orm.Transaction(func(tx *gorm.DB) error {
+
+		// first, load menu and []SysApi with the given menu_id
 		var model = models.SysMenu{}
 		err := e.Orm.Preload("SysApi").
 			First(&model, "menu_id = ?", c.GetId()).Error
 		if err != nil {
 			return err
 		}
-		c.Generate(&model)
-		model.SetUpdateBy(e.Identity.UserId)
 
-		// delete its associated CBs
+		// delete its associated []SysApi
 		err = tx.Model(&model).Association("SysApi").Delete(model.SysApi)
 		if err != nil {
 			return err
 		}
 
-		// try to load the new SysApi from req.ids
+		// try to construct the new []SysApi from req.ids
 		var apiList = make([]models.SysApi, 0)
 		err = tx.Where("id in ?", c.Apis).Find(&apiList).Error
 		if err != nil {
@@ -141,6 +139,8 @@ func (e *SysMenu) Update(c *dto.SysMenuUpdateReq) error {
 		}
 
 		// save the new CBs
+		c.Generate(&model)
+		model.SetUpdateBy(e.Identity.UserId)
 		model.SysApi = apiList
 		db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 		if db.Error != nil {
@@ -377,7 +377,7 @@ func menuLabelCall(eList *[]models.SysMenu, dept dto.MenuLabel) dto.MenuLabel {
 		mi.Id = list[j].MenuId
 		mi.Label = list[j].Title
 		mi.Children = []dto.MenuLabel{}
-		if list[j].MenuType != "F" {
+		if list[j].MenuType != cModels.Button {
 			ms := menuLabelCall(eList, mi)
 			min = append(min, ms)
 		} else {

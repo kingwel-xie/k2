@@ -1,0 +1,29 @@
+{
+	"tableComment": "轮动池",
+	"className": "TbCandidatePool",
+	"packageName": "kx",
+	"moduleName": "pool",
+	"isAuth": true,
+	"dataScope": true,
+	"columns": [
+		{
+			"goField": "Code",
+			"goType": "string",
+			"columnComment": "轮动池标识",
+			"gormTag": "unique;size:12",
+			"validator": "@:len($)>0; msg:'轮动池标识不能为空'",
+			"isPk": true,
+			"queryable": true
+		},
+		{
+			"goField": "Name",
+			"goType": "string",
+			"columnComment": "名称",
+			"gormTag": "size:64",
+			"validator": "@:len($)>0; msg:'名称不能为空'",
+			"queryable": true,
+			"queryType": "LIKE",
+			"sortable": true
+		}
+	]
+}
