@@ -11,9 +11,13 @@ type Service struct {
 }
 
 var (
+	ErrWrongPassword = errors.New("原密码错误")
+
+	ErrMismatchPassword = errors.New("两次输入的密码不匹配")
+
 	ErrDatabaseError = errors.New("db error")
 
-	ErrInternalError = errors.New("internal error")
+	ErrInternalError = errors.New("内部错误")
 
 	ErrNoSuchObject = errors.New("对象不存在")
 
