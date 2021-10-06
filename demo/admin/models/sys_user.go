@@ -24,7 +24,8 @@ type SysUser struct {
 	DeptIds  []int    `json:"deptIds" gorm:"-"`
 	PostIds  []int    `json:"postIds" gorm:"-"`
 	RoleIds  []int    `json:"roleIds" gorm:"-"`
-	Dept     *SysDept `json:"dept"`
+	Dept     	*SysDept `json:"dept"`
+	Role     *SysRole `json:"role"`
 	models.ControlBy
 	models.ModelTime
 }
@@ -33,7 +34,7 @@ func (SysUser) TableName() string {
 	return "sys_user"
 }
 
-//加密
+// Encrypt 加密密码
 func (e *SysUser) Encrypt() (err error) {
 	if e.Password == "" {
 		return
@@ -46,18 +47,6 @@ func (e *SysUser) Encrypt() (err error) {
 		e.Password = string(hash)
 		return
 	}
-}
-
-func (e *SysUser) BeforeCreate(_ *gorm.DB) error {
-	return e.Encrypt()
-}
-
-func (e *SysUser) BeforeUpdate(_ *gorm.DB) error {
-	var err error
-	if e.Password != "" {
-		err = e.Encrypt()
-	}
-	return err
 }
 
 func (e *SysUser) AfterFind(_ *gorm.DB) error {

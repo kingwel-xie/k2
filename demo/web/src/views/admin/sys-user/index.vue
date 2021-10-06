@@ -115,6 +115,7 @@
               <el-table-column label="编号" width="75" prop="userId" sortable="custom" />
               <el-table-column label="登录名" width="105" prop="username" sortable="custom" :show-overflow-tooltip="true" />
               <el-table-column label="昵称" prop="nickName" :show-overflow-tooltip="true" />
+              <el-table-column label="角色" :show-overflow-tooltip="true" prop="role.roleName" />
               <el-table-column label="部门" prop="dept.deptName" :show-overflow-tooltip="true" />
               <el-table-column label="手机号" prop="phone" width="108" />
               <el-table-column label="状态" width="80" sortable="custom">
@@ -186,12 +187,30 @@
         <el-form ref="form" :model="form" :rules="rules" label-width="80px">
           <el-row>
             <el-col :span="12">
+              <el-form-item label="用户名称" prop="username">
+                <el-input v-model="form.username" placeholder="请输入用户名称" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="角色" prop="roleId">
+                <el-select v-model="form.roleId" placeholder="请选择" @change="$forceUpdate()">
+                  <el-option
+                    v-for="item in roleOptions"
+                    :key="item.roleId"
+                    :label="item.roleName"
+                    :value="item.roleId"
+                    :disabled="item.status == 1"
+                  />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item label="用户昵称" prop="nickName">
                 <el-input v-model="form.nickName" placeholder="请输入用户昵称" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="归属部门" prop="deptId">
+              <el-form-item label="部门" prop="deptId">
                 <treeselect
                   v-model="form.deptId"
                   :options="deptOptions"
@@ -210,13 +229,21 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="用户名称" prop="username">
-                <el-input v-model="form.username" placeholder="请输入用户名称" />
+              <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+                <el-input v-model="form.password" placeholder="请输入用户密码" type="password" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-                <el-input v-model="form.password" placeholder="请输入用户密码" type="password" />
+              <el-form-item label="岗位">
+                <el-select v-model="form.postId" placeholder="请选择" @change="$forceUpdate()">
+                  <el-option
+                    v-for="item in postOptions"
+                    :key="item.postId"
+                    :label="item.postName"
+                    :value="item.postId"
+                    :disabled="item.status == 1"
+                  />
+                </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -243,32 +270,6 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="12">
-              <el-form-item label="岗位">
-                <el-select v-model="form.postId" placeholder="请选择" @change="$forceUpdate()">
-                  <el-option
-                    v-for="item in postOptions"
-                    :key="item.postId"
-                    :label="item.postName"
-                    :value="item.postId"
-                    :disabled="item.status == 1"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="角色">
-                <el-select v-model="form.roleId" placeholder="请选择" @change="$forceUpdate()">
-                  <el-option
-                    v-for="item in roleOptions"
-                    :key="item.roleId"
-                    :label="item.roleName"
-                    :value="item.roleId"
-                    :disabled="item.status == 1"
-                  />
-                </el-select>
-              </el-form-item>
-            </el-col>
             <el-col :span="24">
               <el-form-item label="备注">
                 <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -398,6 +399,7 @@ export default {
         username: [{ required: true, message: '用户名称不能为空', trigger: 'blur' }],
         nickName: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
         deptId: [{ required: true, message: '归属部门不能为空', trigger: 'blur' }],
+        roleId: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
         password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
         email: [
           { required: true, message: '邮箱地址不能为空', trigger: 'blur' },

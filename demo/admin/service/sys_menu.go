@@ -41,11 +41,11 @@ func (e *SysMenu) GetPage(c *dto.SysMenuGetPageReq, menus *[]models.SysMenu) err
 func (e *SysMenu) getPage(c *dto.SysMenuGetPageReq, list *[]models.SysMenu) error {
 	var data models.SysMenu
 
-	err := e.Orm.Model(&data).
+	err := e.Orm.Model(&data).Preload("SysApi").
 		Scopes(
 			cDto.OrderDest("sort", false),
 			cDto.MakeCondition(c.GetNeedSearch()),
-		).Preload("SysApi").
+		).
 		Find(list).Error
 
 	return err
@@ -71,10 +71,21 @@ func (e *SysMenu) Get(d *dto.SysMenuGetReq, model *models.SysMenu) error {
 // Insert 创建SysMenu对象
 func (e *SysMenu) Insert(c *dto.SysMenuInsertReq) error {
 	var data models.SysMenu
+
+	// load SysApis specified by c.Apis
+	var sysApis []models.SysApi
+	err := e.Orm.Where("id in ?", c.Apis).Find(&sysApis).Error
+	if err != nil {
+		return err
+	}
+
+	// prepare the Menu data, with the SysApis
 	c.Generate(&data)
 	data.SetCreateBy(e.Identity.UserId)
+	data.SysApi = sysApis
 
-	err := e.Orm.Transaction(func(tx *gorm.DB) (err error) {
+	err = e.Orm.Transaction(func(tx *gorm.DB) (err error) {
+		// this will create the menu and the related APIs
 		if err = tx.Create(&data).Error; err != nil {
 			return
 		}

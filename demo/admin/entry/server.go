@@ -54,16 +54,16 @@ func init() {
 }
 
 func setup() {
-	// ע��������չ��
+	// 注入配置扩展项
 	config.ExtendConfig = &appconfig.Extend
-	//1. ��ȡ����
+	//1. 读取配置
 	config.Setup(
 		configYml,
 		database.Setup,
 		storage.Setup,
 		cronjob.Setup,
 	)
-	//ע���������
+	//注册监听函数
 	queue := common.Runtime.Queue()
 	queue.Register(global.LoginLog, models.SaveLoginLog)
 	queue.Register(global.OperateLog, models.SaveOperaLog)
@@ -110,7 +110,7 @@ func run() error {
 		message, err := common.Runtime.GetStreamMessage("", global.ApiCheck, mp)
 		if err != nil {
 			logger.Errorf("GetStreamMessage error, %s", err.Error())
-			//��־������󣬲��ж�����
+			//日志报错错误，不中断请求
 		} else {
 			err = common.Runtime.Queue().Append(message)
 			if err != nil {
@@ -128,7 +128,7 @@ func run() error {
 	defer cancel()
 
 	go func() {
-		// ��������
+		// 服务连接
 		if config.SslConfig.Enable {
 			if err := srv.ListenAndServeTLS(config.SslConfig.Pem, config.SslConfig.KeyStr); err != nil && err != http.ErrServerClosed {
 				logger.Fatal("listen: ", err)
@@ -148,7 +148,7 @@ func run() error {
 	fmt.Printf("-  Local:   http://localhost:%d/swagger/index.html \r\n", config.ApplicationConfig.Port)
 	fmt.Printf("-  Network: http://%s:%d/swagger/index.html \r\n", utils.GetLocaHonst(), config.ApplicationConfig.Port)
 	fmt.Printf("%s Enter Control + C Shutdown Server \r\n", utils.GetCurrentTimeStr())
-	// �ȴ��ж��ź������ŵعرշ����������� 5 ��ĳ�ʱʱ�䣩
+	// 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
@@ -163,7 +163,7 @@ func run() error {
 }
 
 func tip() {
-	usageStr := `��ӭʹ�� admin ϵͳ��` + ` ����ʹ�� ` + `-h` + ` �鿴����`
+	usageStr := `欢迎使用 kobh 系统。` + ` 可以使用 ` + `-h` + ` 查看命令`
 	fmt.Printf("%s \n\n", usageStr)
 }
 

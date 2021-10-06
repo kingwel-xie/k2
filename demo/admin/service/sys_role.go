@@ -54,7 +54,7 @@ func (e *SysRole) Insert(c *dto.SysRoleInsertReq) error {
 
 	c.Generate(&data)
 	data.SetCreateBy(e.Identity.UserId)
-	c.SysMenu = dataMenu
+	data.SysMenu = &dataMenu
 
 	tx := e.Orm.Begin()
 

@@ -17,7 +17,7 @@ type SysUser struct {
 
 // GetPage 获取SysUser列表
 func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, count *int64) error {
-	err := e.Orm.Preload("Dept").
+	err := e.Orm.Preload("Dept").Preload("Role").
 		Scopes(
 			service.Permission(models.SysUser{}.TableName(), e.Identity),
 			cDto.MakeCondition(c.GetNeedSearch()),
@@ -50,6 +50,10 @@ func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
 		return errors.New("用户名已存在！")
 	}
 	c.Generate(&data)
+	err = data.Encrypt()
+	if err != nil {
+		return service.ErrInternalError
+	}
 	data.SetCreateBy(e.Identity.UserId)
 
 	err = e.Orm.Create(&data).Error
@@ -69,11 +73,11 @@ func (e *SysUser) Update(c *dto.SysUserUpdateReq) error {
 	c.Generate(&model)
 	model.SetUpdateBy(e.Identity.UserId)
 
-	update := e.Orm.Model(&model).Where("user_id = ?", &model.UserId).Omit("password", "salt").Updates(&model)
-	if update.Error != nil {
-		return update.Error
+	db := e.Orm.Save(&model)
+	if db.Error != nil {
+		return db.Error
 	}
-	if update.RowsAffected == 0 {
+	if db.RowsAffected == 0 {
 		return service.ErrPermissionDenied
 	}
 	return nil
@@ -82,61 +86,72 @@ func (e *SysUser) Update(c *dto.SysUserUpdateReq) error {
 // UpdateAvatar 更新用户头像
 func (e *SysUser) UpdateAvatar(c *dto.UpdateSysUserAvatarReq) error {
 	var model models.SysUser
-	db := e.Orm.Scopes(
+	err := e.Orm.Scopes(
 		service.Permission(model.TableName(), e.Identity),
-	).First(&model, c.GetId())
-	if db.Error != nil {
-		return db.Error
-	}
-	if db.RowsAffected == 0 {
-		return errors.New("无权更新该数据")
-
+	).Select("UserId", "Avatar").First(&model, c.GetId()).Error
+	if err != nil {
+		return err
 	}
 	c.Generate(&model)
 	model.SetUpdateBy(e.Identity.UserId)
 
-	err := e.Orm.Save(&model).Error
-	return err
+	db := e.Orm.Select("Avatar").Save(&model)
+	if db.Error != nil {
+		return db.Error
+	}
+	if db.RowsAffected == 0 {
+		return service.ErrPermissionDenied
+	}
+	return nil
 }
 
 // UpdateStatus 更新用户状态
 func (e *SysUser) UpdateStatus(c *dto.UpdateSysUserStatusReq) error {
 	var model models.SysUser
-	db := e.Orm.Scopes(
+	err := e.Orm.Scopes(
 		service.Permission(model.TableName(), e.Identity),
-	).First(&model, c.GetId())
+	).Select("UserId", "Status").First(&model, c.GetId()).Error
+	if err != nil {
+		return err
+	}
+
+	c.Generate(&model)
+	model.SetUpdateBy(e.Identity.UserId)
+
+	db := e.Orm.Select("Status").Save(&model)
 	if db.Error != nil {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
 		return service.ErrPermissionDenied
 	}
-
-	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
-
-	err := e.Orm.Save(&model).Error
-	return err
+	return nil
 }
 
 // ResetPwd 重置用户密码
 func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 	var model models.SysUser
-	db := e.Orm.Scopes(
+	err := e.Orm.Scopes(
 		service.Permission(model.TableName(), e.Identity),
-	).First(&model, c.GetId())
+	).Select("UserId", "Password", "Salt").First(&model, c.GetId()).Error
+	if err != nil {
+		return err
+	}
+
+	c.Generate(&model)
+	err = model.Encrypt()
+	if err != nil {
+		return service.ErrInternalError
+	}
+	model.SetUpdateBy(e.Identity.UserId)
+	db := e.Orm.Select("Password", "Salt").Save(&model)
 	if db.Error != nil {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
 		return service.ErrPermissionDenied
 	}
-
-	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
-	err := e.Orm.Save(&model).Error
-
-	return err
+	return nil
 }
 
 // Remove 删除SysUser
@@ -171,13 +186,18 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 	var ok bool
 	ok, err = utils.CompareHashAndPassword(c.Password, oldPassword)
 	if err != nil {
-		return fmt.Errorf("CompareHashAndPassword error, %s", err.Error())
+		return service.ErrInternalError
 	}
 	if !ok {
-		return fmt.Errorf("user[%d] incorrect password", id)
+		return service.ErrWrongPassword
 	}
+
 	c.Password = newPassword
-	db := e.Orm.Model(c).Where("user_id = ?", id).Select("Password", "Salt").Updates(c)
+	err = c.Encrypt()
+	if err != nil {
+		return service.ErrInternalError
+	}
+	db := e.Orm.Select("Password", "Salt").Save(c)
 	if db.Error != nil {
 		return db.Error
 	}

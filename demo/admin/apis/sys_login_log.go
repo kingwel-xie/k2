@@ -3,9 +3,9 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"admin/models"
 	"github.com/kingwel-xie/k2/common/api"
 
+	"admin/models"
 	"admin/service"
 	"admin/service/dto"
 )

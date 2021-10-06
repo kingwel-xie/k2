@@ -1,15 +1,16 @@
 package apis
 
 import (
-	"github.com/gin-gonic/gin/binding"
-	"github.com/google/uuid"
-	"admin/models"
 	"net/http"
 
+	"github.com/gin-gonic/gin/binding"
+	"github.com/google/uuid"
 	"github.com/gin-gonic/gin"
+	"github.com/kingwel-xie/k2/common/api"
+	
+	"admin/models"
 	"admin/service"
 	"admin/service/dto"
-	"github.com/kingwel-xie/k2/common/api"
 )
 
 type SysUser struct {
