@@ -32,7 +32,7 @@ type SysColumns struct {
 	Comment 	  string `json:"comment"` 		// 注释，不影响生成代码
 	ColumnName    string `json:"columnName"`    // gorm 数据库字段名, 缺省由GoField 生成
 	JsonField     string `json:"jsonField"`     // json 字段名, 缺省由GoField 生成
-	GormTag       string `json:"gormTag"`       // gorm tag, 类型+约束, f.g., size:64;unique;index;unique_index;not null;default;
+	GormTag       string `json:"gormTag"`       // gorm tag, 类型+约束, f.g., size:64;unique;index;uniqueIndex;not null;default;
 	Validator     string `json:"validator"`     // validator
 	IsPk          bool   `json:"isPk"`          // 主鍵?
 	Required      bool   `json:"required"`      // dto, 是否必选字段, gin validator binding:required
