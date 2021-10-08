@@ -78,12 +78,21 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              v-permisaction="['admin:sysDictType:export']"
+              v-permisaction="['admin:sysDictType:list']"
               type="warning"
               icon="el-icon-download"
               size="mini"
               @click="handleExport"
             >导出</el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-permisaction="['admin:sysDictData:list']"
+              type="warning"
+              icon="el-icon-download"
+              size="mini"
+              @click="handleExportData"
+            >导出全部</el-button>
           </el-col>
         </el-row>
 
@@ -168,6 +177,7 @@
 <script>
 import { listType, getType, delType, addType, updateType } from '@/api/admin/dict/type'
 import { formatJson } from '@/utils'
+import { listAllData } from '@/api/admin/dict/data'
 
 export default {
   name: 'SysDictTypeManage',
@@ -333,25 +343,62 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有类型数据项?', '警告', {
+      this.$confirm('是否导出全部字典类型项（最多10000条）?', '请确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.downloadLoading = true
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['字典编号', '字典名称', '字典类型', '状态', '备注']
           const filterVal = ['id', 'dictName', 'dictType', 'status', 'remark']
-          const list = this.typeList
-          const data = formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: '字典管理',
-            autoWidth: true, // Optional
-            bookType: 'xlsx' // Optional
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listType(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '字典管理',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
           })
-          this.downloadLoading = false
+        })
+      })
+    },
+    /** 导出字典数据按钮操作 */
+    handleExportData() {
+      this.$confirm('是否导出全部字典数据项（最多10000条）?', '请确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }).then(() => {
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['编码', '类型', '标签', '值', '备注']
+          const filterVal = ['dictCode', 'dictType', 'dictLabel', 'dictValue', 'remark']
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listAllData(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '字典数据',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+          }).catch(() => {
+            this.loading = false
+          })
         })
       })
     }

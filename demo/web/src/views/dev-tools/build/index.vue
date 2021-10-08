@@ -13,8 +13,8 @@
 <script>
 
 export default {
+  name: 'Build',
   components: {
-
   },
   data() {
     return {

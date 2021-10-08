@@ -71,7 +71,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              v-permisaction="['admin:sysConfig:export']"
+              v-permisaction="['admin:sysConfig:list']"
               type="warning"
               icon="el-icon-download"
               size="mini"
@@ -416,16 +416,24 @@ export default {
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['参数主键', '参数名称', '参数键名', '参数键值', '备注', '创建时间']
           const filterVal = ['configId', 'configName', 'configKey', 'configValue', 'remark', 'createdAt']
-          const list = this.configList
-          const data = formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: '参数设置',
-            autoWidth: true, // Optional
-            bookType: 'xlsx' // Optional
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listConfig(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '参数设置',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
           })
-          this.downloadLoading = false
         })
       })
     }

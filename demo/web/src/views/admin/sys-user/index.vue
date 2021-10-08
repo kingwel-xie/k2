@@ -102,6 +102,15 @@
                   @click="handleDelete"
                 >删除</el-button>
               </el-col>
+              <el-col :span="1.5">
+                <el-button
+                  v-permisaction="['admin:sysUser:list']"
+                  type="warning"
+                  icon="el-icon-download"
+                  size="mini"
+                  @click="handleExport"
+                >导出</el-button>
+              </el-col>
             </el-row>
 
             <el-table
@@ -118,6 +127,7 @@
               <el-table-column label="角色" :show-overflow-tooltip="true" prop="role.roleName" />
               <el-table-column label="部门" prop="dept.deptName" :show-overflow-tooltip="true" />
               <el-table-column label="手机号" prop="phone" width="108" />
+              <el-table-column label="邮箱" prop="email" width="108" />
               <el-table-column label="状态" width="80" sortable="custom">
                 <template slot-scope="scope">
                   <el-switch
@@ -317,7 +327,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, exportUser, resetUserPwd, changeUserStatus, importTemplate } from '@/api/admin/sys-user'
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, importTemplate } from '@/api/admin/sys-user'
 import { getToken } from '@/utils/auth'
 
 import { listPost } from '@/api/admin/sys-post'
@@ -326,6 +336,7 @@ import { treeselect } from '@/api/admin/sys-dept'
 
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { formatJson } from '@/utils'
 
 export default {
   name: 'SysUserManage',
@@ -640,16 +651,34 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有用户数据项?', '警告', {
+      this.$confirm('是否确认导出所有用户数据项（最多10000条）?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(function() {
-        return exportUser(queryParams)
-      }).then(response => {
-        this.download(response.msg)
-      }).catch(function() {})
+      }).then(() => {
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['编号', '用户名', '昵称', '角色', '部门', '岗位', '电话', '邮箱', '性别', '备注']
+          const filterVal = ['userId', 'username', 'nickName', 'roleId', 'deptId', 'postId', 'phone', 'email', 'sex', 'remark']
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listUser(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '用户',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
+          })
+        })
+      })
     },
     /** 导入按钮操作 */
     handleImport() {

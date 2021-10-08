@@ -32,7 +32,7 @@ import {
   dateFormatter,
   floatFormatter2,
   floatFormatter3,
-  percentageFormatter
+  percentageFormatter, datetimePickerOptions
 } from '@/utils/custom'
 
 import './icons' // icon
@@ -67,6 +67,7 @@ Vue.prototype.dateFormatter = dateFormatter
 Vue.prototype.floatFormatter = floatFormatter2
 Vue.prototype.floatFormatter3 = floatFormatter3
 Vue.prototype.percentageFormatter = percentageFormatter
+Vue.prototype.datetimePickerOptions = datetimePickerOptions
 
 // Vue.prototype.download = download
 

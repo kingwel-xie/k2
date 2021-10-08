@@ -16,8 +16,8 @@ type SysOperaLogGetPageReq struct {
 	OperUrl        string `form:"operUrl" search:"type:contains;column:oper_url;table:sys_opera_log" comment:"访问地址"`
 	OperIp         string `form:"operIp" search:"type:exact;column:oper_ip;table:sys_opera_log" comment:"客户端ip"`
 	Status         int    `form:"status" search:"type:exact;column:status;table:sys_opera_log" comment:"状态"`
-	BeginTime      string `form:"beginTime" search:"type:gte;column:ctime;table:sys_opera_log" comment:"创建时间"`
-	EndTime        string `form:"endTime" search:"type:lte;column:ctime;table:sys_opera_log" comment:"创建时间"`
+	BeginTime      string `form:"beginTime" search:"type:gte;column:oper_time;table:sys_opera_log" comment:"操作时间"`
+	EndTime        string `form:"endTime" search:"type:lte;column:oper_time;table:sys_opera_log" comment:"操作时间"`
 	SysOperaLogOrder
 }
 

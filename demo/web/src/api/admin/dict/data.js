@@ -9,6 +9,16 @@ export function listData(query) {
   })
 }
 
+// 查询 All 字典数据列表
+export function listAllData(query) {
+  return request({
+    url: '/api/v1/dict/data',
+    method: 'get',
+    params: query
+  })
+}
+
+
 // 查询字典数据详细
 export function getData(dictCode) {
   return request({

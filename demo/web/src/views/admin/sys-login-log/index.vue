@@ -34,6 +34,19 @@
             @keyup.enter.native="handleQuery"
           />
           </el-form-item>
+          <el-form-item label="登录时间">
+            <el-date-picker
+              v-model="dateRange"
+              size="small"
+              type="datetimerange"
+              :picker-options="datetimePickerOptions()"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              align="right"
+              value-format="yyyy-MM-dd HH:mm:ss"
+            />
+          </el-form-item>
 
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -52,6 +65,15 @@
               @click="handleDelete"
             >删除
             </el-button>
+          </el-col>
+          <el-col :span="1.5">
+            <el-button
+              v-permisaction="['admin:sysLoginLog:list']"
+              type="warning"
+              icon="el-icon-download"
+              size="mini"
+              @click="handleExport"
+            >导出</el-button>
           </el-col>
         </el-row>
 
@@ -137,6 +159,8 @@
 
 <script>
 import { delSysLoginlog, getSysLoginlog, listSysLoginlog } from '@/api/admin/sys-login-log'
+import { listSysOperlog } from '@/api/admin/sys-opera-log'
+import { formatJson } from '@/utils'
 
 export default {
   name: 'SysLoginLogManage',
@@ -165,6 +189,8 @@ export default {
       typeOptions: [],
       sysloginlogList: [],
       statusOptions: [],
+      // 日期范围
+      dateRange: [],
       // 关系表类型
 
       // 查询参数
@@ -199,8 +225,9 @@ export default {
         this.sysloginlogList = response.data.list
         this.total = response.data.count
         this.loading = false
-      }
-      )
+      }).catch(_ => {
+        this.loading = false
+      })
     },
     // 取消按钮
     cancel() {
@@ -259,6 +286,7 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
+
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
@@ -290,6 +318,39 @@ export default {
           this.msgError(response.msg)
         }
       }).catch(function() {})
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      // const queryParams = this.queryParams
+      this.$confirm('是否确认导出所有登录日志数据项（最多10000条）?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.downloadLoading = true
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['日志编号', '用户名', 'ip', '状态', 'os', '平台', '浏览器', '信息', '备注', '登录日期']
+          const filterVal = ['ID', 'username', 'ipaddr', 'status', 'os', 'platform', 'browser', 'msg', 'remark', 'loginTime']
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listSysLoginlog(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '登录日志',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
+          })
+        })
+      })
     }
   }
 }

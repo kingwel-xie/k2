@@ -10,7 +10,7 @@
           <el-form-item label="中文名称" prop="nameCN">
             <el-input v-model="queryParams.nameCN" placeholder="请输入中文名称" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="English Name" prop="nameEN">
+          <el-form-item label="English" prop="nameEN">
             <el-input v-model="queryParams.nameEN" placeholder="请输入English Name" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
           <el-form-item label="描述" prop="alias">
@@ -56,12 +56,12 @@
         <el-dialog :title="title" :visible.sync="open" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="编码" prop="code">
-              <el-input v-model="form.code" placeholder="编码" />
+              <el-input v-model="form.code" placeholder="编码" :disabled="isEdit" />
             </el-form-item>
             <el-form-item label="中文名称" prop="nameCN">
               <el-input v-model="form.nameCN" placeholder="中文名称" />
             </el-form-item>
-            <el-form-item label="English Name" prop="nameEN">
+            <el-form-item label="English" prop="nameEN">
               <el-input v-model="form.nameEN" placeholder="English Name" />
             </el-form-item>
             <el-form-item label="描述" prop="alias">
@@ -126,9 +126,7 @@ export default {
       rules: {
         code: [{ required: true, message: '编码不能为空', trigger: 'blur' }],
         nameCN: [{ required: true, message: '中文名称不能为空', trigger: 'blur' }],
-        nameEN: [{ required: true, message: 'English Name不能为空', trigger: 'blur' }],
-        alias: [{ required: true, message: '描述不能为空', trigger: 'blur' }]
-
+        nameEN: [{ required: true, message: 'English Name不能为空', trigger: 'blur' }]
       }
     }
   },
@@ -155,7 +153,6 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-
         code: undefined,
         nameCN: undefined,
         nameEN: undefined,

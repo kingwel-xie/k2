@@ -69,7 +69,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              v-permisaction="['admin:sysPost:export']"
+              v-permisaction="['admin:sysPost:list']"
               type="warning"
               icon="el-icon-download"
               size="mini"
@@ -338,20 +338,27 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.downloadLoading = true
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['岗位编号', '岗位编码', '岗位名称', '排序', '创建时间']
           const filterVal = ['postId', 'postCode', 'postName', 'sort', 'createdAt']
-          const list = this.postList
-          const data = formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: '岗位管理',
-            autoWidth: true, // Optional
-            bookType: 'xlsx' // Optional
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listPost(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '岗位管理',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
           })
-          this.downloadLoading = false
         })
       }).catch(function() {})
     }

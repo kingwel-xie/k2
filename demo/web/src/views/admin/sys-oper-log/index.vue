@@ -24,7 +24,7 @@
               v-model="dateRange"
               size="small"
               type="datetimerange"
-              :picker-options="pickerOptions"
+              :picker-options="datetimePickerOptions()"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -51,7 +51,7 @@
           </el-col>
           <el-col :span="1.5">
             <el-button
-              v-permisaction="['admin:sysOperLog:export']"
+              v-permisaction="['admin:sysOperLog:list']"
               type="warning"
               icon="el-icon-download"
               size="mini"
@@ -237,8 +237,9 @@ export default {
         this.list = response.data.list
         this.total = response.data.count
         this.loading = false
-      }
-      )
+      }).catch(_ => {
+        this.loading = false
+      })
     },
     // 操作日志状态字典翻译
     statusFormat(row, column) {
@@ -305,7 +306,7 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有操作日志数据项?', '警告', {
+      this.$confirm('是否确认导出所有操作日志数据项（最多10000条）?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -314,16 +315,24 @@ export default {
         import('@/vendor/Export2Excel').then(excel => {
           const tHeader = ['日志编号', '系统模块', '操作类型', '请求方式', '操作人员', '主机', '操作地点', '操作状态', '操作url', '操作日期']
           const filterVal = ['ID', 'title', 'businessType', 'method', 'operName', 'operIp', 'operLocation', 'status', 'operUrl', 'operTime']
-          const list = this.list
-          const data = formatJson(filterVal, list)
-          excel.export_json_to_excel({
-            header: tHeader,
-            data,
-            filename: '操作日志',
-            autoWidth: true, // Optional
-            bookType: 'xlsx' // Optional
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listSysOperlog(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '操作日志',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
           })
-          this.downloadLoading = false
         })
       })
     }

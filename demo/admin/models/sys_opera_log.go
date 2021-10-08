@@ -25,7 +25,7 @@ type SysOperaLog struct {
 	OperLocation  string    `json:"operLocation" gorm:"size:128;comment:访问位置"`
 	OperParam     string    `json:"operParam" gorm:"size:255;comment:请求参数"`
 	Status        string    `json:"status" gorm:"size:4;comment:操作状态"`
-	OperTime      time.Time `json:"operTime" gorm:"comment:操作时间"`
+	OperTime      time.Time `json:"operTime" gorm:"index;comment:操作时间"`
 	JsonResult    string    `json:"jsonResult" gorm:"size:255;comment:返回数据"`
 	Remark        string    `json:"remark" gorm:"size:255;comment:备注"`
 	LatencyTime   string    `json:"latencyTime" gorm:"size:128;comment:耗时"`

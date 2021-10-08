@@ -19,7 +19,7 @@ type SysLoginLog struct {
 	Browser       string    `json:"browser" gorm:"size:255;comment:浏览器"`
 	Os            string    `json:"os" gorm:"size:255;comment:系统"`
 	Platform      string    `json:"platform" gorm:"size:255;comment:固件"`
-	LoginTime     time.Time `json:"loginTime" gorm:"comment:登录时间"`
+	LoginTime     time.Time `json:"loginTime" gorm:"index;comment:登录时间"`
 	Remark        string    `json:"remark" gorm:"size:255;comment:备注"`
 	Msg           string    `json:"msg" gorm:"size:255;comment:信息"`
 	CreatedAt     time.Time `json:"createdAt" gorm:"comment:创建时间"`
