@@ -282,7 +282,7 @@ func (e *SysRole) GetById(roleId int) ([]string, error) {
 	permissions := make([]string, 0)
 	model := models.SysRole{}
 	model.RoleId = roleId
-	if err := e.Orm.Model(&model).Preload("SysMenu").First(&model).Error; err != nil {
+	if err := e.Orm.Model(&model).Preload("SysMenu", "menu_type = 'F'").First(&model).Error; err != nil {
 		return nil, err
 	}
 	l := *model.SysMenu

@@ -361,18 +361,14 @@ func (e SysUser) GetInfo(c *gin.Context) {
 	roles[0] = identity.RoleKey
 	var permissions = make([]string, 1)
 	permissions[0] = "*:*:*"
-	var buttons = make([]string, 1)
-	buttons[0] = "*:*:*"
 
 	var mp = make(map[string]interface{})
 	mp["roles"] = roles
 	if identity.RoleKey == "admin" {
 		mp["permissions"] = permissions
-		mp["buttons"] = buttons
 	} else {
 		list, _ := r.GetById(identity.RoleId)
 		mp["permissions"] = list
-		mp["buttons"] = list
 	}
 	sysUser := models.SysUser{}
 	req.Id = identity.UserId
@@ -381,7 +377,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 		e.Error(http.StatusUnauthorized, err, "登录失败")
 		return
 	}
-	mp["introduction"] = " am a super administrator"
+	mp["introduction"] = "If I die before I wake"
 	mp["avatar"] = "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
 	if sysUser.Avatar != "" {
 		mp["avatar"] = sysUser.Avatar
