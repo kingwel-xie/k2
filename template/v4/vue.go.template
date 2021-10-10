@@ -90,12 +90,13 @@
         <!-- 添加或修改对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-            {{ range .Columns -}}
-            {{- $isNumber := false -}}
-            {{- if eq .GoType "int" -}}{{- $isNumber = true -}}{{- end -}}
-            {{- if eq .GoType "float64" -}}{{- $isNumber = true -}}{{- end -}}
-            {{- $x := .NotOnInsert -}}
-            {{ if not ($x) -}}
+            <el-row :gutter="10" class="mb8">
+              {{ range .Columns -}}
+              {{- $isNumber := false -}}
+              {{- if eq .GoType "int" -}}{{- $isNumber = true -}}{{- end -}}
+              {{- if eq .GoType "float64" -}}{{- $isNumber = true -}}{{- end -}}
+              {{- $x := .NotOnInsert -}}
+              {{ if not ($x) -}}
               {{- if (.AutoInc) -}}
               {{- else if eq .GoField "CreatedAt" -}}
               {{- else if eq .GoField "UpdatedAt" -}}
@@ -103,42 +104,45 @@
               {{- else if eq .GoField "UpdateBy" -}}
               {{- else if eq .GoField "CreateBy" -}}
               {{- else -}}
-                {{- if eq .Comment "" -}}
-            <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
+              <el-col :span="24">
+                {{ if eq .Comment "" -}}
+                <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
                 {{- else -}}
-            <el-form-item prop="{{.JsonField}}">
-              <span slot="label">{{.ColumnComment}}<el-tooltip content="{{ .Comment }}" placement="top"><i class="el-icon-info" /></el-tooltip></span>
+                <el-form-item prop="{{.JsonField}}">
+                  <span slot="label">{{.ColumnComment}}<el-tooltip content="{{ .Comment }}" placement="top"><i class="el-icon-info" /></el-tooltip></span>
+                    {{- end }}
+                  {{ if eq "input" .HtmlType -}}
+                  <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="form.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
+                  {{- else if eq "select" .HtmlType -}}
+                    {{- if ne .FkTableName "" -}}
+                  <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
+                    <el-option v-for="dict in {{.JsonField}}Options" :key="dict.key" :label="dict.value" :value="dict.key" />
+                  </el-select>
+                    {{- else -}}
+                  <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
+                    <el-option v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label" :value="dict.value" />
+                  </el-select>
+                    {{- end -}}
+                  {{- else if eq "radio" .HtmlType -}}
+                  <el-radio-group v-model="form.{{.JsonField}}">
+                    <el-radio v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.value">{{"{{"}} dict.label {{"}}"}}</el-radio>
+                  </el-radio-group>
+                  {{- else if eq "file" .HtmlType -}}
+                  <el-input v-model="form.{{.JsonField}}" placeholder="图片" />
+                  <el-button type="primary" @click="fileShow{{.GoField}}">选择文件</el-button>
+                  {{- else if eq "datetime" .HtmlType -}}
+                  <el-date-picker v-model="form.{{.JsonField}}" type="datetime" placeholder="选择日期"></el-date-picker>
+                  {{- else if eq "textarea" .HtmlType -}}
+                  <el-input v-model="form.{{.JsonField}}" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
+                  {{- else if eq "switch" .HtmlType -}}
+                  <el-switch v-model="form.{{.JsonField}}" active-text="是" inactive-text="否" />
+                  {{- end }}
+                </el-form-item>
                 {{- end }}
-              {{ if eq "input" .HtmlType -}}
-              <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="form.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
-              {{- else if eq "select" .HtmlType -}}
-                {{- if ne .FkTableName "" -}}
-              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
-                <el-option v-for="dict in {{.JsonField}}Options" :key="dict.key" :label="dict.value" :value="dict.key" />
-              </el-select>
-                {{- else -}}
-              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
-                <el-option v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label" :value="dict.value" />
-              </el-select>
-                {{- end -}}
-              {{- else if eq "radio" .HtmlType -}}
-              <el-radio-group v-model="form.{{.JsonField}}">
-                <el-radio v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.value">{{"{{"}} dict.label {{"}}"}}</el-radio>
-              </el-radio-group>
-              {{- else if eq "file" .HtmlType -}}
-              <el-input v-model="form.{{.JsonField}}" placeholder="图片" />
-              <el-button type="primary" @click="fileShow{{.GoField}}">选择文件</el-button>
-              {{- else if eq "datetime" .HtmlType -}}
-              <el-date-picker v-model="form.{{.JsonField}}" type="datetime" placeholder="选择日期"></el-date-picker>
-              {{- else if eq "textarea" .HtmlType -}}
-              <el-input v-model="form.{{.JsonField}}" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
-              {{- else if eq "switch" .HtmlType -}}
-              <el-switch v-model="form.{{.JsonField}}" active-text="是" inactive-text="否" />
-              {{- end }}
-            </el-form-item>
-              {{- end }}
-            {{ end -}}
-          {{- end -}}
+              </el-col>
+              {{ end -}}
+            {{- end -}}
+            </el-row>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
