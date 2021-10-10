@@ -113,11 +113,11 @@
               <el-input v-model{{- if ($isNumber) -}}.number{{- end -}}="form.{{.JsonField}}" {{- if ($isNumber) }} type="number" {{- end }} placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
               {{- else if eq "select" .HtmlType -}}
                 {{- if ne .FkTableName "" -}}
-              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end -}}>
+              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
                 <el-option v-for="dict in {{.JsonField}}Options" :key="dict.key" :label="dict.value" :value="dict.key" />
               </el-select>
                 {{- else -}}
-              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end -}}>
+              <el-select v-model="form.{{.JsonField}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }}>
                 <el-option v-for="dict in {{.JsonField}}Options" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
                 {{- end -}}
@@ -190,7 +190,7 @@ export default {
       {{range .Columns}}
       {{- if ne .DictType "" -}}
       {{.JsonField}}Options: [],
-      {{- end -}}
+      {{ end -}}
       {{- end }}
       // 关系表类型
       {{range .Columns}}
@@ -286,9 +286,9 @@ export default {
     {{range .Columns}}
     {{- if ne .FkTableName "" -}}
     get{{.FkClassName}}Items() {
-      this.getItems(list{{.FkClassName}}, undefined).then(res => {
-        this.{{.JsonField}}Options = this.setItems(res, '{{.FkLabelId}}', '{{.FkLabelName}}')
-      })
+       this.getItems(list{{.FkClassName}}, undefined).then(res => {
+         this.{{.JsonField}}Options = this.setItems(res, '{{.FkLabelId}}', '{{.FkLabelName}}')
+       })
     },
     {{ end -}}
     {{- end -}}
