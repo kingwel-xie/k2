@@ -30,7 +30,6 @@ type SysMenuInsertReq struct {
 	Permission string          `form:"permission" comment:"权限编码"`  //权限编码
 	ParentId   int             `form:"parentId" comment:"上级菜单"`    //上级菜单
 	NoCache    bool            `form:"noCache" comment:"是否缓存"`     //是否缓存
-	Breadcrumb string          `form:"breadcrumb" comment:"是否面包屑"` //是否面包屑
 	Component  string          `form:"component" comment:"组件"`     //组件
 	Sort       int             `form:"sort" comment:"排序"`          //排序
 	Visible    string          `form:"visible" comment:"是否显示"`     //是否显示
@@ -52,7 +51,6 @@ func (s *SysMenuInsertReq) Generate(model *models.SysMenu) {
 	model.Permission = s.Permission
 	model.ParentId = s.ParentId
 	model.NoCache = s.NoCache
-	model.Breadcrumb = s.Breadcrumb
 	model.Component = s.Component
 	model.Sort = s.Sort
 	model.Visible = s.Visible
@@ -77,7 +75,6 @@ type SysMenuUpdateReq struct {
 	Permission string          `form:"permission" comment:"权限编码"`  //权限编码
 	ParentId   int             `form:"parentId" comment:"上级菜单"`    //上级菜单
 	NoCache    bool            `form:"noCache" comment:"是否缓存"`     //是否缓存
-	Breadcrumb string          `form:"breadcrumb" comment:"是否面包屑"` //是否面包屑
 	Component  string          `form:"component" comment:"组件"`     //组件
 	Sort       int             `form:"sort" comment:"排序"`          //排序
 	Visible    string          `form:"visible" comment:"是否显示"`     //是否显示
@@ -99,7 +96,6 @@ func (s *SysMenuUpdateReq) Generate(model *models.SysMenu) {
 	model.Permission = s.Permission
 	model.ParentId = s.ParentId
 	model.NoCache = s.NoCache
-	model.Breadcrumb = s.Breadcrumb
 	model.Component = s.Component
 	model.Sort = s.Sort
 	model.Visible = s.Visible

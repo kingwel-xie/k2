@@ -50,6 +50,7 @@ func init() {
 	StartCmd.PersistentFlags().StringVarP(&configYml, "config", "c", "config/admin.yml", "Start server with provided configuration file")
 	StartCmd.PersistentFlags().BoolVarP(&apiCheck, "api", "a", false, "Start server with check api data")
 
+	//注册路由
 	AppRouters = append(AppRouters, router.InitRouter)
 }
 

@@ -199,7 +199,7 @@ export default {
       // 关系表类型
       {{range .Columns}}
       {{- if ne .FkTableName "" -}}
-      {{.JsonField}}Options :[],
+      {{.JsonField}}Options: [],
       {{ end -}}
       {{- end }}
       // 查询参数
@@ -290,9 +290,9 @@ export default {
     {{range .Columns}}
     {{- if ne .FkTableName "" -}}
     get{{.FkClassName}}Items() {
-       this.getItems(list{{.FkClassName}}, undefined).then(res => {
-         this.{{.JsonField}}Options = this.setItems(res, '{{.FkLabelId}}', '{{.FkLabelName}}')
-       })
+      this.getItems(list{{.FkClassName}}, undefined).then(res => {
+        this.{{.JsonField}}Options = this.setItems(res, '{{.FkLabelId}}', '{{.FkLabelName}}')
+      })
     },
     {{ end -}}
     {{- end -}}

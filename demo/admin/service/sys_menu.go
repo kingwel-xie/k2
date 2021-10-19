@@ -424,7 +424,6 @@ func menuCall(menuList *[]models.SysMenu, menu models.SysMenu) models.SysMenu {
 		mi.Permission = list[j].Permission
 		mi.ParentId = list[j].ParentId
 		mi.NoCache = list[j].NoCache
-		mi.Breadcrumb = list[j].Breadcrumb
 		mi.Component = list[j].Component
 		mi.Sort = list[j].Sort
 		mi.Visible = list[j].Visible
