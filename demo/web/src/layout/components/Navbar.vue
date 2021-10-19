@@ -38,6 +38,7 @@ import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
 import Search from '@/components/HeaderSearch'
+import checkPermission from '@/utils/permission'
 
 export default {
   components: {
@@ -70,6 +71,16 @@ export default {
       }
     }
 
+  },
+  created() {
+    // topNav set to 'true' for 'admin'
+    if (checkPermission(['admin'])) {
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'topNav',
+        value: true
+      })
+      this.$store.commit('permission/SET_SIDEBAR_ROUTERS', this.$store.state.permission.defaultRoutes)
+    }
   },
   methods: {
     toggleSideBar() {

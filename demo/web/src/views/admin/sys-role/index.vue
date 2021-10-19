@@ -380,10 +380,10 @@ export default {
     getMenuAllCheckedKeys() {
       // 目前被选中的菜单节点
       const checkedKeys = this.$refs.menuTree.getHalfCheckedKeys()
-      console.log('目前被选中的菜单节点', checkedKeys)
+      console.log('半选中的菜单节点', checkedKeys)
       // 半选中的菜单节点
       const halfCheckedKeys = this.$refs.menuTree.getCheckedKeys()
-      console.log('半选中的菜单节点', halfCheckedKeys)
+      console.log('目前被选中的菜单节点', halfCheckedKeys)
       // checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys)
       return halfCheckedKeys.concat(checkedKeys)
     },
@@ -426,7 +426,7 @@ export default {
       }).then(function() {
         return changeRoleStatus(row.roleId, row.status)
       }).then((res) => {
-        console.log('res', res)
+        // console.log('res', res)
         this.msgSuccess(res.msg)
       }).catch(function() {
         row.status = row.status === '2' ? '1' : '2'

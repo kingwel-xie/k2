@@ -10,7 +10,7 @@ module.exports = {
   /**
    * 是否显示顶部导航
    */
-  topNav: true,
+  topNav: false,
 
   /**
    * @type {boolean} true | false
