@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/casbin/casbin/v2/util"
 	"github.com/gin-gonic/gin"
+	"github.com/kingwel-xie/k2/core/utils"
 	"net/http"
 
 	"github.com/kingwel-xie/k2/common"
@@ -31,7 +32,7 @@ func AuthCheckRole() gin.HandlerFunc {
 			return
 		}
 		// DEV mode, check CasbinExclude
-		if config.ApplicationConfig.Mode == "dev" {
+		if config.ApplicationConfig.Mode == utils.ModeDev.String() {
 			for _, i := range CasbinExclude {
 				if util.KeyMatch2(c.Request.URL.Path, i.Url) && c.Request.Method == i.Method {
 					casbinExclude = true
@@ -46,8 +47,8 @@ func AuthCheckRole() gin.HandlerFunc {
 		}
 		res, err = e.Enforce(v.RoleKey, c.Request.URL.Path, c.Request.Method)
 		if err != nil {
-			log.Errorf("AuthCheckRole error:%s method:%s path:%s", err, c.Request.Method, c.Request.URL.Path)
-			response.Error(c, 500, err, "")
+			log.Errorf("AuthCheckRole error: %s method:%s path:%s", err, c.Request.Method, c.Request.URL.Path)
+			response.Error(c, 500, err, "内部错误")
 			return
 		}
 

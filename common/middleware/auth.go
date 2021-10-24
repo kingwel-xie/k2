@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/kingwel-xie/k2/core/utils"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v2"
@@ -13,7 +14,7 @@ import (
 func AuthInit() (*jwt.GinJWTMiddleware, error) {
 	timeout := time.Hour
 	sendCookie := false
-	if config.ApplicationConfig.Mode == "dev" {
+	if config.ApplicationConfig.Mode  == utils.ModeDev.String() {
 		timeout = time.Duration(876010) * time.Hour
 		sendCookie = true
 	} else {

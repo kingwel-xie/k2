@@ -1,6 +1,7 @@
 package response
 
 import (
+	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/core/utils"
 	"net/http"
 
@@ -12,13 +13,10 @@ var Default = &response{}
 // Error 失败数据处理
 func Error(c *gin.Context, code int, err error, msg string) {
 	res := Default.Clone()
-	if msg != "" {
-		res.SetMsg(msg)
-	} else {
-		if err != nil {
-			res.SetMsg(err.Error())
-		}
+	if config.ApplicationConfig.Mode == utils.ModeDev.String() && err != nil {
+		msg = msg + ": " + err.Error()
 	}
+	res.SetMsg(msg)
 	res.SetTraceID(utils.GenerateMsgIDFromContext(c))
 	res.SetCode(int32(code))
 	res.SetSuccess(false)
