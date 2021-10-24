@@ -33,7 +33,7 @@ func (e SysDept) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	list := make([]models.SysDept, 0)
@@ -61,7 +61,7 @@ func (e SysDept) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var object models.SysDept
@@ -92,7 +92,7 @@ func (e SysDept) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -123,7 +123,7 @@ func (e SysDept) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.Update(&req)
@@ -150,7 +150,7 @@ func (e SysDept) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -181,7 +181,7 @@ func (e SysDept) Get2Tree(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	list := make([]dto.DeptLabel, 0)
@@ -209,7 +209,7 @@ func (e SysDept) GetDeptTreeRoleSelect(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 

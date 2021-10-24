@@ -34,7 +34,7 @@ func (e SysConfig) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -64,7 +64,7 @@ func (e SysConfig) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var object models.SysConfig
@@ -96,7 +96,7 @@ func (e SysConfig) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.Insert(&req)
@@ -126,7 +126,7 @@ func (e SysConfig) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.Update(&req)
@@ -153,7 +153,7 @@ func (e SysConfig) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -179,7 +179,7 @@ func (e SysConfig) Get2SysApp(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	// 控制只读前台的数据
@@ -216,7 +216,7 @@ func (e SysConfig) Get2Set(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.GetForSet(&req)
@@ -249,13 +249,13 @@ func (e SysConfig) Update2Set(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
 	err = s.UpdateForSet(&req)
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(500, err, "更新失败")
 		return
 	}
 
@@ -279,13 +279,13 @@ func (e SysConfig) GetSysConfigByKEYForService(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
 	err = s.GetWithKey(req, resp)
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(500, err, "查询失败")
 		return
 	}
 	e.OK(resp, "Ok")

@@ -35,7 +35,7 @@ func (e SysApi) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	list := make([]models.SysApi, 0)
@@ -64,7 +64,7 @@ func (e SysApi) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var object models.SysApi
@@ -95,7 +95,7 @@ func (e SysApi) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -123,7 +123,7 @@ func (e SysApi) DeleteSysApi(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.Remove(&req)

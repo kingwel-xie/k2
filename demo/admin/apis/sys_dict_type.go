@@ -34,7 +34,7 @@ func (e SysDictType) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	list := make([]models.SysDictType, 0)
@@ -63,7 +63,7 @@ func (e SysDictType) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var object models.SysDictType
@@ -93,7 +93,7 @@ func (e SysDictType) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -124,7 +124,7 @@ func (e SysDictType) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -152,7 +152,7 @@ func (e SysDictType) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -182,7 +182,7 @@ func (e SysDictType) GetAll(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	list := make([]models.SysDictType, 0)

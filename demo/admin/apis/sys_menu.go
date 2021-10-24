@@ -29,7 +29,7 @@ func (e SysMenu) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var list = make([]models.SysMenu, 0)
@@ -57,7 +57,7 @@ func (e SysMenu) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	var object = models.SysMenu{}
@@ -87,7 +87,7 @@ func (e SysMenu) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -118,7 +118,7 @@ func (e SysMenu) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 
@@ -146,7 +146,7 @@ func (e SysMenu) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 	err = s.Remove(control)
@@ -195,7 +195,7 @@ func (e SysMenu) GetMenuRole(c *gin.Context) {
 //		Errors
 //	if err != nil {
 //		e.Logger.Error(err)
-//		e.Error(400, err, err.Error())
+//		e.Error(400, err, "参数错误")
 //		return
 //	}
 //	var data models.SysRole
@@ -233,7 +233,7 @@ func (e SysMenu) GetMenuTreeSelect(c *gin.Context) {
 		Bind(&req, nil).
 		Errors
 	if err != nil {
-		e.Error(400, err, err.Error())
+		e.Error(400, err, "参数错误")
 		return
 	}
 

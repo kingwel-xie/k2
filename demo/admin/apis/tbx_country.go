@@ -36,7 +36,7 @@ func (e TbxCountry) GetPage(c *gin.Context) {
         MakeService(&s.Service).
         Errors
    	if err != nil {
-        e.Error(400, err, err.Error())
+        e.Error(400, err, "参数错误")
         return
    	}
 
@@ -68,7 +68,7 @@ func (e TbxCountry) Get(c *gin.Context) {
         MakeService(&s.Service).
         Errors
 	if err != nil {
-        e.Error(400, err, err.Error())
+        e.Error(400, err, "参数错误")
         return
 	}
 
@@ -100,7 +100,7 @@ func (e TbxCountry) Insert(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, err.Error())
+        e.Error(400, err, "参数错误")
         return
     }
 	err = s.Insert(&req)
@@ -130,7 +130,7 @@ func (e TbxCountry) Update(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, err.Error())
+        e.Error(400, err, "参数错误")
         return
     }
 	err = s.Update(&req)
@@ -157,7 +157,7 @@ func (e TbxCountry) Delete(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, err.Error())
+        e.Error(400, err, "参数错误")
         return
     }
 
