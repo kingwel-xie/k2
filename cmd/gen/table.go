@@ -38,7 +38,7 @@ type SysColumns struct {
 	Required      bool   `json:"required"`      // dto, 是否必选字段, gin validator binding:required
 	AutoInc       bool   `json:"autoInc"`       // 自增？
 	Queryable     bool   `json:"queryable"`     // dto, 可查询的 vue GetPageReq 参数
-	QueryType     string `json:"queryType"`     // dto, EQ/NE/LIKE/GT/GTE/LT/LTE  => SQL exact/iexact/contains/gt/gte/lt/lte, 缺省 EQ
+	QueryType     string `json:"queryType"`     // dto, EQ/NE/LIKE/GT/GTE/LT/LTE  => SQL exact/not-exact/contains/gt/gte/lt/lte, 缺省 EQ
 	Sortable      bool   `json:"sortable"`      // dto, 可以排序 vue GetPageReq 参数
 	NotOnUpdate   bool   `json:"notOnUpdate"`   // dto, 可以更新 UpdateReq 参数, vue Update dialog
 	NotOnInsert   bool   `json:"notOnInsert"`   // dto, 不出现于 InsertReq, vue 不出现于 insert dialog

@@ -64,6 +64,8 @@ func ResolveSearchQuery(driver string, q interface{}, condition Condition) {
 			ResolveSearchQuery(driver, qValue.Field(i).Interface(), join)
 		case "exact", "iexact":
 			condition.SetWhere(fmt.Sprintf("`%s`.`%s` = ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
+		case "not-exact":
+			condition.SetWhere(fmt.Sprintf("`%s`.`%s` <> ?", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 		case "contains", "icontains":
 			//fixme mysql不支持ilike
 			if driver == Postgres && t.Type == "icontains" {
