@@ -130,7 +130,7 @@ func (e *SysMenu) Update(c *dto.SysMenuUpdateReq) error {
 
 		// first, load menu and []SysApi with the given menu_id
 		var model = models.SysMenu{}
-		err := e.Orm.Preload("SysApi").
+		err := tx.Preload("SysApi").
 			First(&model, "menu_id = ?", c.GetId()).Error
 		if err != nil {
 			return err
