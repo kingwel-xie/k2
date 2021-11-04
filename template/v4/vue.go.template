@@ -138,8 +138,8 @@
                   <el-switch v-model="form.{{.JsonField}}" active-text="是" inactive-text="否" />
                   {{- end }}
                 </el-form-item>
-                {{- end }}
               </el-col>
+                {{- end }}
               {{ end -}}
             {{- end -}}
             </el-row>
