@@ -136,6 +136,8 @@
                   <el-input v-model="form.{{.JsonField}}" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
                   {{- else if eq "switch" .HtmlType -}}
                   <el-switch v-model="form.{{.JsonField}}" active-text="是" inactive-text="否" />
+                  {{- else if eq "el-rate" .HtmlType -}}
+                  <el-rate v-model="form.{{.JsonField}}" show-score />
                   {{- end }}
                 </el-form-item>
               </el-col>
