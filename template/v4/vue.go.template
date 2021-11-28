@@ -65,6 +65,12 @@
                 {{- if eq .DictType "" -}}
                   {{- if eq .HtmlType "datetime" -}}
           <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" :formatter="timeFormatter" />
+                  {{- else if eq .HtmlType "el-rate" -}}
+          <el-table-column label="{{.ColumnComment}}" align="center" :show-overflow-tooltip="true">
+            <template slot-scope="scope">
+              <el-rate v-model="scope.row.{{.JsonField}}" disabled />
+            </template>
+          </el-table-column>
                   {{- else -}}
                     {{- if eq .GoType "float64" -}}
           <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" :formatter="floatFormatter" />

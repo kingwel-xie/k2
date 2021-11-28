@@ -41,8 +41,8 @@ func (m *{{.ClassName}}GetPageReq) GetNeedSearch() interface{} {
 
 type {{.ClassName}}InsertReq struct {
     {{- range .Columns -}}
-    {{$x := .AutoInc}}
-    {{- if ($x) }}
+    {{$x := .AutoInc}} {{$y := .NotOnInsert}}
+    {{- if or ($x) ($y) }}
     {{.GoField}} {{.GoType}} `json:"-" comment:"{{.ColumnComment}}"`
     {{- else if eq .GoField "CreatedAt" -}}
     {{- else if eq .GoField "UpdatedAt" -}}
