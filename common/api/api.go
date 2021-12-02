@@ -16,7 +16,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var DefaultLanguage = "zh-CN"
+// var DefaultLanguage = "zh-CN"
+var DefaultLanguage = "en"
 
 func init() {
 	vd.SetErrorFactory(func(failPath, msg string) error {
@@ -82,6 +83,7 @@ func (e *Api) GetIdentity() *service.AuthIdentity {
 }
 
 // Error 通常错误数据处理
+// Deprecated: Use BizError instead.
 func (e Api) Error(code int, err error, msg string) {
 	// 500 means something wrong inside, otherwise, it is a binging error
 	if code == 400 {
@@ -90,6 +92,20 @@ func (e Api) Error(code int, err error, msg string) {
 		e.Logger.Errorw(msg, "code", code, "error", err)
 	}
 	response.Error(e.Context, code, err, msg)
+}
+
+
+type bizError interface {
+	Code() int
+	Message(lang string) string
+}
+
+func (e Api) BizError(err error)  {
+	if er, ok := err.(bizError); ok {
+		response.Error(e.Context, er.Code(), err, er.Message(e.getAcceptLanguage()))
+	} else {
+		response.Error(e.Context, 500, err, "Internal Server Error")
+	}
 }
 
 // OK 通常成功数据处理
