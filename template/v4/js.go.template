@@ -1,4 +1,13 @@
 import request from '@/utils/request'
+{{- if eq .DictCache true }}
+import store from '@/store'
+
+// 获取缓存的{{.ClassName}}列表
+export function list{{.ClassName}}ByStore() {
+  const list = store.getters.{{.ModuleName}}List
+  return Promise.resolve({ data: { list }})
+}
+{{- end }}
 
 // 查询{{.ClassName}}列表
 export function list{{.ClassName}}(query) {

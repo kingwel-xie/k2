@@ -10,8 +10,9 @@ type SysTables struct {
 	ModuleFrontName string `json:"moduleFrontName"` // tbx-country, 缺省由 ClassName 生成
 	BusinessName    string `json:"businessName"`    // tbxCountry, 缺省由 ClassName 生成
 
-	DataScope bool         `json:"dataScope"` // 数据权限 是否支持数据权限
-	IsAuth    bool         `json:"isAuth"`    // 路由 是否带认证
+	DataScope 	bool         `json:"dataScope"` // 数据权限 是否支持数据权限
+	IsAuth    	bool         `json:"isAuth"`    // 路由 是否带认证
+	DictCache   bool         `json:"dictCache"`    // 是否生成字典缓存  f.g., getTbxCountryListFromStore
 	Columns   []SysColumns `json:"columns"`   // 列
 
 	HardDelete bool `json:"hardDelete"` // model, ModelTimeHardDelete
