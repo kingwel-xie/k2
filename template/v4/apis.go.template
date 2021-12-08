@@ -48,7 +48,7 @@ func (e {{.ClassName}}) GetPage(c *gin.Context) {
 
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-        e.Error(500, err, "查询失败")
+        e.BizError(err)
         return
 	}
 
@@ -78,7 +78,7 @@ func (e {{.ClassName}}) Get(c *gin.Context) {
 	var object models.{{.ClassName}}
 	err = s.Get(&req, &object)
 	if err != nil {
-        e.Error(500, err, "查询失败")
+        e.BizError(err)
         return
 	}
 
@@ -108,7 +108,7 @@ func (e {{.ClassName}}) Insert(c *gin.Context) {
     }
 	err = s.Insert(&req)
 	if err != nil {
-        e.Error(500, err, "创建失败")
+        e.BizError(err)
         return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -138,7 +138,7 @@ func (e {{.ClassName}}) Update(c *gin.Context) {
     }
 	err = s.Update(&req)
 	if err != nil {
-	    e.Error(500, err, "更新失败")
+	    e.BizError(err)
         return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -166,7 +166,7 @@ func (e {{.ClassName}}) Delete(c *gin.Context) {
 
 	err = s.Remove(&req)
 	if err != nil {
-        e.Error(500, err, "删除失败")
+        e.BizError(err)
         return
 	}
 	e.OK(req.GetId(), "删除成功")
