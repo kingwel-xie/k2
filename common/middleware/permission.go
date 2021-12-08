@@ -48,7 +48,7 @@ func AuthCheckRole() gin.HandlerFunc {
 		res, err = e.Enforce(v.RoleKey, c.Request.URL.Path, c.Request.Method)
 		if err != nil {
 			log.Errorf("AuthCheckRole error: %s method:%s path:%s", err, c.Request.Method, c.Request.URL.Path)
-			response.Error(c, 500, err, "内部错误")
+			response.Error(c, err)
 			return
 		}
 

@@ -8,16 +8,14 @@ import (
 	vd "github.com/bytedance/go-tagexpr/v2/validator"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	cerr "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/response"
 	"github.com/kingwel-xie/k2/common/service"
 	"github.com/kingwel-xie/k2/core/logger"
-	"github.com/kingwel-xie/k2/core/tools/language"
 	"github.com/kingwel-xie/k2/core/utils"
 	"gorm.io/gorm"
 )
 
-// var DefaultLanguage = "zh-CN"
-var DefaultLanguage = "en"
 
 func init() {
 	vd.SetErrorFactory(func(failPath, msg string) error {
@@ -33,7 +31,7 @@ type Api struct {
 }
 
 func (e *Api) SetError(err error) {
-	e.Errors = err
+	e.Errors = cerr.BadRequestError.Wrap(err)
 }
 
 // MakeContext 设置http上下文
@@ -83,29 +81,8 @@ func (e *Api) GetIdentity() *service.AuthIdentity {
 }
 
 // Error 通常错误数据处理
-// Deprecated: Use BizError instead.
-func (e Api) Error(code int, err error, msg string) {
-	// 500 means something wrong inside, otherwise, it is a binging error
-	if code == 400 {
-		e.Logger.Warnw(msg, "code", code, "error", err)
-	} else {
-		e.Logger.Errorw(msg, "code", code, "error", err)
-	}
-	response.Error(e.Context, code, err, msg)
-}
-
-
-type bizError interface {
-	Code() int
-	Message(lang string) string
-}
-
-func (e Api) BizError(err error)  {
-	if er, ok := err.(bizError); ok {
-		response.Error(e.Context, er.Code(), err, er.Message(e.getAcceptLanguage()))
-	} else {
-		response.Error(e.Context, 500, err, "Internal Server Error")
-	}
+func (e Api) Error(err error) {
+	response.Error(e.Context, err)
 }
 
 // OK 通常成功数据处理
@@ -125,15 +102,6 @@ func (e Api) Custom(data gin.H) {
 
 func (e Api) Translate(form, to interface{}) {
 	utils.Translate(form, to)
-}
-
-// getAcceptLanguage 获取当前语言
-func (e *Api) getAcceptLanguage() string {
-	languages := language.ParseAcceptLanguage(e.Context.GetHeader("Accept-Language"), nil)
-	if len(languages) == 0 {
-		return DefaultLanguage
-	}
-	return languages[0]
 }
 
 // MustGetLogger 获取上下文提供的日志
