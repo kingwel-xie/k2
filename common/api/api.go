@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	vd "github.com/bytedance/go-tagexpr/v2/validator"
 	"github.com/gin-gonic/gin"
@@ -102,7 +103,7 @@ type bizError interface {
 
 func (e Api) BizError(err error)  {
 	if er, ok := err.(bizError); ok {
-		response.Error(e.Context, er.Code(), err, er.Message(e.getAcceptLanguage()))
+		response.Error(e.Context, er.Code(), err, er.Message(strings.ToLower(e.getAcceptLanguage())))
 	} else {
 		response.Error(e.Context, 500, err, "Internal Server Error")
 	}
