@@ -15,7 +15,7 @@ import (
 )
 
 type {{.ClassName}}GetPageReq struct {
-	dto.Pagination     `search:"-"`
+    dto.Pagination     `search:"-"`
     {{- $tablename := .TBName -}}
     {{- range .Columns -}}
     {{$z := .Queryable}}
@@ -41,9 +41,10 @@ func (m *{{.ClassName}}GetPageReq) GetNeedSearch() interface{} {
 
 type {{.ClassName}}InsertReq struct {
     {{- range .Columns -}}
-    {{$x := .AutoInc}} {{$y := .NotOnInsert}}
-    {{- if or ($x) ($y) }}
+    {{- if or .AutoInc .NotOnInsert }}
+    {{- if .IsPk }}
     {{.GoField}} {{.GoType}} `json:"-" comment:"{{.ColumnComment}}"`
+    {{- end -}}
     {{- else if eq .GoField "CreatedAt" -}}
     {{- else if eq .GoField "UpdatedAt" -}}
     {{- else if eq .GoField "DeletedAt" -}}
