@@ -3,6 +3,7 @@ package error
 import (
 	"fmt"
 	"github.com/kingwel-xie/k2/core/utils"
+	"strings"
 )
 
 var (
@@ -36,7 +37,7 @@ func (e *bizError) Code() int {
 }
 
 func (e *bizError) Message(mode string, lang string) string {
-	msg, ok := e.messages[lang];
+	msg, ok := e.messages[strings.ToLower(lang)]
 	if !ok {
 		msg = e.messages["__default__"]
 	}
