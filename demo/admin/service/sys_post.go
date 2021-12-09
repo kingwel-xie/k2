@@ -58,7 +58,7 @@ func (e *SysPost) Update(c *dto.SysPostUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -72,7 +72,7 @@ func (e *SysPost) Remove(d *dto.SysPostDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

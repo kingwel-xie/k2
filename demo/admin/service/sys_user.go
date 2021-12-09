@@ -52,7 +52,7 @@ func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
 	c.Generate(&data)
 	err = data.Encrypt()
 	if err != nil {
-		return service.ErrInternalError
+		return k2Error.ErrInternalError
 	}
 	data.SetCreateBy(e.Identity.UserId)
 
@@ -78,7 +78,7 @@ func (e *SysUser) Update(c *dto.SysUserUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -100,7 +100,7 @@ func (e *SysUser) UpdateAvatar(c *dto.UpdateSysUserAvatarReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func (e *SysUser) UpdateStatus(c *dto.UpdateSysUserStatusReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -141,7 +141,7 @@ func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 	c.Generate(&model)
 	err = model.Encrypt()
 	if err != nil {
-		return service.ErrInternalError
+		return k2Error.ErrInternalError
 	}
 	model.SetUpdateBy(e.Identity.UserId)
 	db := e.Orm.Select("Password", "Salt").Save(&model)
@@ -149,7 +149,7 @@ func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -165,7 +165,7 @@ func (e *SysUser) Remove(c *dto.SysUserById) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -186,23 +186,23 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 	var ok bool
 	ok, err = utils.CompareHashAndPassword(c.Password, oldPassword)
 	if err != nil {
-		return service.ErrInternalError
+		return k2Error.ErrInternalError
 	}
 	if !ok {
-		return service.ErrWrongPassword
+		return k2Error.ErrWrongPassword
 	}
 
 	c.Password = newPassword
 	err = c.Encrypt()
 	if err != nil {
-		return service.ErrInternalError
+		return k2Error.ErrInternalError
 	}
 	db := e.Orm.Select("Password", "Salt").Save(c)
 	if db.Error != nil {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

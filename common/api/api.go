@@ -31,7 +31,7 @@ type Api struct {
 }
 
 func (e *Api) SetError(err error) {
-	e.Errors = cerr.BadRequestError.Wrap(err)
+	e.Errors = cerr.ErrBadRequest.Wrap(err)
 }
 
 // MakeContext 设置http上下文

@@ -91,7 +91,7 @@ func (e *SysDept) Update(c *dto.SysDeptUpdateReq) error {
 		return err
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -104,7 +104,7 @@ func (e *SysDept) Remove(d *dto.SysDeptDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

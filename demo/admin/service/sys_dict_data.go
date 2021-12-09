@@ -55,7 +55,7 @@ func (e *SysDictData) Update(c *dto.SysDictDataUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -69,7 +69,7 @@ func (e *SysDictData) Remove(c *dto.SysDictDataDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

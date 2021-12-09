@@ -54,7 +54,7 @@ func (e *SysConfig) Update(c *dto.SysConfigControl) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 
 	}
 	return nil
@@ -74,7 +74,7 @@ func (e *SysConfig) SetSysConfig(c *[]dto.GetSetSysConfigReq) error {
 				return err
 			}
 			if db.RowsAffected == 0 {
-				return service.ErrPermissionDenied
+				return k2Error.ErrPermissionDenied
 			}
 		}
 	}
@@ -116,7 +116,7 @@ func (e *SysConfig) Remove(d *dto.SysConfigDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

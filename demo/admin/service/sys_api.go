@@ -50,7 +50,7 @@ func (e *SysApi) Update(c *dto.SysApiUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func (e *SysApi) Remove(d *dto.SysApiDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

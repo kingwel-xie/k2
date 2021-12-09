@@ -136,7 +136,7 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 
 	_, err = cb.RemoveFilteredPolicy(0, model.RoleKey)
@@ -174,7 +174,7 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 		return err
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -239,7 +239,7 @@ func (e *SysRole) UpdateDataScope(c *dto.RoleDataScopeReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
@@ -259,7 +259,7 @@ func (e *SysRole) UpdateStatus(c *dto.UpdateStatusReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

@@ -62,7 +62,7 @@ func (e *TbxCountry) Update(c *dto.TbxCountryUpdateReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
     return nil
 }
@@ -76,7 +76,7 @@ func (e *TbxCountry) Remove(d *dto.TbxCountryDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

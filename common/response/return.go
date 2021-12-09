@@ -29,7 +29,7 @@ func Error(c *gin.Context, err error) {
 
 	e, ok := err.(bizError)
 	if !ok {
-		e = cerr.InternalServerError.Wrap(err)
+		e = cerr.ErrInternal.Wrap(err)
 	}
 
 	res.SetMsg(e.Message(config.ApplicationConfig.Mode, getAcceptLanguage(c)))

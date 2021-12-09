@@ -42,7 +42,7 @@ func (e *SysLoginLog) Remove(c *dto.SysLoginLogDeleteReq) error {
 		return db.Error
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	cDto "github.com/kingwel-xie/k2/common/dto"
+	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
 
 	"{{.PackageName}}/models"
@@ -38,20 +39,41 @@ func (e *{{.ClassName}}) Get(d *dto.{{.ClassName}}GetReq, model *models.{{.Class
         ).
         {{- end }}
         First(model, "{{.PkColumn}} = ?", d.GetId()).Error
-	return err
+	if err != nil {
+		return k2Error.ErrCodeNotFound.Wrap(err)
+	}
+	return nil
 }
 
 // Insert 创建{{.ClassName}}对象
 func (e *{{.ClassName}}) Insert(c *dto.{{.ClassName}}InsertReq) error {
+    var err error
+    {{- $AutoIncPk := false -}}
+    {{- range .Columns -}}
+    {{- if and .GoType .IsPk .AutoInc -}}{{- $AutoIncPk = true -}}{{- end -}}
+    {{- end -}}
+    {{- if not ($AutoIncPk) }}
+	var list []models.{{.ClassName}}
+	err = e.Orm.
+		Find(&list, "{{.PkColumn}} = ?", c.GetId()).Error
+	if err != nil {
+		return k2Error.ErrDatabase.Wrap(err)
+	}
+	if len(list) > 0 {
+		return k2Error.ErrCodeExisted
+	}
+	{{- end }}
+
     var data models.{{.ClassName}}
     c.Generate(&data)
     data.SetCreateBy(e.Identity.UserId)
 
-	err := e.Orm.Create(&data).Error
-	if err == nil {
-	    c.{{.PkGoField}} = data.{{.PkGoField}}
+	err = e.Orm.Create(&data).Error
+	if err != nil {
+	    return k2Error.ErrDatabase.Wrap(err)
 	}
-	return err
+	c.{{.PkGoField}} = data.{{.PkGoField}}
+	return nil
 }
 
 // Update 修改{{.ClassName}}对象
@@ -65,17 +87,17 @@ func (e *{{.ClassName}}) Update(c *dto.{{.ClassName}}UpdateReq) error {
         {{- end }}
         First(&data, "{{.PkColumn}} = ?", c.GetId()).Error
     if err != nil {
-    	return err
+    	return k2Error.ErrCodeNotFound.Wrap(err)
 	}
     c.Generate(&data)
     data.SetUpdateBy(e.Identity.UserId)
 
     db := e.Orm.Save(&data)
 	if db.Error != nil {
-		return db.Error
+		return k2Error.ErrDatabase.Wrap(db.Error)
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
     return nil
 }
@@ -91,10 +113,10 @@ func (e *{{.ClassName}}) Remove(d *dto.{{.ClassName}}DeleteReq) error {
         {{- end }}
 	    Delete(&data, "{{.PkColumn}} in ?", d.GetId())
 	if db.Error != nil {
-		return db.Error
+		return k2Error.ErrDatabase.Wrap(db.Error)
 	}
 	if db.RowsAffected == 0 {
-		return service.ErrPermissionDenied
+		return k2Error.ErrPermissionDenied
 	}
 	return nil
 }
