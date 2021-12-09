@@ -1,16 +1,22 @@
 package apis
 
 import (
-	"net/http"
-
+	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
-	"github.com/gin-gonic/gin"
 	"github.com/kingwel-xie/k2/common/api"
-	
+	cerr "github.com/kingwel-xie/k2/common/error"
+	"net/http"
+
 	"admin/models"
 	"admin/service"
 	"admin/service/dto"
+)
+
+
+var (
+	passwordModificationFailedErr = cerr.New(403, "密码修改失败", "password modification failed")
+	loginFailedErr = cerr.New(403, "登录失败", "login failed")
 )
 
 type SysUser struct {
@@ -33,7 +39,7 @@ func (e SysUser) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -42,7 +48,7 @@ func (e SysUser) GetPage(c *gin.Context) {
 
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 
@@ -65,13 +71,13 @@ func (e SysUser) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	var object models.SysUser
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(object, "查询成功")
@@ -95,13 +101,13 @@ func (e SysUser) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Insert(&req)
 	if err != nil {
-		e.Error(500, err, "创建失败")
+		e.Error(err)
 		return
 	}
 
@@ -127,13 +133,13 @@ func (e SysUser) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Update(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -155,13 +161,13 @@ func (e SysUser) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, "删除失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "删除成功")
@@ -185,13 +191,13 @@ func (e SysUser) UpdateStatus(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.UpdateStatus(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -215,13 +221,13 @@ func (e SysUser) ResetPwd(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.ResetPwd(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -245,13 +251,13 @@ func (e SysUser) UpdatePwd(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.UpdatePwd(s.Identity.UserId, req.OldPassword, req.NewPassword)
 	if err != nil {
-		e.Error(http.StatusForbidden, err, "密码修改失败")
+		e.Error(passwordModificationFailedErr.Wrap(err))
 		return
 	}
 	e.OK(nil, "密码修改成功")
@@ -273,7 +279,7 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -286,7 +292,7 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 		// 上传文件至指定目录
 		err = c.SaveUploadedFile(file, filPath)
 		if err != nil {
-			e.Error(400, err, "内部错误")
+			e.Error(err)
 			return
 		}
 	}
@@ -295,7 +301,7 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 
 	err = s.UpdateAvatar(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(filPath, "修改成功")
@@ -315,7 +321,7 @@ func (e SysUser) GetProfile(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -326,7 +332,7 @@ func (e SysUser) GetProfile(c *gin.Context) {
 	posts := make([]models.SysPost, 0)
 	err = s.GetProfile(&req, &sysUser, &roles, &posts)
 	if err != nil {
-		e.Error(500, err, "获取用户信息失败")
+		e.Error(err)
 		return
 	}
 	e.OK(gin.H{
@@ -352,7 +358,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 

@@ -34,14 +34,14 @@ func (e SysDictType) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	list := make([]models.SysDictType, 0)
 	var count int64
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
@@ -63,13 +63,13 @@ func (e SysDictType) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	var object models.SysDictType
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(object, "查询成功")
@@ -93,13 +93,13 @@ func (e SysDictType) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Insert(&req)
 	if err != nil {
-		e.Error(500, err, fmt.Sprintf(" 创建字典类型失败，详情：%s", err.Error()))
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -124,13 +124,13 @@ func (e SysDictType) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Update(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -152,13 +152,13 @@ func (e SysDictType) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, "删除失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "删除成功")
@@ -182,13 +182,13 @@ func (e SysDictType) GetAll(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	list := make([]models.SysDictType, 0)
 	err = s.GetAll(&req, &list)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(list, "查询成功")

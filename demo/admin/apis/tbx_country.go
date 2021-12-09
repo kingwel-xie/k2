@@ -20,8 +20,9 @@ type TbxCountry struct {
 // @Description 获取国家编码列表
 // @Tags 国家编码
 // @Param code query string false "编码"
-// @Param nameCN query string false "中文名称"
-// @Param nameEN query string false "English Name"
+// @Param nameCN query string false "中文名"
+// @Param nameEN query string false "英文名"
+// @Param teleCode query string false "电话代码"
 // @Param alias query string false "描述"
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
@@ -36,7 +37,7 @@ func (e TbxCountry) GetPage(c *gin.Context) {
         MakeService(&s.Service).
         Errors
    	if err != nil {
-        e.Error(400, err, "参数错误")
+        e.Error(err)
         return
    	}
 
@@ -45,7 +46,7 @@ func (e TbxCountry) GetPage(c *gin.Context) {
 
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-        e.Error(500, err, "查询失败")
+        e.Error(err)
         return
 	}
 
@@ -68,14 +69,14 @@ func (e TbxCountry) Get(c *gin.Context) {
         MakeService(&s.Service).
         Errors
 	if err != nil {
-        e.Error(400, err, "参数错误")
+        e.Error(err)
         return
 	}
 
 	var object models.TbxCountry
 	err = s.Get(&req, &object)
 	if err != nil {
-        e.Error(500, err, "查询失败")
+        e.Error(err)
         return
 	}
 
@@ -100,12 +101,12 @@ func (e TbxCountry) Insert(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, "参数错误")
+        e.Error(err)
         return
     }
 	err = s.Insert(&req)
 	if err != nil {
-        e.Error(500, err, "创建失败")
+        e.Error(err)
         return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -130,12 +131,12 @@ func (e TbxCountry) Update(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, "参数错误")
+        e.Error(err)
         return
     }
 	err = s.Update(&req)
 	if err != nil {
-	    e.Error(500, err, "更新失败")
+	    e.Error(err)
         return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -157,13 +158,13 @@ func (e TbxCountry) Delete(c *gin.Context) {
         MakeService(&s.Service).
         Errors
     if err != nil {
-        e.Error(400, err, "参数错误")
+        e.Error(err)
         return
     }
 
 	err = s.Remove(&req)
 	if err != nil {
-        e.Error(500, err, "删除失败")
+        e.Error(err)
         return
 	}
 	e.OK(req.GetId(), "删除成功")

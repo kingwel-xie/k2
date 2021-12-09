@@ -2,6 +2,7 @@ package service
 
 import (
 	cDto "github.com/kingwel-xie/k2/common/dto"
+	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
 
 	"admin/models"
@@ -30,20 +31,35 @@ func (e *TbxCountry) GetPage(c *dto.TbxCountryGetPageReq, list *[]models.TbxCoun
 func (e *TbxCountry) Get(d *dto.TbxCountryGetReq, model *models.TbxCountry) error {
 	err := e.Orm.
         First(model, "code = ?", d.GetId()).Error
-	return err
+	if err != nil {
+		return k2Error.ErrCodeNotFound.Wrap(err)
+	}
+	return nil
 }
 
 // Insert 创建TbxCountry对象
 func (e *TbxCountry) Insert(c *dto.TbxCountryInsertReq) error {
+    var err error
+	var list []models.TbxCountry
+	err = e.Orm.
+		Find(&list, "code = ?", c.GetId()).Error
+	if err != nil {
+		return k2Error.ErrDatabase.Wrap(err)
+	}
+	if len(list) > 0 {
+		return k2Error.ErrCodeExisted
+	}
+
     var data models.TbxCountry
     c.Generate(&data)
     data.SetCreateBy(e.Identity.UserId)
 
-	err := e.Orm.Create(&data).Error
-	if err == nil {
-	    c.Code = data.Code
+	err = e.Orm.Create(&data).Error
+	if err != nil {
+	    return k2Error.ErrDatabase.Wrap(err)
 	}
-	return err
+	c.Code = data.Code
+	return nil
 }
 
 // Update 修改TbxCountry对象
@@ -52,14 +68,14 @@ func (e *TbxCountry) Update(c *dto.TbxCountryUpdateReq) error {
     err := e.Orm.
         First(&data, "code = ?", c.GetId()).Error
     if err != nil {
-    	return err
+    	return k2Error.ErrCodeNotFound.Wrap(err)
 	}
     c.Generate(&data)
     data.SetUpdateBy(e.Identity.UserId)
 
     db := e.Orm.Save(&data)
 	if db.Error != nil {
-		return db.Error
+		return k2Error.ErrDatabase.Wrap(db.Error)
 	}
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
@@ -73,7 +89,7 @@ func (e *TbxCountry) Remove(d *dto.TbxCountryDeleteReq) error {
 	db := e.Orm.
 	    Delete(&data, "code in ?", d.GetId())
 	if db.Error != nil {
-		return db.Error
+		return k2Error.ErrDatabase.Wrap(db.Error)
 	}
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied

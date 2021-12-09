@@ -35,14 +35,14 @@ func (e SysApi) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	list := make([]models.SysApi, 0)
 	var count int64
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
@@ -64,13 +64,13 @@ func (e SysApi) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	var object models.SysApi
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(object, "查询成功")
@@ -95,13 +95,13 @@ func (e SysApi) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Update(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -123,12 +123,12 @@ func (e SysApi) DeleteSysApi(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, "删除失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "删除成功")

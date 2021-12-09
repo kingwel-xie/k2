@@ -2,13 +2,13 @@ package service
 
 import (
 	"errors"
-	"fmt"
-	"admin/models"
-	"admin/service/dto"
+	cDto "github.com/kingwel-xie/k2/common/dto"
+	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
 	"github.com/kingwel-xie/k2/core/utils"
 
-	cDto "github.com/kingwel-xie/k2/common/dto"
+	"admin/models"
+	"admin/service/dto"
 )
 
 type SysUser struct {
@@ -52,7 +52,7 @@ func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
 	c.Generate(&data)
 	err = data.Encrypt()
 	if err != nil {
-		return k2Error.ErrInternalError
+		return k2Error.ErrInternal
 	}
 	data.SetCreateBy(e.Identity.UserId)
 
@@ -141,7 +141,7 @@ func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 	c.Generate(&model)
 	err = model.Encrypt()
 	if err != nil {
-		return k2Error.ErrInternalError
+		return k2Error.ErrInternal
 	}
 	model.SetUpdateBy(e.Identity.UserId)
 	db := e.Orm.Select("Password", "Salt").Save(&model)
@@ -186,7 +186,7 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 	var ok bool
 	ok, err = utils.CompareHashAndPassword(c.Password, oldPassword)
 	if err != nil {
-		return k2Error.ErrInternalError
+		return k2Error.ErrInternal
 	}
 	if !ok {
 		return k2Error.ErrWrongPassword
@@ -195,7 +195,7 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 	c.Password = newPassword
 	err = c.Encrypt()
 	if err != nil {
-		return k2Error.ErrInternalError
+		return k2Error.ErrInternal
 	}
 	db := e.Orm.Select("Password", "Salt").Save(c)
 	if db.Error != nil {

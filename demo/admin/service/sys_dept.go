@@ -1,13 +1,14 @@
 package service
 
 import (
-	"admin/models"
+	cDto "github.com/kingwel-xie/k2/common/dto"
+	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
 	"github.com/kingwel-xie/k2/core/utils"
 	"gorm.io/gorm"
 
+	"admin/models"
 	"admin/service/dto"
-	cDto "github.com/kingwel-xie/k2/common/dto"
 )
 
 type SysDept struct {

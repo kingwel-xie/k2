@@ -38,7 +38,7 @@ func (e SysRole) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -47,7 +47,7 @@ func (e SysRole) GetPage(c *gin.Context) {
 
 	err = s.GetPage(&req, &list, &count)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 
@@ -70,14 +70,14 @@ func (e SysRole) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	var object models.SysRole
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(http.StatusUnprocessableEntity, err, "查询失败")
+		e.Error(err)
 		return
 	}
 
@@ -102,7 +102,7 @@ func (e SysRole) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -111,13 +111,13 @@ func (e SysRole) Insert(c *gin.Context) {
 	}
 	err = s.Insert(&req)
 	if err != nil {
-		e.Error(500, err, "创建失败")
+		e.Error(err)
 		return
 	}
 	// reload casbin policies
 	err = common.Runtime.GetCasbin().LoadPolicy()
 	if err != nil {
-		e.Error(500, err, "内部错误")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -142,18 +142,18 @@ func (e SysRole) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	err = s.Update(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	// reload casbin policies
 	err = common.Runtime.GetCasbin().LoadPolicy()
 	if err != nil {
-		e.Error(500, err, "内部错误")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -175,19 +175,19 @@ func (e SysRole) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, "删除角色失败")
+		e.Error(err)
 		return
 	}
 	// reload casbin policies
 	err = common.Runtime.GetCasbin().LoadPolicy()
 	if err != nil {
-		e.Error(500, err, fmt.Sprintf("删除角色 %v 失败，失败信息 %s", req.GetId(), err.Error()))
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), fmt.Sprintf("删除角色角色 %v 状态成功！", req.GetId()))
@@ -211,13 +211,13 @@ func (e SysRole) Update2Status(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.UpdateStatus(&req)
 	if err != nil {
-		e.Error(500, err, fmt.Sprintf("更新角色状态失败，失败原因：%s ", err.Error()))
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), fmt.Sprintf("更新角色 %v 状态成功！", req.GetId()))
@@ -241,13 +241,13 @@ func (e SysRole) Update2DataScope(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.UpdateDataScope(&req)
 	if err != nil {
-		e.Error(500, err, fmt.Sprintf("更新角色数据权限失败！错误详情：%s", err.Error()))
+		e.Error(err)
 		return
 	}
 	e.OK(nil, "操作成功")

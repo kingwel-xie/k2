@@ -33,13 +33,13 @@ func (e SysDept) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	list := make([]models.SysDept, 0)
 	list, err = s.SetDeptPage(&req)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(list, "查询成功")
@@ -61,13 +61,13 @@ func (e SysDept) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	var object models.SysDept
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 
@@ -92,13 +92,13 @@ func (e SysDept) Insert(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Insert(&req)
 	if err != nil {
-		e.Error(500, err, "创建失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "创建成功")
@@ -123,12 +123,12 @@ func (e SysDept) Update(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	err = s.Update(&req)
 	if err != nil {
-		e.Error(500, err, "更新失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "更新成功")
@@ -150,13 +150,13 @@ func (e SysDept) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, "删除失败")
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "删除成功")
@@ -181,13 +181,13 @@ func (e SysDept) Get2Tree(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	list := make([]dto.DeptLabel, 0)
 	list, err = s.SetDeptTree(&req)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(list, "")
@@ -209,21 +209,21 @@ func (e SysDept) GetDeptTreeRoleSelect(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	id, err := utils.StringToInt(c.Param("roleId"))
 	result, err := s.SetDeptLabel()
 	if err != nil {
-		e.Error(500, err, err.Error())
+		e.Error(err)
 		return
 	}
 	menuIds := make([]int, 0)
 	if id != 0 {
 		menuIds, err = s.GetWithRoleId(id)
 		if err != nil {
-			e.Error(500, err, err.Error())
+			e.Error(err)
 			return
 		}
 	}

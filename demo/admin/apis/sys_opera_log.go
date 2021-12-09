@@ -37,7 +37,7 @@ func (e SysOperaLog) GetPage(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
@@ -46,7 +46,7 @@ func (e SysOperaLog) GetPage(c *gin.Context) {
 
 	err = s.GetPage(req, &list, &count)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 
@@ -69,13 +69,13 @@ func (e SysOperaLog) Get(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 	var object models.SysOperaLog
 	err = s.Get(&req, &object)
 	if err != nil {
-		e.Error(500, err, "查询失败")
+		e.Error(err)
 		return
 	}
 	e.OK(object, "查询成功")
@@ -98,13 +98,13 @@ func (e SysOperaLog) Delete(c *gin.Context) {
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
-		e.Error(400, err, "参数错误")
+		e.Error(err)
 		return
 	}
 
 	err = s.Remove(&req)
 	if err != nil {
-		e.Error(500, err, fmt.Sprintf("删除失败！错误详情：%s", err.Error()))
+		e.Error(err)
 		return
 	}
 	e.OK(req.GetId(), "删除成功")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/kingwel-xie/k2/common"
 	cDto "github.com/kingwel-xie/k2/common/dto"
+	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
 )
 
