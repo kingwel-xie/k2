@@ -15,7 +15,7 @@ type SysTables struct {
 	DictCache   bool         `json:"dictCache"`    // 是否生成字典缓存  f.g., getTbxCountryListFromStore
 	Columns   []SysColumns `json:"columns"`   // 列
 
-	HardDelete bool `json:"hardDelete"` // model, ModelTimeHardDelete
+	SoftDelete bool `json:"softDelete"` // model, use ModelTime instead of ModelTimeHardDelete
 	HasExport  bool `json:"hasExport"`  // vue, Export 按钮
 
 	// 以下字段提取自Columns

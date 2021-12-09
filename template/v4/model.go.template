@@ -26,7 +26,7 @@ type {{.ClassName}} struct {
     {{.GoField}}    {{.GoType}} `json:"{{.JsonField}}" gorm:"{{- if ne .GormTag "" -}}{{.GormTag}};{{end -}}column:{{.ColumnName}};comment:{{- if eq .ColumnComment "" -}}{{.GoField}}{{- else -}}{{.ColumnComment}}{{end -}}"`{{ end -}}
     {{- end }}
     models.ControlBy
-    models.ModelTime{{- if (.HardDelete) -}}HardDelete{{- end }}
+    models.ModelTime{{- if not (.SoftDelete) -}}HardDelete{{- end }}
 }
 
 func ({{.ClassName}}) TableName() string {
