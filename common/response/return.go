@@ -1,27 +1,42 @@
 package response
 
 import (
-	"github.com/kingwel-xie/k2/common/config"
-	"github.com/kingwel-xie/k2/core/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/kingwel-xie/k2/common/config"
+	cerr "github.com/kingwel-xie/k2/common/error"
+	"github.com/kingwel-xie/k2/core/tools/language"
+	"github.com/kingwel-xie/k2/core/utils"
+
 )
+
+// var DefaultLanguage = "zh-CN"
+var DefaultLanguage = "en"
 
 var Default = &response{}
 
+type bizError interface {
+	Code() int
+	Message(mode string, lang string) string
+}
+
 // Error 失败数据处理
-func Error(c *gin.Context, code int, err error, msg string) {
+func Error(c *gin.Context, err error) {
 	res := Default.Clone()
-	if config.ApplicationConfig.Mode == utils.ModeDev.String() && err != nil {
-		msg = msg + ": " + err.Error()
-	}
-	res.SetMsg(msg)
 	res.SetTraceID(utils.GenerateMsgIDFromContext(c))
-	res.SetCode(int32(code))
+
+	e, ok := err.(bizError)
+	if !ok {
+		e = cerr.InternalServerError.Wrap(err)
+	}
+
+	res.SetMsg(e.Message(config.ApplicationConfig.Mode, getAcceptLanguage(c)))
+	res.SetCode(int32(e.Code()))
 	res.SetSuccess(false)
 	c.Set("result", res)
-	c.Set("status", code)
+	c.Set("status", e.Code())
 	c.AbortWithStatusJSON(http.StatusOK, res)
 }
 
@@ -56,3 +71,12 @@ func Custom(c *gin.Context, data gin.H) {
 	c.Set("result", data)
 	c.AbortWithStatusJSON(http.StatusOK, data)
 }
+// getAcceptLanguage 获取当前语言
+func getAcceptLanguage(c *gin.Context) string {
+	languages := language.ParseAcceptLanguage(c.GetHeader("Accept-Language"), nil)
+	if len(languages) == 0 {
+		return DefaultLanguage
+	}
+	return languages[0]
+}
+
