@@ -62,3 +62,15 @@ func (e bizError) Wrap(err error) *bizError {
 	e.err = err
 	return &e
 }
+
+func (e bizError) Wrapf(format string, a ...interface{}) *bizError {
+	e.err = fmt.Errorf(format, a...)
+	return &e
+}
+
+func (e bizError) Is(err error) bool {
+	if x, ok := err.(*bizError); ok && x.code == e.code {
+		return true
+	}
+	return false
+}
