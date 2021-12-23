@@ -37,6 +37,7 @@ func setupSimpleDatabase(c *config.Database) {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
+		CreateBatchSize: 500, // set to 500 to solve 'too many SQL variables'
 		Logger: &gormLogger{SlowThreshold: 200 * time.Millisecond},
 	}, open)
 

@@ -44,7 +44,7 @@ func (e *SysDept) Insert(c *dto.SysDeptInsertReq) error {
 		var err error
 		var data models.SysDept
 		c.Generate(&data)
-		data.SetCreateBy(e.Identity.UserId)
+		data.SetCreateBy(e.Identity.Username)
 
 		err = tx.Create(&data).Error
 		if err != nil {
@@ -73,7 +73,7 @@ func (e *SysDept) Update(c *dto.SysDeptUpdateReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	deptPath := utils.IntToString(model.DeptId) + "/"
 	if model.ParentId != 0 {

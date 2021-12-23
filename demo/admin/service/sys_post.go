@@ -38,7 +38,7 @@ func (e *SysPost) Get(d *dto.SysPostGetReq, model *models.SysPost) error {
 func (e *SysPost) Insert(c *dto.SysPostInsertReq) error {
 	var data models.SysPost
 	c.Generate(&data)
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 
 	err := e.Orm.Create(&data).Error
 	return err
@@ -52,7 +52,7 @@ func (e *SysPost) Update(c *dto.SysPostUpdateReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Save(&model)
 	if db.Error != nil {

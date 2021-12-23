@@ -52,7 +52,7 @@ func (e *TbxCountry) Insert(c *dto.TbxCountryInsertReq) error {
 
     var data models.TbxCountry
     c.Generate(&data)
-    data.SetCreateBy(e.Identity.UserId)
+    data.SetCreateBy(e.Identity.Username)
 
 	err = e.Orm.Create(&data).Error
 	if err != nil {
@@ -71,7 +71,7 @@ func (e *TbxCountry) Update(c *dto.TbxCountryUpdateReq) error {
     	return k2Error.ErrCodeNotFound.Wrap(err)
 	}
     c.Generate(&data)
-    data.SetUpdateBy(e.Identity.UserId)
+    data.SetUpdateBy(e.Identity.Username)
 
     db := e.Orm.Save(&data)
 	if db.Error != nil {

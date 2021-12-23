@@ -36,7 +36,7 @@ func (e *SysConfig) Get(d *dto.SysConfigGetReq, model *models.SysConfig) error {
 func (e *SysConfig) Insert(c *dto.SysConfigControl) error {
 	var data models.SysConfig
 	c.Generate(&data)
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 	err := e.Orm.Create(&data).Error
 	return err
 }
@@ -49,7 +49,7 @@ func (e *SysConfig) Update(c *dto.SysConfigControl) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 	db := e.Orm.Save(&model)
 	if db.Error != nil {
 		return db.Error

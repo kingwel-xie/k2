@@ -54,7 +54,7 @@ func (e *SysRole) Insert(c *dto.SysRoleInsertReq) error {
 	}
 
 	c.Generate(&data)
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 	data.SysMenu = &dataMenu
 
 	tx := e.Orm.Begin()
@@ -130,7 +130,7 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq) error {
 
 	// last, save all of them
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 	model.SysMenu = &mlist
 	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 	if db.Error != nil {
@@ -233,7 +233,7 @@ func (e *SysRole) UpdateDataScope(c *dto.RoleDataScopeReq) error {
 
 	// last, save all the changes
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 	model.SysDept = dlist
 	db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 	if db.Error != nil {
@@ -253,7 +253,7 @@ func (e *SysRole) UpdateStatus(c *dto.UpdateStatusReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Save(&model)
 	if db.Error != nil {

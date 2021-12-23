@@ -40,7 +40,7 @@ func (e *SysDictType) Get(d *dto.SysDictTypeGetReq, model *models.SysDictType) e
 func (e *SysDictType) Insert(c *dto.SysDictTypeInsertReq) error {
 	var data models.SysDictType
 	c.Generate(&data)
-	data.SetUpdateBy(e.Identity.UserId)
+	data.SetUpdateBy(e.Identity.Username)
 
 	var count int64
 	e.Orm.Model(&data).Where("dict_type = ?", data.DictType).Count(&count)
@@ -59,7 +59,7 @@ func (e *SysDictType) Update(c *dto.SysDictTypeUpdateReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Save(&model)
 	if db.Error != nil {

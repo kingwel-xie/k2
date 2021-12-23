@@ -83,7 +83,7 @@ func (e *SysMenu) Insert(c *dto.SysMenuInsertReq) error {
 
 	// prepare the Menu data, with the SysApis
 	c.Generate(&data)
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 	data.SysApi = sysApis
 
 	err = e.Orm.Transaction(func(tx *gorm.DB) (err error) {
@@ -153,7 +153,7 @@ func (e *SysMenu) Update(c *dto.SysMenuUpdateReq) error {
 
 		// save the new CBs
 		c.Generate(&model)
-		model.SetUpdateBy(e.Identity.UserId)
+		model.SetUpdateBy(e.Identity.Username)
 		model.SysApi = apiList
 		db := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&model)
 		if db.Error != nil {

@@ -7,17 +7,17 @@ import (
 )
 
 type ControlBy struct {
-	CreateBy int `json:"createBy" gorm:"index;comment:创建者"`
-	UpdateBy int `json:"updateBy" gorm:"index;comment:更新者"`
+	CreateBy string `json:"createBy" gorm:"index;comment:创建者"`
+	UpdateBy string `json:"updateBy" gorm:"index;comment:更新者"`
 }
 
 // SetCreateBy 设置创建人id
-func (e *ControlBy) SetCreateBy(createBy int) {
+func (e *ControlBy) SetCreateBy(createBy string) {
 	e.CreateBy = createBy
 }
 
 // SetUpdateBy 设置修改人id
-func (e *ControlBy) SetUpdateBy(updateBy int) {
+func (e *ControlBy) SetUpdateBy(updateBy string) {
 	e.UpdateBy = updateBy
 }
 

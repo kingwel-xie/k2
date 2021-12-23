@@ -54,7 +54,7 @@ func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
 	if err != nil {
 		return k2Error.ErrInternal
 	}
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 
 	err = e.Orm.Create(&data).Error
 	return err
@@ -71,7 +71,7 @@ func (e *SysUser) Update(c *dto.SysUserUpdateReq) error {
 	}
 
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Save(&model)
 	if db.Error != nil {
@@ -93,7 +93,7 @@ func (e *SysUser) UpdateAvatar(c *dto.UpdateSysUserAvatarReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Select("Avatar").Save(&model)
 	if db.Error != nil {
@@ -116,7 +116,7 @@ func (e *SysUser) UpdateStatus(c *dto.UpdateSysUserStatusReq) error {
 	}
 
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Select("Status").Save(&model)
 	if db.Error != nil {
@@ -143,7 +143,7 @@ func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 	if err != nil {
 		return k2Error.ErrInternal
 	}
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 	db := e.Orm.Select("Password", "Salt").Save(&model)
 	if db.Error != nil {
 		return db.Error

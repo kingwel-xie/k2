@@ -66,7 +66,7 @@ func (e *{{.ClassName}}) Insert(c *dto.{{.ClassName}}InsertReq) error {
 
     var data models.{{.ClassName}}
     c.Generate(&data)
-    data.SetCreateBy(e.Identity.UserId)
+    data.SetCreateBy(e.Identity.Username)
 
 	err = e.Orm.Create(&data).Error
 	if err != nil {
@@ -90,7 +90,7 @@ func (e *{{.ClassName}}) Update(c *dto.{{.ClassName}}UpdateReq) error {
     	return k2Error.ErrCodeNotFound.Wrap(err)
 	}
     c.Generate(&data)
-    data.SetUpdateBy(e.Identity.UserId)
+    data.SetUpdateBy(e.Identity.Username)
 
     db := e.Orm.Save(&data)
 	if db.Error != nil {

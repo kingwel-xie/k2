@@ -37,7 +37,7 @@ func (e *SysDictData) Get(d *dto.SysDictDataGetReq, model *models.SysDictData) e
 func (e *SysDictData) Insert(c *dto.SysDictDataInsertReq) error {
 	var data = new(models.SysDictData)
 	c.Generate(data)
-	data.SetCreateBy(e.Identity.UserId)
+	data.SetCreateBy(e.Identity.Username)
 	err := e.Orm.Create(data).Error
 
 	return err
@@ -51,7 +51,7 @@ func (e *SysDictData) Update(c *dto.SysDictDataUpdateReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 	db := e.Orm.Save(model)
 	if db.Error != nil {
 		return db.Error

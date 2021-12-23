@@ -44,7 +44,7 @@ func (e *SysApi) Update(c *dto.SysApiUpdateReq) error {
 		return err
 	}
 	c.Generate(&model)
-	model.SetUpdateBy(e.Identity.UserId)
+	model.SetUpdateBy(e.Identity.Username)
 
 	db := e.Orm.Save(&model)
 	if db.Error != nil {
