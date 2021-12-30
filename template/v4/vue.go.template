@@ -51,7 +51,7 @@
           {{- end }}
         </el-row>
 
-        <el-table v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="{{.BusinessName}}List" stripe border @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="{{.BusinessName}}List" stripe border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           {{ range .Columns -}}
           {{- $x := .NotOnList -}}
@@ -83,7 +83,7 @@
             {{ end }}
           {{ end -}}
 
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -362,7 +362,14 @@ export default {
               this.msgSuccess(response.msg)
               this.open = false
               this.saving = false
-              this.getList()
+              // reload the row and refresh
+              const foundIndex = this.{{.BusinessName}}List.findIndex(x => x.{{.PkJsonField}} === this.form.{{.PkJsonField}})
+              if (foundIndex !== -1) {
+                get{{.ClassName}}(this.form.{{.PkJsonField}}).then(response => {
+                  this.{{.BusinessName}}List[foundIndex] = response.data
+                  this.$refs.mainTable.setCurrentRow(this.{{.BusinessName}}List[foundIndex], true)
+                })
+              }
             }).catch(() => {
               this.saving = false
             })
