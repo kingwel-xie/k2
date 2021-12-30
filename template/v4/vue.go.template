@@ -57,10 +57,10 @@
           {{- $x := .NotOnList -}}
           {{- if not ($x) -}}
             {{- if ne .FkTableName "" -}}
-          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :formatter="{{.JsonField}}Format" />
+          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" :formatter="{{.JsonField}}Format" />
               {{- else -}}
                 {{- if ne .DictType "" -}}
-          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :formatter="{{.JsonField}}Format" />
+          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" :formatter="{{.JsonField}}Format" />
                 {{- end -}}
                 {{- if eq .DictType "" -}}
                   {{- if eq .HtmlType "datetime" -}}
