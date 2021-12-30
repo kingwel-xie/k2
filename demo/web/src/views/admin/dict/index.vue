@@ -96,7 +96,7 @@
           </el-col>
         </el-row>
 
-        <el-table v-loading="loading" :data="typeList" border @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" :data="typeList" border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="字典编号" width="80" align="center" prop="id" />
           <el-table-column label="字典名称" align="center" prop="dictName" :show-overflow-tooltip="true" />
@@ -114,7 +114,7 @@
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button
                 v-permisaction="['admin:sysDictType:edit']"
@@ -307,7 +307,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.typeList.findIndex(x => x.id === this.form.id)
+                if (foundIndex !== -1) {
+                  getType(this.form.id).then(response => {
+                    this.typeList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.typeList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

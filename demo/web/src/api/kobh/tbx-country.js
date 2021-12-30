@@ -1,4 +1,12 @@
 import request from '@/utils/request'
+import store from '@/store'
+
+// 获取缓存的TbxCountry列表
+export function listTbxCountryByStore(query) {
+  const kv = Object.entries(query).filter(([k, _]) => k !== 'pageSize' && k !== 'pageIndex')
+  const list = store.getters.countryList.filter(e => kv.every(([key, value]) => e[key] === value))
+  return Promise.resolve({ data: { list }})
+}
 
 // 查询TbxCountry列表
 export function listTbxCountry(query) {

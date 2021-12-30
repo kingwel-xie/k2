@@ -70,7 +70,7 @@
           </el-col>
         </el-row>
 
-        <el-table v-loading="loading" :data="dataList" border @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" :data="dataList" border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="字典编码" width="80" align="center" prop="dictCode" />
           <el-table-column label="字典标签" align="center" prop="dictLabel" />
@@ -83,7 +83,7 @@
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button
                 v-permisaction="['admin:sysDictData:edit']"
@@ -304,7 +304,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.dataList.findIndex(x => x.dictCode === this.form.dictCode)
+                if (foundIndex !== -1) {
+                  getData(this.form.dictCode).then(response => {
+                    this.dataList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.dataList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

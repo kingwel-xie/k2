@@ -38,6 +38,7 @@
           v-loading="loading"
           :data="menuList"
           border
+          highlight-current-row
           row-key="menuId"
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >

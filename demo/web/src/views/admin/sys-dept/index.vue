@@ -47,6 +47,7 @@
           row-key="deptId"
           default-expand-all
           border
+          highlight-current-row
           :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         >
           <el-table-column prop="deptName" label="部门名称" />
@@ -64,7 +65,7 @@
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180px">
             <template slot-scope="scope">
               <el-button
                 v-permisaction="['admin:sysDept:edit']"

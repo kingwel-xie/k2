@@ -365,3 +365,11 @@ export function formatJson(filterVal, jsonData) {
   }))
 }
 
+/**
+ * @param {number} num, 传入的数字
+ * @param {Object} n, 需要返回的字符长度
+ * @returns {string}
+ */
+export function prefixInteger(num, n) {
+  return (Array(n).join(0) + num).slice(-n)
+}

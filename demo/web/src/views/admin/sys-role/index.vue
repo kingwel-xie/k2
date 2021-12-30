@@ -99,9 +99,11 @@
         </el-row>
 
         <el-table
+          ref="mainTable"
           v-loading="loading"
           :data="roleList"
           border
+          highlight-current-row
           @selection-change="handleSelectionChange"
           @sort-change="handleSortChang"
         >
@@ -532,7 +534,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.roleList.findIndex(x => x.roleId === this.form.roleId)
+                if (foundIndex !== -1) {
+                  getRole(this.form.roleId).then(response => {
+                    this.roleList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.roleList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }
@@ -561,7 +570,14 @@ export default {
           if (response.code === 200) {
             this.msgSuccess(response.msg)
             this.openDataScope = false
-            this.getList()
+            // reload the row and refresh
+            const foundIndex = this.roleList.findIndex(x => x.roleId === this.form.roleId)
+            if (foundIndex !== -1) {
+              getRole(this.form.roleId).then(response => {
+                this.roleList[foundIndex] = response.data
+                this.$refs.mainTable.setCurrentRow(this.roleList[foundIndex], true)
+              })
+            }
           } else {
             this.msgError(response.msg)
           }

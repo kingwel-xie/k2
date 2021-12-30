@@ -78,7 +78,7 @@
           </el-col>
         </el-row>
 
-        <el-table v-loading="loading" :data="postList" border @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" :data="postList" border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="岗位编号" width="80" align="center" prop="postId" />
           <el-table-column label="岗位编码" align="center" prop="postCode" />
@@ -97,7 +97,7 @@
               <span>{{ parseTime(scope.row.createdAt) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button
                 v-permisaction="['admin:sysPost:edit']"
@@ -291,7 +291,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.postList.findIndex(x => x.postId === this.form.postId)
+                if (foundIndex !== -1) {
+                  getPost(this.form.postId).then(response => {
+                    this.postList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.postList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

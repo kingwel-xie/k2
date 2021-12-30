@@ -32,6 +32,7 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         try {
+          const loadingDict = store.dispatch('dict/getAllDict')
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
           const { roles } = await store.dispatch('user/getInfo')
@@ -41,6 +42,8 @@ router.beforeEach(async(to, from, next) => {
 
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
+
+          await loadingDict
 
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record

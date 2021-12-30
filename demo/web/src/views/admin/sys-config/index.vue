@@ -81,9 +81,11 @@
         </el-row>
 
         <el-table
+          ref="mainTable"
           v-loading="loading"
           :data="configList"
           border
+          highlight-current-row
           @selection-change="handleSelectionChange"
           @sort-change="handleSortChang"
         >
@@ -366,7 +368,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.configList.findIndex(x => x.id === this.form.id)
+                if (foundIndex !== -1) {
+                  getConfig(this.form.id).then(response => {
+                    this.configList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.configList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

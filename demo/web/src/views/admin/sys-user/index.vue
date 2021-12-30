@@ -114,9 +114,11 @@
             </el-row>
 
             <el-table
+              ref="mainTable"
               v-loading="loading"
               :data="userList"
               border
+              highlight-current-row
               @selection-change="handleSelectionChange"
               @sort-change="handleSortChang"
             >
@@ -327,7 +329,17 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, importTemplate } from '@/api/admin/sys-user'
+import {
+  listUser,
+  getUser,
+  delUser,
+  addUser,
+  updateUser,
+  resetUserPwd,
+  changeUserStatus,
+  importTemplate,
+  listUserWithoutCustomer
+} from '@/api/admin/sys-user'
 import { getToken } from '@/utils/auth'
 
 import { listPost } from '@/api/admin/sys-post'
@@ -611,7 +623,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.userList.findIndex(x => x.userId === this.form.userId)
+                if (foundIndex !== -1) {
+                  getUser(this.form.userId).then(response => {
+                    this.userList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.userList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

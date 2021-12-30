@@ -1,6 +1,6 @@
 // 查询列表
 export function getItems(f, query) {
-  query = query || { pageIndex: 1, pageSize: -1 }
+  query = Object.assign(query || {}, { pageIndex: 1, pageSize: -1 })
   return f(query)
 }
 
@@ -15,6 +15,6 @@ export function setItems(response, k, v) {
         value: e[v].toString()
       })
     })
-    return data
   }
+  return data
 }

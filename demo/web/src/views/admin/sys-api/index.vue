@@ -44,9 +44,11 @@
         </el-form>
 
         <el-table
+          ref="mainTable"
           v-loading="loading"
           :data="sysapiList"
           border
+          highlight-current-row
           @selection-change="handleSelectionChange"
           @sort-change="handleSortChang"
         >
@@ -384,7 +386,14 @@ export default {
               if (response.code === 200) {
                 this.msgSuccess(response.msg)
                 this.open = false
-                this.getList()
+                // reload the row and refresh
+                const foundIndex = this.sysapiList.findIndex(x => x.id === this.form.id)
+                if (foundIndex !== -1) {
+                  getSysApi(this.form.id).then(response => {
+                    this.sysapiList[foundIndex] = response.data
+                    this.$refs.mainTable.setCurrentRow(this.sysapiList[foundIndex], true)
+                  })
+                }
               } else {
                 this.msgError(response.msg)
               }

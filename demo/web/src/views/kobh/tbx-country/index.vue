@@ -7,11 +7,14 @@
           <el-form-item label="编码" prop="code">
             <el-input v-model="queryParams.code" placeholder="请输入编码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="中文名称" prop="nameCN">
-            <el-input v-model="queryParams.nameCN" placeholder="请输入中文名称" clearable size="small" @keyup.enter.native="handleQuery" />
+          <el-form-item label="中文名" prop="nameCN">
+            <el-input v-model="queryParams.nameCN" placeholder="请输入中文名" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="English" prop="nameEN">
-            <el-input v-model="queryParams.nameEN" placeholder="请输入English Name" clearable size="small" @keyup.enter.native="handleQuery" />
+          <el-form-item label="英文名" prop="nameEN">
+            <el-input v-model="queryParams.nameEN" placeholder="请输入英文名" clearable size="small" @keyup.enter.native="handleQuery" />
+          </el-form-item>
+          <el-form-item label="电话代码" prop="teleCode">
+            <el-input v-model="queryParams.teleCode" placeholder="请输入电话代码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
           <el-form-item label="描述" prop="alias">
             <el-input v-model="queryParams.alias" placeholder="请输入描述" clearable size="small" @keyup.enter.native="handleQuery" />
@@ -32,17 +35,19 @@
           <el-col :span="1.5">
             <el-button v-permisaction="['kobh:tbxCountry:remove']" type="danger" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
           </el-col>
-
+          <el-col :span="1.5">
+            <el-button v-permisaction="['kobh:tbxCountry:list']" type="warning" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
+          </el-col>
         </el-row>
 
-        <el-table v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="tbxCountryList" stripe border @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="tbxCountryList" stripe border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="编码" align="center" prop="code" :show-overflow-tooltip="true" />
-
-          <el-table-column label="中文名称" align="center" prop="nameCN" :show-overflow-tooltip="true" />
-          <el-table-column label="English Name" align="center" prop="nameEN" :show-overflow-tooltip="true" />
+          <el-table-column label="中文名" align="center" prop="nameCN" :show-overflow-tooltip="true" />
+          <el-table-column label="英文名" align="center" prop="nameEN" :show-overflow-tooltip="true" />
+          <el-table-column label="电话代码" align="center" prop="teleCode" :show-overflow-tooltip="true" />
           <el-table-column label="描述" align="center" prop="alias" :show-overflow-tooltip="true" />
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button v-permisaction="['kobh:tbxCountry:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
               <el-button v-permisaction="['kobh:tbxCountry:remove']" size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -55,18 +60,34 @@
         <!-- 添加或修改对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="编码" prop="code">
-              <el-input v-model="form.code" placeholder="编码" :disabled="isEdit" />
-            </el-form-item>
-            <el-form-item label="中文名称" prop="nameCN">
-              <el-input v-model="form.nameCN" placeholder="中文名称" />
-            </el-form-item>
-            <el-form-item label="English" prop="nameEN">
-              <el-input v-model="form.nameEN" placeholder="English Name" />
-            </el-form-item>
-            <el-form-item label="描述" prop="alias">
-              <el-input v-model="form.alias" type="textarea" :rows="4" placeholder="请输入内容" />
-            </el-form-item>
+            <el-row :gutter="10" class="mb8">
+              <el-col :span="24">
+                <el-form-item label="编码" prop="code">
+                  <el-input v-model="form.code" placeholder="编码" :disabled="isEdit" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="中文名" prop="nameCN">
+                  <el-input v-model="form.nameCN" placeholder="中文名" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item prop="nameEN">
+                  <span slot="label">英文名<el-tooltip content="Country name in English" placement="top"><i class="el-icon-info" /></el-tooltip></span>
+                  <el-input v-model="form.nameEN" placeholder="英文名" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="电话代码" prop="teleCode">
+                  <el-input v-model="form.teleCode" placeholder="电话代码" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="描述" prop="alias">
+                  <el-input v-model="form.alias" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
+                </el-form-item>
+              </el-col>
+              </el-row>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
@@ -80,6 +101,8 @@
 
 <script>
 import { addTbxCountry, delTbxCountry, getTbxCountry, listTbxCountry, updateTbxCountry } from '@/api/kobh/tbx-country'
+
+import { formatJson } from '@/utils'
 
 export default {
   name: 'TbxCountry',
@@ -116,7 +139,8 @@ export default {
         code: undefined,
         nameCN: undefined,
         nameEN: undefined,
-        alias: undefined
+        teleCode: undefined,
+        alias: undefined,
 
       },
       // 表单参数
@@ -125,13 +149,17 @@ export default {
       // 表单校验
       rules: {
         code: [{ required: true, message: '编码不能为空', trigger: 'blur' }],
-        nameCN: [{ required: true, message: '中文名称不能为空', trigger: 'blur' }],
-        nameEN: [{ required: true, message: 'English Name不能为空', trigger: 'blur' }]
+        nameCN: [{ required: true, message: '中文名不能为空', trigger: 'blur' }],
+        nameEN: [{ required: true, message: '英文名不能为空', trigger: 'blur' }],
+        teleCode: [{ required: true, message: '电话代码不能为空', trigger: 'blur' }],
+        alias: [{ required: true, message: '描述不能为空', trigger: 'blur' }],
+
       }
     }
   },
   created() {
     this.getList()
+
   },
   methods: {
     /** 查询参数列表 */
@@ -153,11 +181,13 @@ export default {
     // 表单重置
     reset() {
       this.form = {
+
         code: undefined,
         nameCN: undefined,
         nameEN: undefined,
-        alias: undefined
-      }
+        teleCode: undefined,
+        alias: undefined,
+    }
       this.resetForm('form')
     },
     // 关系
@@ -211,7 +241,14 @@ export default {
               this.msgSuccess(response.msg)
               this.open = false
               this.saving = false
-              this.getList()
+              // reload the row and refresh
+              const foundIndex = this.tbxCountryList.findIndex(x => x.code === this.form.code)
+              if (foundIndex !== -1) {
+                getTbxCountry(this.form.code).then(response => {
+                  this.tbxCountryList[foundIndex] = response.data
+                  this.$refs.mainTable.setCurrentRow(this.tbxCountryList[foundIndex], true)
+                })
+              }
             }).catch(() => {
               this.saving = false
             })
@@ -230,7 +267,7 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      var Ids = (row.code && [row.code]) || this.ids
+      const Ids = (row.code && [row.code]) || this.ids
 
       this.$confirm('是否确认删除编号为"' + Ids + '"的数据项?', '警告', {
         confirmButtonText: '确定',
@@ -243,6 +280,36 @@ export default {
         this.open = false
         this.getList()
       }).catch(() => {})
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.$confirm('是否导出满足当前查询条件的数据项（最多10000条）?', '请确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'info'
+      }).then(() => {
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['编码','中文名','英文名','电话代码','描述',]
+          const filterVal = ['code','nameCN','nameEN','teleCode','alias',]
+          const params = Object.assign({}, this.queryParams)
+          params.pageIndex = 1
+          params.pageSize = 10000
+          this.loading = true
+          listTbxCountry(this.addDateRange(params, this.dateRange)).then(response => {
+            this.loading = false
+            const data = formatJson(filterVal, response.data.list)
+            excel.export_json_to_excel({
+              header: tHeader,
+              data,
+              filename: '国家编码',
+              autoWidth: true, // Optional
+              bookType: 'xlsx' // Optional
+            })
+          }).catch(() => {
+            this.loading = false
+          })
+        })
+      })
     }
   }
 }

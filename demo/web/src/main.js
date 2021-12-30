@@ -4,7 +4,7 @@ import Cookies from 'js-cookie'
 
 import 'normalize.css/normalize.css' // a modern alternative to CSS resets
 
-import Element from 'element-ui'
+import ElementUI from 'element-ui'
 import './styles/element-variables.scss'
 
 import '@/styles/index.scss' // global css
@@ -14,10 +14,15 @@ import VueCodemirror from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 Vue.use(VueCodemirror)
 
+// 需要按需引入，先引入vue并引入element-ui
+import AFTableColumn from 'af-table-column'
+Vue.use(AFTableColumn)
+
 import App from './App'
 import store from './store'
 import router from './router'
 import permission from './directive/permission'
+import clipboard from '@/directive/clipboard'
 
 import { getDicts } from '@/api/admin/dict/data'
 import { getItems, setItems } from '@/api/table'
@@ -88,9 +93,10 @@ Vue.prototype.msgInfo = function(msg) {
 }
 
 Vue.use(permission)
+Vue.use(clipboard)
 
-Vue.use(Element, {
-  size: Cookies.get('size') || 'medium' // set element-ui default size
+Vue.use(ElementUI, {
+  size: Cookies.get('size') || 'small' // set element-ui default size
 })
 
 import VueDND from 'awe-dnd'
@@ -106,7 +112,7 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
-Element.Dialog.props.closeOnClickModal.default = false
+ElementUI.Dialog.props.closeOnClickModal.default = false
 
 new Vue({
   el: '#app',

@@ -145,7 +145,7 @@
                 {{ statusFormat(scope.row) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
               <template slot-scope="scope">
                 <el-button
                   v-permisaction="['job:sysJob:edit']"

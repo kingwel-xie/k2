@@ -77,7 +77,7 @@
           </el-col>
         </el-row>
 
-        <el-table v-loading="loading" :data="sysloginlogList" @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" :data="sysloginlogList" highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column
             label="用户名"
@@ -131,7 +131,7 @@
               <span>{{ parseTime(scope.row.loginTime) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button
                 v-permisaction="['admin:sysLoginLog:remove']"
@@ -159,7 +159,6 @@
 
 <script>
 import { delSysLoginlog, getSysLoginlog, listSysLoginlog } from '@/api/admin/sys-login-log'
-import { listSysOperlog } from '@/api/admin/sys-opera-log'
 import { formatJson } from '@/utils'
 
 export default {
