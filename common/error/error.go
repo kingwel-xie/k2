@@ -9,6 +9,7 @@ import (
 var (
 	ErrBadRequest = New(400, "错误的请求参数", "bad request")
 	ErrInternal = New(500, "系统内部错误", "internal server error")
+	ErrUnimplemented = New(501, "功能尚未实现", "not implemented yet")
 	ErrCodeExisted = New(550, "已存在相同编码", "code existed")
 	ErrCodeNotFound = New(551, "未找到该编码", "code not found")
 	ErrWrongPassword = New(560, "原密码错误", "wrong password")
