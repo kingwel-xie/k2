@@ -82,6 +82,7 @@ func (e *Api) GetIdentity() *service.AuthIdentity {
 
 // Error 通常错误数据处理
 func (e Api) Error(err error) {
+	e.Logger.Errorf("API error: %v", err)
 	response.Error(e.Context, err)
 }
 

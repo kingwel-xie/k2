@@ -25,6 +25,7 @@ import (
 	"github.com/kingwel-xie/k2/common/storage"
 	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/utils"
+	"github.com/kingwel-xie/k2/core/ws"
 )
 
 var (
@@ -63,6 +64,7 @@ func setup() {
 		database.Setup,
 		storage.Setup,
 		cronjob.Setup,
+		ws.Setup,
 	)
 	//注册监听函数
 	queue := common.Runtime.Queue()

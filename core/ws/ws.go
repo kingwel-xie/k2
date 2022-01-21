@@ -2,7 +2,6 @@ package ws
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -15,6 +14,14 @@ import (
 )
 
 var log = logger.Logger("ws")
+
+func Setup() {
+	log.Debugf("starting websocket manageer...")
+	go WebsocketManager.Start()
+	go WebsocketManager.SendService()
+	go WebsocketManager.SendGroupService()
+	go WebsocketManager.SendAllService()
+}
 
 // Manager 所有 websocket 信息
 type Manager struct {
@@ -109,7 +116,6 @@ func (c *Client) Write(cxt context.Context) {
 
 // 启动 websocket 管理器
 func (manager *Manager) Start() {
-	log.Debugf("websocket manage start")
 	for {
 		select {
 		// 注册
@@ -288,11 +294,11 @@ func (manager *Manager) WsClient(c *gin.Context) {
 
 	conn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		log.Debugf("websocket connect error: %s", c.Param("channel"))
+		log.Infof("connect error: %s", c.Param("channel"))
 		return
 	}
 
-	fmt.Println("token: ", c.Query("token"))
+	log.Debugf("got token: %s", c.Query("token"))
 
 	client := &Client{
 		Id:         c.Param("id"),
@@ -306,9 +312,9 @@ func (manager *Manager) WsClient(c *gin.Context) {
 	manager.RegisterClient(client)
 	go client.Read(ctx)
 	go client.Write(ctx)
-	time.Sleep(time.Second * 15)
+	time.Sleep(time.Second * 1)
 
-	utils.FileMonitoringById(ctx, "temp/logs/job/db-20200820.log", c.Param("id"), c.Param("channel"), SendOne)
+	utils.FileMonitoringById(ctx, "tmp/test-ws.log", c.Param("id"), c.Param("channel"), SendOne)
 }
 
 func (manager *Manager) UnWsClient(c *gin.Context) {
@@ -325,20 +331,20 @@ func (manager *Manager) UnWsClient(c *gin.Context) {
 
 func SendGroup(msg []byte) {
 	WebsocketManager.SendGroup("leffss", []byte("{\"code\":200,\"data\":"+string(msg)+"}"))
-	fmt.Println(WebsocketManager.Info())
+	log.Debug(WebsocketManager.Info())
 }
 
 func SendAll(msg []byte) {
 	WebsocketManager.SendAll([]byte("{\"code\":200,\"data\":" + string(msg) + "}"))
-	fmt.Println(WebsocketManager.Info())
+	log.Debug(WebsocketManager.Info())
 }
 
 func SendOne(ctx context.Context, id string, group string, msg []byte) {
 	WebsocketManager.Send(ctx, id, group, []byte("{\"code\":200,\"data\":"+string(msg)+"}"))
-	fmt.Println(WebsocketManager.Info())
+	log.Debug(WebsocketManager.Info())
 }
 
 func WsLogout(id string, group string) {
 	WebsocketManager.UnRegisterClient(&Client{Id: id, Group: group})
-	fmt.Println(WebsocketManager.Info())
+	log.Debug(WebsocketManager.Info())
 }
