@@ -8,9 +8,7 @@
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
-
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-
       </template>
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
@@ -23,6 +21,9 @@
             <el-dropdown-item>个人中心</el-dropdown-item>
           </router-link>
           <el-dropdown-item divided>
+            <span style="display:block;" @click="setting = !setting">{{ setting ? '设置关闭' : '设置开启' }}</span>
+          </el-dropdown-item>
+          <el-dropdown-item divided>
             <span style="display:block;" @click="logout">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -33,11 +34,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import TopNav from '@/components/TopNav'
-import Hamburger from '@/components/Hamburger'
-import Screenfull from '@/components/Screenfull'
-import Search from '@/components/HeaderSearch'
+import Breadcrumb from '@/layout/components/Breadcrumb'
+import TopNav from '@/layout/components/TopNav'
+import Hamburger from '@/layout/components/Hamburger'
+import Screenfull from '@/layout/components/Screenfull'
+import Search from '@/layout/components/HeaderSearch'
 import checkPermission from '@/utils/permission'
 
 export default {

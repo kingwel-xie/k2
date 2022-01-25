@@ -5,7 +5,13 @@ module.exports = {
    * @type {boolean} true | false
    * @description Whether show the settings right-panel
    */
-  showSettings: true,
+  showSettings: false,
+
+  /**
+   * @type {boolean} true | false
+   * @description Whether show the bottom tray panel
+   */
+  showTrayPanel: true,
 
   /**
    * 是否显示顶部导航
@@ -36,7 +42,7 @@ module.exports = {
    * The default is only used in the production env
    * If you want to also use it in dev, you can pass ['production', 'development']
    */
-  errorLog: 'production',
+  errorLog: ['production', 'development'],
 
   themeStyle: 'dark'
 }

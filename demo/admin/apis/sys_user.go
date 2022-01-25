@@ -380,7 +380,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 	req.Id = identity.UserId
 	err = s.Get(&req, &sysUser)
 	if err != nil {
-		e.Error(http.StatusUnauthorized, err, "登录失败")
+		e.Error(loginFailedErr.Wrap(err))
 		return
 	}
 	mp["introduction"] = "If I die before I wake"
@@ -392,6 +392,5 @@ func (e SysUser) GetInfo(c *gin.Context) {
 	mp["userId"] = sysUser.UserId
 	mp["deptId"] = sysUser.DeptId
 	mp["name"] = sysUser.NickName
-	mp["code"] = 200
 	e.OK(mp, "")
 }

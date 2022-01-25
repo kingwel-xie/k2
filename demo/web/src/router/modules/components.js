@@ -25,8 +25,8 @@ const componentsRouter = {
       meta: { title: 'Markdown' }
     },
     {
-      path: 'json-editor',
-      component: () => import('@/views/components-demo/json-editor'),
+      path: 'json-user',
+      component: () => import('@/views/components-demo/json-user'),
       name: 'JsonEditorDemo',
       meta: { title: 'JSON Editor' }
     },

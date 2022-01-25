@@ -16,6 +16,7 @@ const getters = {
   defaultRoutes: state => state.permission.defaultRoutes,
   sidebarRouters: state => state.permission.sidebarRouters,
   errorLogs: state => state.errorLog.logs,
+  messageLogs: state => state.errorLog.messages,
   appInfo: state => state.system.info,
   dict: state => state.dict.sys,
   countryList: state => state.dict.countryList

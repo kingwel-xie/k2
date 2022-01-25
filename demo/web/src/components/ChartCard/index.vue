@@ -61,8 +61,8 @@ export default {
       overflow: hidden;
       width: 100%;
       color: rgba(0, 0, 0, .45);
-      font-size: 14px;
-      line-height: 22px;
+      font-size: 15px;
+      line-height: 30px;
     }
   }
   .chart-card-action {
@@ -75,6 +75,7 @@ export default {
     border-top: 1px solid #e8e8e8;
     padding-top: 9px;
     margin-top: 8px;
+    line-height: 22px;
     > * {
       position: relative;
     }
@@ -90,7 +91,7 @@ export default {
   .chart-card-content {
     margin-bottom: 12px;
     position: relative;
-    height: 46px;
+    height: 76px;
     width: 100%;
     .content-fix {
       position: absolute;
@@ -105,10 +106,10 @@ export default {
     word-break: break-all;
     white-space: nowrap;
     color: #000;
-    margin-top: 4px;
+    margin-top: 10px;
     margin-bottom: 0;
-    font-size: 30px;
-    line-height: 38px;
-    height: 38px;
+    font-size: 40px;
+    line-height: 48px;
+    height: 48px;
   }
 </style>

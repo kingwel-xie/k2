@@ -1,13 +1,11 @@
 <template>
   <el-card class="box-card" body-style="padding: 0 20px !important;">
-    <div slot="header" class="clearfix">
-      <slot v-if="$slots.header || header" name="header"><span>{{ header }}</span></slot>
-      <el-button
-        style="float: right; padding: 3px 0"
-        type="text"
-        :icon="collapse ? 'el-icon-arrow-right' : 'el-icon-arrow-down'"
-        @click="handleCollapseExpand"
-      />
+    <div slot="header" class="clearfix header" role="button" @click="handleCollapseExpand">
+      <slot v-if="$slots.header || header" name="header">
+        <el-icon :name="collapse ? 'circle-plus-outline' : 'remove-outline'" style="padding-right: 4px" />
+        <span>{{ header }}</span>
+      </slot>
+      <el-icon style="margin: 0 8px 0 auto" :name="collapse ? 'arrow-right' : 'arrow-down'" />
     </div>
     <div v-show="!collapse" class="card-content" :style="bodyStyle">
       <slot />
@@ -19,12 +17,22 @@
 export default {
   name: 'CollapseCard',
   props: {
-    header: {},
-    bodyStyle: {}
+    header: {
+      type: String,
+      default: ''
+    },
+    collapseByDefault: {
+      type: [Boolean, String],
+      default: false
+    },
+    bodyStyle: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
-      collapse: false
+      collapse: this.collapseByDefault === '' ? true : this.collapseByDefault
     }
   },
   methods: {
@@ -36,7 +44,15 @@ export default {
 </script>
 
 <style scoped>
+
 .card-content {
-  padding: 20px 0 10px 0;
+  padding: 8px 0 6px 0;
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 </style>

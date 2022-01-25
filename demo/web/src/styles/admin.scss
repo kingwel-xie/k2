@@ -72,6 +72,10 @@
   margin-top: 6vh !important;
 }
 
+.el-dialog__footer {
+  padding-top: 2px;
+}
+
 .el-table {
 
   .el-table__header-wrapper,
@@ -150,8 +154,7 @@
   border-bottom: 1px solid #e7eaec;
   border-top: 1px solid #e7eaec;
   margin-bottom: -1px;
-  padding: 11px 0px;
-  font-size: 13px;
+  padding: 8px 0px;
 }
 
 .pull-right {
@@ -160,17 +163,21 @@
 
 .el-card__header {
   padding: 14px 15px 7px;
-  min-height: 40px;
+  min-height: 36px;
 }
 
 .el-card__body {
   padding: 15px 20px 20px 20px;
 }
 
+.el-card + .el-card{
+ margin-top: 8px;
+}
+
 .card-box {
   padding-right: 15px;
   padding-left: 15px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* button color */
@@ -288,7 +295,7 @@
 // Drawer 抽屉增加滚动条
 .el-drawer {
   overflow-y: scroll;
-  
+
 }
 .delete-popconfirm{
 margin-left: 10px;

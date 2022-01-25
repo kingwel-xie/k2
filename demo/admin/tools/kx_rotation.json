@@ -3,7 +3,6 @@
 	"className": "TbRotation",
 	"packageName": "kx",
 	"moduleName": "rotation",
-	"hardDelete": true,
 	"isAuth": true,
 	"dataScope": true,
 	"columns": [

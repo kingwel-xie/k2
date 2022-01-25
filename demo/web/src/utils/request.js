@@ -2,6 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
+import Vue from 'vue'
 
 // create an axios instance
 const service = axios.create({
@@ -70,6 +71,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
+      postMessageLog(code, response.data.msg)
       return Promise.reject(response)
     } else if (code !== 200) {
       Message({
@@ -77,6 +79,7 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000
       })
+      postMessageLog(code, response.data.msg)
       return Promise.reject(response)
     } else {
       return response.data
@@ -102,5 +105,15 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+function postMessageLog(code, msg) {
+  Vue.nextTick(() => {
+    store.dispatch('errorLog/addMessageLog', {
+      code: code,
+      msg: msg,
+      url: window.location.href
+    })
+  })
+}
 
 export default service

@@ -25,7 +25,7 @@ export function downLoadFile(str) {
   aLink.href = url
   document.body.appendChild(aLink)
   aLink.click()
-  document.body.appendChild(aLink)
+  document.body.removeChild(aLink)
 }
 /**
  * 解析blob响应内容并下载
@@ -45,5 +45,24 @@ export function resolveBlob(res, mimeType) {
   aLink.setAttribute('download', fileName) // 设置下载文件名称
   document.body.appendChild(aLink)
   aLink.click()
-  document.body.appendChild(aLink)
+  document.body.removeChild(aLink)
+}
+
+export function InlineDownloadPdf(str) {
+  const url = baseUrl + str
+  return axios({
+    method: 'get',
+    url: url,
+    responseType: 'blob',
+    headers: { 'Authorization': 'Bearer ' + getToken() }
+  }).then(res => {
+    const aLink = document.createElement('a')
+    debugger
+    var blob = new Blob([res.data], { type: 'application/pdf' })
+    aLink.href = URL.createObjectURL(blob)
+    aLink.target = '_blank'
+    document.body.appendChild(aLink)
+    aLink.click()
+    document.body.removeChild(aLink)
+  })
 }

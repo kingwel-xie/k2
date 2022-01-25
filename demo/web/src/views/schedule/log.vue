@@ -48,10 +48,6 @@ export default {
   destroyed() {
     console.log('断开websocket连接')
     this.websock.close() // 离开路由之后断开websocket连接
-    unWsLogout(this.id, this.group).then(response => {
-      console.log(response.data)
-    }
-    )
   },
   methods: {
     initWebSocket() { // 初始化weosocket
@@ -85,8 +81,7 @@ export default {
     websocketclose(e) { // 关闭
       unWsLogout(this.id, this.group).then(response => {
         console.log(response.data)
-      }
-      )
+      })
       console.log('断开连接', e)
     },
     guid() {

@@ -35,17 +35,7 @@
           />
           </el-form-item>
           <el-form-item label="登录时间">
-            <el-date-picker
-              v-model="dateRange"
-              size="small"
-              type="datetimerange"
-              :picker-options="datetimePickerOptions()"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              align="right"
-              value-format="yyyy-MM-dd HH:mm:ss"
-            />
+            <DatetimeRanger v-model="dateRange" />
           </el-form-item>
 
           <el-form-item>

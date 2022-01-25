@@ -3,18 +3,18 @@
     <el-button :style="{background:color,borderColor:color}" icon="el-icon-upload" size="mini" type="primary" @click="handleFile">
       upload
     </el-button>
-    <file-choose :dialog-form-visible="dialogVisible" @close="handleFileClose" @confirm="handleFileConfirm" />
+<!--    <file-choose :dialog-form-visible="dialogVisible" @close="handleFileClose" @confirm="handleFileConfirm" />-->
   </div>
 </template>
 
 <script>
 // import { getToken } from 'api/qiniu'
 
-import FileChoose from '../../FileChoose/index'
+// import FileChoose from '../../FileChoose/index'
 export default {
   name: 'EditorSlideUpload',
   components: {
-    FileChoose
+    // FileChoose
   },
   props: {
     color: {

@@ -5,6 +5,7 @@
 	"tableComment": "国家编码",
 	"hasExport": true,
 	"isAuth": true,
+	"dictCache": true,
 	"columns": [
 		{
 			"goField": "Code",
@@ -15,17 +16,9 @@
 			"queryable": true
 		},
 		{
-			"goField": "Code2",
-			"goType": "string",
-			"columnComment": "编码2",
-			"notOnList": true,
-			"notOnInsert": true,
-			"notOnUpdate": true
-		},
-		{
 			"goField": "NameCN",
 			"goType": "string",
-			"columnComment": "中文名称",
+			"columnComment": "中文名",
 			"gormTag": "size:64;unique",
 			"validator": "@:len($)>0; msg:'中文名不能为空'",
 			"queryable": true,
@@ -34,11 +27,18 @@
 		{
 			"goField": "NameEN",
 			"goType": "string",
-			"columnComment": "English Name",
+			"columnComment": "英文名",
+			"comment": "Country name in English",
 			"gormTag": "size:64;unique",
 			"validator": "@:len($)>0; msg:'English Name is empty'",
 			"queryable": true,
 			"queryType": "LIKE"
+		},
+		{
+			"goField": "TeleCode",
+			"goType": "string",
+			"columnComment": "电话代码",
+			"queryable": true
 		},
 		{
 			"goField": "Alias",

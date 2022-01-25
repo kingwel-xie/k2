@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div id="particles-js">
-      <!-- <vue-particles
+      <vue-particles
         v-if="refreshParticles"
         color="#dedede"
         :particle-opacity="0.7"
@@ -13,12 +13,12 @@
         :line-linked="true"
         :line-opacity="0.4"
         :lines-distance="150"
-        :move-speed="3"
+        :move-speed="4"
         :hover-effect="true"
         hover-mode="grab"
         :click-effect="true"
         click-mode="push"
-      /> -->
+      />
     </div>
 
     <div class="login-weaper animated bounceInDown">
@@ -157,7 +157,9 @@ import { Message } from 'element-ui'
 
 export default {
   name: 'Login',
-  components: { SocialSign },
+  components: {
+    SocialSign
+  },
   data() {
     return {
       codeUrl: '',

@@ -373,3 +373,15 @@ export function formatJson(filterVal, jsonData) {
 export function prefixInteger(num, n) {
   return (Array(n).join(0) + num).slice(-n)
 }
+
+/**
+ * @param {number} num, 传入
+ * @returns {Object}
+ */
+export function tryParseJson(str) {
+  try {
+    return JSON.parse(str)
+  } catch {
+    return undefined
+  }
+}

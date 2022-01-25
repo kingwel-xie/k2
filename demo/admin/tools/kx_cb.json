@@ -5,6 +5,7 @@
 	"moduleName": "cb",
 	"isAuth": true,
 	"hasExport": true,
+	"softDelete": true,
 	"columns": [
 		{
 			"goField": "SecurityId",

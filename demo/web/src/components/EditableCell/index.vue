@@ -10,7 +10,7 @@
       <div
         tabindex="0"
         class="cell-content"
-        :class="{'edit-enabled-cell': canEdit}"
+        :class="computedClasses"
         @keyup.enter="onFieldClick"
       >
         <slot name="content" />
@@ -36,8 +36,12 @@ export default {
   inheritAttrs: false,
   props: {
     value: {
-      type: [String, Number],
+      type: [String, Number, Object],
       default: ''
+    },
+    initValue: {
+      type: Number,
+      default: 0
     },
     toolTipContent: {
       type: String,
@@ -74,6 +78,13 @@ export default {
     }
   },
   computed: {
+    computedClasses() {
+      return {
+        'edit-enabled-cell': this.canEdit,
+        'edit-enabled-cell-less': this.initValue !== 0 && this.initValue > this.value,
+        'edit-enabled-cell-greater': this.initValue !== 0 && this.initValue < this.value
+      }
+    },
     model: {
       get() {
         return this.value
@@ -110,6 +121,7 @@ export default {
   }
 }
 </script>
+
 <style>
 .cell-content {
   min-height: 30px;
@@ -119,5 +131,22 @@ export default {
 }
 .edit-enabled-cell {
   border: 1px dashed #409eff;
+}
+.edit-enabled-cell-less {
+  border: 1px dashed #00ff00;
+}
+.edit-enabled-cell-greater {
+  border: 1px dashed #ff0000;
+}
+</style>
+
+<style scoped>
+
+.class /deep/  .a input::-webkit-outer-spin-button,
+.class /deep/  .a input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+.class /deep/  .a input[type="number"]{
+  -moz-appearance: textfield;
 }
 </style>

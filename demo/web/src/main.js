@@ -10,10 +10,6 @@ import './styles/element-variables.scss'
 import '@/styles/index.scss' // global css
 import '@/styles/admin.scss'
 
-import VueCodemirror from 'vue-codemirror'
-import 'codemirror/lib/codemirror.css'
-Vue.use(VueCodemirror)
-
 // 需要按需引入，先引入vue并引入element-ui
 import AFTableColumn from 'af-table-column'
 Vue.use(AFTableColumn)
@@ -37,7 +33,7 @@ import {
   dateFormatter,
   floatFormatter2,
   floatFormatter3,
-  percentageFormatter, datetimePickerOptions
+  percentageFormatter, parseBoolean, boolFormatter
 } from '@/utils/custom'
 
 import './icons' // icon
@@ -51,7 +47,10 @@ import * as filters from './filters' // global filters
 
 import Pagination from '@/components/Pagination'
 import BasicLayout from '@/layout/BasicLayout'
+import K2Dialog from '@/components/K2Dialog'
+import DatetimeRanger from '@/components/DatetimeRanger'
 
+// particle effect, see login/index.vue
 import VueParticles from 'vue-particles'
 Vue.use(VueParticles)
 
@@ -63,6 +62,7 @@ Vue.prototype.getItems = getItems
 Vue.prototype.setItems = setItems
 Vue.prototype.getConfigKey = getConfigKey
 Vue.prototype.parseTime = parseTime
+Vue.prototype.parseBoolean = parseBoolean
 Vue.prototype.resetForm = resetForm
 Vue.prototype.addDateRange = addDateRange
 Vue.prototype.selectDictLabel = selectDictLabel
@@ -72,13 +72,15 @@ Vue.prototype.dateFormatter = dateFormatter
 Vue.prototype.floatFormatter = floatFormatter2
 Vue.prototype.floatFormatter3 = floatFormatter3
 Vue.prototype.percentageFormatter = percentageFormatter
-Vue.prototype.datetimePickerOptions = datetimePickerOptions
+Vue.prototype.boolFormatter = boolFormatter
 
 // Vue.prototype.download = download
 
 // 全局组件挂载
 Vue.component('Pagination', Pagination)
 Vue.component('BasicLayout', BasicLayout)
+Vue.component('K2Dialog', K2Dialog)
+Vue.component('DatetimeRanger', DatetimeRanger)
 
 Vue.prototype.msgSuccess = function(msg) {
   this.$message({ showClose: true, message: msg, type: 'success' })
@@ -98,9 +100,6 @@ Vue.use(clipboard)
 Vue.use(ElementUI, {
   size: Cookies.get('size') || 'small' // set element-ui default size
 })
-
-import VueDND from 'awe-dnd'
-Vue.use(VueDND)
 
 import 'remixicon/fonts/remixicon.css'
 

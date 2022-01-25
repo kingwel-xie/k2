@@ -6,6 +6,7 @@
 	"moduleName": "snapshot",
 	"isAuth": true,
 	"dataScope": true,
+	"softDelete": true,
 	"columns": [
 		{
 			"goType": "int",

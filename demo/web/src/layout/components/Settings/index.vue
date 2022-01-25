@@ -39,12 +39,25 @@
       <el-divider />
       <div class="setting-drawer-content">
         <div class="setting-drawer-title">
+          组件大小
+        </div>
+        <SizeSelect />
+
+      </div>
+      <el-divider />
+      <div class="setting-drawer-content">
+        <div class="setting-drawer-title">
           布局设置
         </div>
 
         <div class="drawer-item">
           <span>开启 TopNav</span>
           <el-switch v-model="topNav" class="drawer-switch" />
+        </div>
+
+        <div class="drawer-item">
+          <span>开启消息托盘</span>
+          <el-switch v-model="showTrayPanel" class="drawer-switch" />
         </div>
 
         <div class="drawer-item">
@@ -67,10 +80,11 @@
 </template>
 
 <script>
-import ThemePicker from '@/components/ThemePicker'
+import ThemePicker from '@/layout/components/ThemePicker'
+import SizeSelect from '@/layout/components/SizeSelect'
 
 export default {
-  components: { ThemePicker },
+  components: { SizeSelect, ThemePicker },
   data() {
     return {
       activeColor: this.$store.state.settings.theme
@@ -106,6 +120,17 @@ export default {
         if (!val) {
           this.$store.commit('permission/SET_SIDEBAR_ROUTERS', this.$store.state.permission.defaultRoutes)
         }
+      }
+    },
+    showTrayPanel: {
+      get() {
+        return this.$store.state.settings.showTrayPanel
+      },
+      set(val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'showTrayPanel',
+          value: val
+        })
       }
     },
     tagsView: {

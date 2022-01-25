@@ -86,28 +86,27 @@ func (e *SysMenu) Insert(c *dto.SysMenuInsertReq) error {
 	data.SetCreateBy(e.Identity.Username)
 	data.SysApi = sysApis
 
-	err = e.Orm.Transaction(func(tx *gorm.DB) (err error) {
+	err = e.Orm.Transaction(func(tx *gorm.DB) error {
 		// this will create the menu and the related APIs
-		if err = tx.Create(&data).Error; err != nil {
-			return
+		if err := tx.Create(&data).Error; err != nil {
+			return err
 		}
+		// get back the AutoIncrease Id
+		c.MenuId = data.MenuId
+
 		var paths string
 		if data.ParentId == 0 {
 			paths = fmt.Sprintf("/0/%d", data.MenuId)
 		} else {
 			var parent models.SysMenu
 			if err = tx.Where("menu_id", data.ParentId).First(&parent).Error; err != nil {
-				return
+				return err
 			}
 			paths = fmt.Sprintf("%s/%d", parent.Paths, data.MenuId)
 		}
 		return tx.Model(&data).Update("paths", paths).Error
 	})
-	if err != nil {
-		return err
-	}
-	c.MenuId = data.MenuId
-	return nil
+	return err
 }
 
 func (e *SysMenu) initPaths(menu *models.SysMenu) error {
@@ -346,6 +345,10 @@ func (e *SysMenu) SetLabel() (m []dto.MenuLabel, err error) {
 	return
 }
 
+// kingwel: Note, currently we only support one role per sys-user.
+// There are still bugs in below code to load role, i.e., Find(&role),
+// where 'role' should be a list...
+
 // GetSysMenuByRoleName 左侧菜单
 func (e *SysMenu) GetSysMenuByRoleName(roleName ...string) ([]models.SysMenu, error) {
 	var MenuList []models.SysMenu
@@ -470,25 +473,23 @@ func (e *SysMenu) getByRoleKey(roleKey string) ([]models.SysMenu, error) {
 	} else {
 		role.RoleKey = roleKey
 		err = e.Orm.Model(&role).Where("role_key = ? ", roleKey).Preload("SysMenu", func(db *gorm.DB) *gorm.DB {
-			return db.Where(" menu_type in ('C')").Order("sort")
+			return db.Where(" menu_type in ('M', 'C')").Order("sort")
 		}).Find(&role).Error
 		if role.SysMenu != nil {
 			MenuList = *role.SysMenu
 		}
-		mIds := make([]int, 0)
-		for _, menu := range MenuList {
-			if menu.ParentId != 0 {
-				mIds = append(mIds, menu.ParentId)
-			}
-		}
-		var data []models.SysMenu
-		err = e.Orm.Where(" menu_type in ('M') and menu_id in ?", mIds).Order("sort").Find(&data).Error
-		if err != nil {
-			return nil, err
-		}
-		for _, datum := range data {
-			MenuList = append(MenuList, datum)
-		}
+		//mIds := make([]int, 0)
+		//for _, menu := range MenuList {
+		//	if menu.ParentId != 0 {
+		//		mIds = append(mIds, menu.ParentId)
+		//	}
+		//}
+		//var data []models.SysMenu
+		//err = e.Orm.Where(" menu_type in ('M') and menu_id in ?", mIds).Order("sort").Find(&data).Error
+		//if err != nil {
+		//	return nil, err
+		//}
+		//MenuList = append(MenuList, data...)
 	}
 
 	return MenuList, err
