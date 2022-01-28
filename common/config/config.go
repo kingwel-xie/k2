@@ -48,6 +48,7 @@ type Config struct {
 	Cache       *Cache       `yaml:"cache"`
 	Queue       *Queue       `yaml:"queue"`
 	Locker      *Locker      `yaml:"locker"`
+	Oss   *Oss   `yaml:"oss"`
 }
 
 // Setup 载入配置文件
@@ -63,6 +64,7 @@ func Setup(configFile string,
 			Cache:       CacheConfig,
 			Queue:       QueueConfig,
 			Locker:      LockerConfig,
+			Oss:   		 OssConfig,
 		},
 		Extend:    ExtendConfig,
 		callbacks: fs,

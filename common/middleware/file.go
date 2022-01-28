@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/kingwel-xie/k2/common"
 	"io/ioutil"
 	"strings"
 
@@ -11,8 +12,6 @@ import (
 	"github.com/kingwel-xie/k2/common/api"
 	cerr "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/core/utils"
-
-	"github.com/kingwel-xie/k2/common/file_store"
 )
 
 var (
@@ -101,7 +100,7 @@ func (e File) baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix strin
 		Type:     typeStr,
 	}
 	source, _ := c.GetPostForm("source")
-	err = thirdUpload(source, fileName, base64File)
+	err = upload(source, fileName, base64File)
 	if err != nil {
 		e.Error(failedUploadThirdPartyErr.Wrap(err))
 		return fileResponse
@@ -129,7 +128,7 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
 		err1 := c.SaveUploadedFile(f, multipartFileName)
 		fileType, _ := utils.GetType(multipartFileName)
 		if err1 == nil {
-			err := thirdUpload(source, fileName, multipartFileName)
+			err := upload(source, fileName, multipartFileName)
 			if err != nil {
 				e.Error(failedUploadThirdPartyErr.Wrap(err))
 			} else {
@@ -178,7 +177,7 @@ func (e File) singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix st
 		Type:     fileType,
 	}
 	//source, _ := c.GetPostForm("source")
-	//err = thirdUpload(source, fileName, singleFile)
+	//err = upload(source, fileName, singleFile)
 	//if err != nil {
 	//	e.Error(200, err, "上传第三方失败")
 	//	return FileResponse{}, true
@@ -188,22 +187,10 @@ func (e File) singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix st
 	return fileResponse, false
 }
 
-func thirdUpload(source string, name string, path string) error {
-	switch source {
-	case "2":
-		return ossUpload("img/"+name, path)
-	case "3":
-		return qiniuUpload("img/"+name, path)
-	}
+func upload(source string, name string, path string) error {
+	log.Infof("uploading source=%s, name=%s, path=%s", source, name, path)
+
+	_ = common.Runtime.GetOss().UpLoadLocalFile(name, path)
 	return nil
 }
 
-func ossUpload(name string, path string) error {
-	oss := file_store.ALiYunOSS{}
-	return oss.UpLoad(name, path)
-}
-
-func qiniuUpload(name string, path string) error {
-	oss := file_store.ALiYunOSS{}
-	return oss.UpLoad(name, path)
-}

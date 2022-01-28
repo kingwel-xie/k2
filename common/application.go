@@ -1,10 +1,11 @@
 package common
 
 import (
+	"github.com/kingwel-xie/k2/core/oss"
 	"net/http"
-	"sync"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,7 @@ type Application struct {
 	cache   storage.AdapterCache
 	queue   storage.AdapterQueue
 	locker  storage.AdapterLocker
+	oss     oss.Oss
 	routers []Router
 }
 
@@ -144,6 +146,20 @@ func (e *Application) SetLockerAdapter(c storage.AdapterLocker) {
 // Locker 获取分布式锁
 func (e *Application) Locker() storage.AdapterLocker {
 	return e.locker
+}
+
+// SetOss 设置Oss service
+func (e *Application) SetOss(oss oss.Oss) {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	e.oss = oss
+}
+
+// SetOss 设置Oss service
+func (e *Application) GetOss() oss.Oss {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	return e.oss
 }
 
 // GetStreamMessage 获取队列需要用的message

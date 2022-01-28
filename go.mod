@@ -19,7 +19,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.1
-	github.com/ipfs/go-log/v2 v2.3.0
 	github.com/json-iterator/go v1.1.11
 	github.com/mattn/go-isatty v0.0.13
 	github.com/mojocn/base64Captcha v1.3.4
@@ -27,7 +26,6 @@ require (
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/prometheus/client_golang v1.11.0 // indirect
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/robinjoseph08/redisqueue/v2 v2.1.0
 	github.com/shamsher31/goimgext v1.0.0
 	github.com/shirou/gopsutil v3.21.5+incompatible
