@@ -20,7 +20,23 @@ func NewLocal(path string) Oss {
 }
 
 func (l *Local) UpLoadLocalFile(objectName string, localFile string) error {
-	panic("implement me")
+	if l.Path != "" {
+		source, err := os.Open(localFile)
+		if err != nil {
+			return err
+		}
+		defer source.Close()
+
+		destination, err := os.Create(path.Join(l.Path, objectName))
+		if err != nil {
+			return err
+		}
+
+		defer destination.Close()
+		_, err = io.Copy(destination, source)
+		return err
+	}
+	return nil
 }
 
 func (l *Local) UploadFile(file *multipart.FileHeader) (string, string, error) {

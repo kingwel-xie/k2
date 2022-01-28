@@ -176,12 +176,12 @@ func (e File) singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix st
 		Name:     files.Filename,
 		Type:     fileType,
 	}
-	//source, _ := c.GetPostForm("source")
-	//err = upload(source, fileName, singleFile)
-	//if err != nil {
-	//	e.Error(200, err, "上传第三方失败")
-	//	return FileResponse{}, true
-	//}
+	source, _ := c.GetPostForm("source")
+	err = upload(source, fileName, singleFile)
+	if err != nil {
+		e.Error(err)
+		return FileResponse{}, true
+	}
 	fileResponse.Path = "/static/uploadfile/" + fileName
 	fileResponse.FullPath = "/static/uploadfile/" + fileName
 	return fileResponse, false
