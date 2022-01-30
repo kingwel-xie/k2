@@ -49,8 +49,11 @@ func (e *bizError) Message(mode string, lang string) string {
 	if !ok {
 		msg = e.messages["__default__"]
 	}
-	if mode != utils.ModeProd.String() && e.err != nil {
-		msg = fmt.Sprintf("%s: %s", msg, e.err)
+	if mode != utils.ModeProd.String() {
+		msg = fmt.Sprintf("%s : %d", msg, e.code)
+		if e.err != nil {
+			msg += ": " + e.err.Error()
+		}
 	}
 	return msg
 }
