@@ -7,9 +7,9 @@ import (
 type Oss struct {
 	Which string 			`yaml:"which"`
 	Local Local  			`yaml:"local"`
-	Qiniu      Qiniu      	`yaml:"qiniu"`
-	AliyunOSS  AliyunOSS  	`yaml:"aliyun"`
-	TencentCOS TencentCOS 	`yaml:"tencent"`
+	Qiniu      Qiniu      `yaml:"qiniu"`
+	Aliyun  AliyunOSS  `yaml:"aliyun"`
+	Tencent TencentCOS `yaml:"tencent"`
 }
 
 var OssConfig = new(Oss)
@@ -53,9 +53,9 @@ func (e Oss) Setup() oss.Oss {
 	//case "qiniu":
 	//	oss = &Qiniu{}
 	//case "tencent":
-	//	return oss.NewTencent(e.TencentCOS.Region, e.TencentCOS.Bucket, e.TencentCOS.BaseURL, e.TencentCOS.PathPrefix...)
+	//	return oss.NewTencent(e.Tencent.Region, e.Tencent.Bucket, e.Tencent.BaseURL, e.Tencent.PathPrefix...)
 	case "aliyun":
-		return oss.NewAliyun(e.AliyunOSS.Endpoint, e.AliyunOSS.AccessKeyId, e.AliyunOSS.AccessKeySecret, e.AliyunOSS.BucketName, e.AliyunOSS.BucketUrl)
+		return oss.NewAliyun(e.Aliyun.Endpoint, e.Aliyun.AccessKeyId, e.Aliyun.AccessKeySecret, e.Aliyun.BucketName, e.Aliyun.BucketUrl)
 	default:
 		return oss.NewLocal(e.Local.Path)
 	}

@@ -3,7 +3,7 @@ package oss
 type TencentCOS struct{}
 //
 //// UploadFile upload file to COS
-//func (*TencentCOS) UploadFile(file *multipart.FileHeader) (string, string, error) {
+//func (*Tencent) UploadFile(file *multipart.FileHeader) (string, string, error) {
 //	client := NewClient()
 //	f, openError := file.Open()
 //	if openError != nil {
@@ -13,17 +13,17 @@ type TencentCOS struct{}
 //	defer f.Close() // 创建文件 defer 关闭
 //	fileKey := fmt.Sprintf("%d%s", time.Now().Unix(), file.Filename)
 //
-//	_, err := client.Object.Put(context.Background(), global.Config.TencentCOS.PathPrefix+"/"+fileKey, f, nil)
+//	_, err := client.Object.Put(context.Background(), global.Config.Tencent.PathPrefix+"/"+fileKey, f, nil)
 //	if err != nil {
 //		panic(err)
 //	}
-//	return global.Config.TencentCOS.BaseURL + "/" + global.Config.TencentCOS.PathPrefix + "/" + fileKey, fileKey, nil
+//	return global.Config.Tencent.BaseURL + "/" + global.Config.Tencent.PathPrefix + "/" + fileKey, fileKey, nil
 //}
 //
 //// DeleteFile delete file form COS
-//func (*TencentCOS) DeleteFile(key string) error {
+//func (*Tencent) DeleteFile(key string) error {
 //	client := NewClient()
-//	name := global.Config.TencentCOS.PathPrefix + "/" + key
+//	name := global.Config.Tencent.PathPrefix + "/" + key
 //	_, err := client.Object.Delete(context.Background(), name)
 //	if err != nil {
 //		log.Error("function bucketManager.Delete() Filed", zap.Any("err", err.Error()))
@@ -34,12 +34,12 @@ type TencentCOS struct{}
 //
 //// NewClient init COS client
 //func NewClient() *cos.Client {
-//	urlStr, _ := url.Parse("https://" + global.Config.TencentCOS.Bucket + ".cos." + global.Config.TencentCOS.Region + ".myqcloud.com")
+//	urlStr, _ := url.Parse("https://" + global.Config.Tencent.Bucket + ".cos." + global.Config.Tencent.Region + ".myqcloud.com")
 //	baseURL := &cos.BaseURL{BucketURL: urlStr}
 //	client := cos.NewClient(baseURL, &http.Client{
 //		Transport: &cos.AuthorizationTransport{
-//			SecretID:  global.Config.TencentCOS.SecretID,
-//			SecretKey: global.Config.TencentCOS.SecretKey,
+//			SecretID:  global.Config.Tencent.SecretID,
+//			SecretKey: global.Config.Tencent.SecretKey,
 //		},
 //	})
 //	return client

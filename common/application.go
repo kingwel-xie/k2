@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/kingwel-xie/k2/core/oss"
+	"github.com/kingwel-xie/k2/core/sms"
 	"net/http"
 	"sort"
 	"strings"
@@ -28,6 +29,7 @@ type Application struct {
 	queue   storage.AdapterQueue
 	locker  storage.AdapterLocker
 	oss     oss.Oss
+	sms     sms.Sms
 	routers []Router
 }
 
@@ -160,6 +162,20 @@ func (e *Application) GetOss() oss.Oss {
 	e.mux.Lock()
 	defer e.mux.Unlock()
 	return e.oss
+}
+
+// SetSms 设置Sms service
+func (e *Application) SetSms(sms sms.Sms) {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	e.sms = sms
+}
+
+// SetSms 设置Sms service
+func (e *Application) GetSms() sms.Sms {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	return e.sms
 }
 
 // GetStreamMessage 获取队列需要用的message
