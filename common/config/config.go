@@ -50,6 +50,7 @@ type Config struct {
 	Locker      *Locker      `yaml:"locker"`
 	Oss   		*Oss   		 `yaml:"oss"`
 	Sms   		*Sms   		 `yaml:"sms"`
+	File   		*File   	 `yaml:"file"`
 }
 
 // Setup 载入配置文件
@@ -67,6 +68,7 @@ func Setup(configFile string,
 			Locker:      LockerConfig,
 			Oss:   		 OssConfig,
 			Sms:   		 SmsConfig,
+			File:        FileConfig,
 		},
 		Extend:    ExtendConfig,
 		callbacks: fs,
