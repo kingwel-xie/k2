@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"mime/multipart"
+	"net/http"
 	"path"
 	"strings"
 
@@ -17,20 +19,19 @@ import (
 )
 
 const UploadFilePath = "static/upload/"
-const DownloadUrlPrefix = "public/downloadFile"
+const DownloadUrlPrefix = "/public/downloadFile/"
 
 var (
-	failedInitFilePathErr = cerr.New(500, "初始化路径失败", "failed to initialize upload path")
-	failedUploadThirdPartyErr = cerr.New(500, "上传第三方失败", "failed to upload third party")
+	failedInitFilePath = cerr.New(4500, "初始化路径失败", "failed to initialize upload path")
+	failedSavingFile = cerr.New(4501, "未能保存文件", "failed to save the uploaded file")
+	failedUploadToOss = cerr.New(500, "上传第三方失败", "failed to upload third party")
 	requiredPicFileErr = cerr.New(500, "图片不能为空", "picture file cannot be empty")
 )
 
 type FileResponse struct {
-	Size     int64  `json:"size"`
 	Path     string `json:"path"`
 	FullPath string `json:"full_path"`
 	Name     string `json:"name"`
-	Type     string `json:"type"`
 }
 
 type File struct {
@@ -53,22 +54,21 @@ func (e File) UploadFile(c *gin.Context) {
 
 	// local path as file storage
 	if config.FileConfig.Path != "" {
-		err := utils.IsNotExistMkDir(UploadFilePath)
+		err := utils.IsNotExistMkDir(config.FileConfig.Path)
 		if err != nil {
-			e.Error(failedInitFilePathErr.Wrap(err))
+			e.Error(failedInitFilePath.Wrap(err))
 			return
 		}
 	}
 
 	tag, _ := c.GetPostForm("type")
-	urlPrefix := fmt.Sprintf("http://%s/api/v1/%s/", c.Request.Host, DownloadUrlPrefix)
-	var fileResponse FileResponse
+	urlPrefix := DownloadUrlPrefix
 
 	switch tag {
 	case "1": // 单图
-		var done bool
-		fileResponse, done = e.singleFile(c, fileResponse, urlPrefix)
-		if done {
+		fileResponse, err := e.singleFile(c, urlPrefix)
+		if err != nil {
+			e.Error(err)
 			return
 		}
 		e.OK(fileResponse, "上传成功")
@@ -78,12 +78,12 @@ func (e File) UploadFile(c *gin.Context) {
 		e.OK(multipartFile, "上传成功")
 		return
 	case "3": // base64
-		fileResponse = e.baseImg(c, fileResponse, urlPrefix)
+		fileResponse := e.baseImg(c, urlPrefix)
 		e.OK(fileResponse, "上传成功")
 	default:
-		var done bool
-		fileResponse, done = e.singleFile(c, fileResponse, urlPrefix)
-		if done {
+		fileResponse, err := e.singleFile(c, urlPrefix)
+		if err != nil {
+			e.Error(err)
 			return
 		}
 		e.OK(fileResponse, "上传成功")
@@ -100,10 +100,9 @@ func (e File) UploadFile(c *gin.Context) {
 // @Success 200
 // @Failure 503
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
-// @Router /api/v1/public/downloadFile/{filename} [get]
+// @Router /public/downloadFile/{filename} [get]
 // @Security Bearer
 func (e File) DownloadFile(c *gin.Context) {
-	e.MakeContext(c)
 	var req struct {
 		Filename string `uri:"filename"`
 	}
@@ -117,15 +116,31 @@ func (e File) DownloadFile(c *gin.Context) {
 
 	// local path as file storage
 	if config.FileConfig.Path != "" {
-		fullname := path.Join(config.FileConfig.Path, e.GetIdentity().Username, req.Filename)
+		fullname := path.Join(config.FileConfig.Path, req.Filename)
 		e.Context.File(fullname)
 	} else {
-		e.Error(nil)
+		oss := common.Runtime.GetOss()
+		reader, err := oss.DownloadFile(req.Filename)
+		if err != nil {
+			_ = e.Context.AbortWithError(400, failedUploadToOss.Wrap(err))
+			return
+		}
+		defer reader.Close()
+
+		// TODO: remove ReadAll, bad efficency
+		data, err := ioutil.ReadAll(reader)
+		if err != nil {
+			_ = e.Context.AbortWithError(400, failedUploadToOss.Wrap(err))
+			return
+		}
+
+		contentType := http.DetectContentType(data)
+		e.Context.Data(200, contentType, data)
 	}
 }
 
 
-func (e File) baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix string) FileResponse {
+func (e File) baseImg(c *gin.Context, urlPerfix string) *FileResponse {
 	files, _ := c.GetPostForm("file")
 	file2list := strings.Split(files, ",")
 	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
@@ -134,17 +149,15 @@ func (e File) baseImg(c *gin.Context, fileResponse FileResponse, urlPerfix strin
 
 	base64File := UploadFilePath + fileName
 	_ = ioutil.WriteFile(base64File, ddd, 0666)
-	typeStr := strings.Replace(strings.Replace(file2list[0], "data:", "", -1), ";base64", "", -1)
-	fileResponse = FileResponse{
-		Size:     utils.GetFileSize(base64File),
+	//typeStr := strings.Replace(strings.Replace(file2list[0], "data:", "", -1), ";base64", "", -1)
+	fileResponse := &FileResponse{
 		Path:     base64File,
 		FullPath: urlPerfix + base64File,
 		Name:     "",
-		Type:     typeStr,
 	}
 	err := upload(fileName, base64File)
 	if err != nil {
-		e.Error(failedUploadThirdPartyErr.Wrap(err))
+		e.Error(failedUploadToOss.Wrap(err))
 		return fileResponse
 	}
 	return fileResponse
@@ -159,18 +172,15 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
 
 		multipartFileName := UploadFilePath + fileName
 		err1 := c.SaveUploadedFile(f, multipartFileName)
-		fileType, _ := utils.GetType(multipartFileName)
 		if err1 == nil {
 			err := upload(fileName, multipartFileName)
 			if err != nil {
-				e.Error(failedUploadThirdPartyErr.Wrap(err))
+				e.Error(failedUploadToOss.Wrap(err))
 			} else {
 				fileResponse := FileResponse{
-					Size:     utils.GetFileSize(multipartFileName),
 					Path:     multipartFileName,
 					FullPath: urlPerfix + multipartFileName,
 					Name:     f.Filename,
-					Type:     fileType,
 				}
 				multipartFile = append(multipartFile, fileResponse)
 			}
@@ -179,34 +189,45 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
 	return multipartFile
 }
 
-func (e File) singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix string) (FileResponse, bool) {
-	files, err := c.FormFile("file")
-
-	if err != nil {
-		e.Error(requiredPicFileErr.Wrap(err))
-		return FileResponse{}, true
-	}
-	filename := e.filename(files.Filename)
-
+func (e File) saveFile(file *multipart.FileHeader, filename string) error {
+	var err error
 	if config.FileConfig.Path != "" {
 		dir := path.Join(config.FileConfig.Path, e.GetIdentity().Username)
 		err = utils.IsNotExistMkDir(dir)
 		if err != nil {
-			e.Error(failedInitFilePathErr.Wrap(err))
-			return FileResponse{}, true
+			return failedInitFilePath.Wrap(err)
 		}
-		fullname := path.Join(dir, filename)
-		_ = c.SaveUploadedFile(files, fullname)
+		fullname := path.Join(config.FileConfig.Path, filename)
+		err = e.Context.SaveUploadedFile(file, fullname)
+		if err != nil {
+			return failedSavingFile.Wrap(err)
+		}
 	} else {
 		oss := common.Runtime.GetOss()
-		oss.UploadFile(files)
+		err = oss.UploadFile(file, filename)
+		if err != nil {
+			return failedUploadToOss.Wrap(err)
+		}
 	}
-	fileResponse = FileResponse{
-		Path:     filename,
-		FullPath: urlPerfix + filename,
-		Name:     files.Filename,
+	return nil
+}
+
+func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return nil, requiredPicFileErr.Wrap(err)
+	}
+	filename := e.filename(file.Filename)
+	err = e.saveFile(file, filename)
+	if err != nil {
+		return nil, err
 	}
 
+	fileResponse := &FileResponse{
+		Path:     filename,
+		FullPath: urlPerfix + filename,
+		Name:     file.Filename,
+	}
 	//fileType, _ := utils.GetType(singleFile)
 	//fileResponse = FileResponse{
 	//	Size:     utils.GetFileSize(singleFile),
@@ -222,11 +243,11 @@ func (e File) singleFile(c *gin.Context, fileResponse FileResponse, urlPerfix st
 	//}
 	//fileResponse.Path = "/static/uploadfile/" + fileName
 	//fileResponse.FullPath = "/static/uploadfile/" + fileName
-	return fileResponse, false
+	return fileResponse, nil
 }
 
 func (e File) filename(oldname string) string {
-	return fmt.Sprintf("%s%s", uuid.New().String(), utils.GetExt(oldname))
+	return fmt.Sprintf("[%s]%s%s", e.GetIdentity().Username, uuid.New().String(), utils.GetExt(oldname))
 }
 //
 //func (e File) save(file *multipart.FileHeader, filename string) {
