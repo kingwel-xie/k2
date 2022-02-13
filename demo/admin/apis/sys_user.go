@@ -384,10 +384,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 		return
 	}
 	mp["introduction"] = "If I die before I wake"
-	mp["avatar"] = "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"
-	if sysUser.Avatar != "" {
-		mp["avatar"] = sysUser.Avatar
-	}
+	mp["avatar"] = sysUser.Avatar
 	mp["userName"] = sysUser.NickName
 	mp["userId"] = sysUser.UserId
 	mp["deptId"] = sysUser.DeptId
