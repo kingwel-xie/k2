@@ -1,8 +1,7 @@
 package common
 
 import (
-	"github.com/kingwel-xie/k2/core/oss"
-	"github.com/kingwel-xie/k2/core/sms"
+	"github.com/kingwel-xie/k2/core/storage/cache"
 	"net/http"
 	"sort"
 	"strings"
@@ -10,11 +9,13 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
-
 	"github.com/kingwel-xie/k2/core/cronjob"
+	"github.com/kingwel-xie/k2/core/oss"
+	"github.com/kingwel-xie/k2/core/sms"
 	"github.com/kingwel-xie/k2/core/storage"
 	"github.com/kingwel-xie/k2/core/storage/queue"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var Runtime = NewApplication()
@@ -185,4 +186,24 @@ func (e *Application) GetStreamMessage(id, stream string, value map[string]inter
 	message.SetStream(stream)
 	message.SetValues(value)
 	return message, nil
+}
+
+// SetupRuntimeForTest for test purpose
+func SetupRuntimeForTest(dbFilename string) {
+	db, err := gorm.Open(sqlite.Open(dbFilename), &gorm.Config{
+		CreateBatchSize: 500,
+	})
+	if err != nil {
+		panic(err)
+	}
+	Runtime.SetDb(db)
+
+	cron := cronjob.Setup()
+	Runtime.SetCrontab(cron)
+
+	cacheAdapter := cache.NewMemory()
+	Runtime.SetCacheAdapter(cacheAdapter)
+
+	queueAdapter := queue.NewMemory(100)
+	Runtime.SetQueueAdapter(queueAdapter)
 }
