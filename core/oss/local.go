@@ -42,6 +42,12 @@ func (l *Local) UploadFile(file io.Reader, filename string) (string, error) {
 	// 拼接路径和文件名
 	p := path.Join(l.Path, filename)
 
+	err := os.MkdirAll(path.Dir(p), os.ModePerm)
+	if err != nil {
+		log.Errorf("function os.MkDirAll() failed for %s, %v", path.Dir(p), err)
+		return "", err
+	}
+
 	out, createErr := os.Create(p)
 	if createErr != nil {
 		log.Errorf("function os.Create() Filed, %v", createErr)

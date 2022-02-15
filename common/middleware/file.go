@@ -213,8 +213,6 @@ func (e File) saveFile(file io.Reader, filename string) error {
 			return failedInitFilePath.Wrap(err)
 		}
 		fullname := path.Join(config.FileConfig.Path, filename)
-		//err = e.Context.SaveUploadedFile(file, fullname)
-
 		out, err := os.Create(fullname)
 		if err != nil {
 			return failedSavingFile.Wrap(err)
@@ -261,5 +259,5 @@ func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error
 }
 
 func (e File) filename(oldname string) string {
-	return fmt.Sprintf("[%s]%s%s", e.GetIdentity().Username, uuid.New().String(), utils.GetExt(oldname))
+	return fmt.Sprintf("%s/%s%s", e.GetIdentity().Username, uuid.New().String(), utils.GetExt(oldname))
 }
