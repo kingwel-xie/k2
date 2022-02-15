@@ -3,7 +3,6 @@ package oss
 import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"io"
-	"mime/multipart"
 )
 
 type AliyunOSS struct{
@@ -13,9 +12,10 @@ type AliyunOSS struct{
 	AccessKeyId     string
 	AccessKeySecret string
 	BucketName      string
+	BucketUrl       string
 }
 
-func NewAliyun(endpoint, accessKeyId, accessKeySecret, bucketName string) Oss {
+func NewAliyun(endpoint, accessKeyId, accessKeySecret, bucketName string, bucketUrl string) Oss {
 	// 创建OSSClient实例。
 	client, err := oss.New(endpoint, accessKeyId, accessKeySecret)
 	if err != nil {
@@ -27,10 +27,12 @@ func NewAliyun(endpoint, accessKeyId, accessKeySecret, bucketName string) Oss {
 	if err != nil {
 		panic(err)
 	}
-	return &AliyunOSS{ client: client, bucket: bucket, BucketName: bucketName }
+	return &AliyunOSS{ client: client, bucket: bucket, BucketName: bucketName, BucketUrl: bucketUrl}
 }
 
-
+func (e *AliyunOSS) GetFileMeta(filename string) (map[string][]string, error) {
+	return e.bucket.GetObjectDetailedMeta(filename)
+}
 
 // UpLoadLocalFile 文件上传
 func (e *AliyunOSS) UpLoadLocalFile(yourObjectName string, localFile string) error {
@@ -45,23 +47,14 @@ func (e *AliyunOSS) UpLoadLocalFile(yourObjectName string, localFile string) err
 	return nil
 }
 
-func (e *AliyunOSS) UploadFile(file *multipart.FileHeader, filename string) error {
-	// 读取本地文件。
-	f, openError := file.Open()
-	if openError != nil {
-		log.Errorf("function file.Open() Failed, %v", openError)
-		return openError
-	}
-	defer f.Close() // 创建文件 defer 关闭
-
+func (e *AliyunOSS) UploadFile(file io.Reader, filename string) (string, error) {
 	// 上传文件流。
-	err := e.bucket.PutObject(filename, f)
+	err := e.bucket.PutObject(filename, file)
 	if err != nil {
 		log.Errorf("PutObject Failed, %v", err)
-		return err
+		return "", err
 	}
-
-	return nil
+	return e.BucketUrl + "/" + filename, nil
 }
 
 func (e *AliyunOSS) DownloadFile(filename string) (io.ReadCloser, error) {

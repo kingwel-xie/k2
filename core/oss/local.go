@@ -3,7 +3,6 @@ package oss
 import (
 	"errors"
 	"io"
-	"mime/multipart"
 	"os"
 	"path"
 
@@ -39,30 +38,23 @@ func (l *Local) UpLoadLocalFile(objectName string, localFile string) error {
 	return nil
 }
 
-func (l *Local) UploadFile(file *multipart.FileHeader, filename string) error {
+func (l *Local) UploadFile(file io.Reader, filename string) (string, error) {
 	// 拼接路径和文件名
 	p := path.Join(l.Path, filename)
-
-	f, openError := file.Open() // 读取文件
-	if openError != nil {
-		log.Errorf("function file.Open() Filed, %v", openError)
-		return openError
-	}
-	defer f.Close() // 创建文件 defer 关闭
 
 	out, createErr := os.Create(p)
 	if createErr != nil {
 		log.Errorf("function os.Create() Filed, %v", createErr)
-		return createErr
+		return "", createErr
 	}
 	defer out.Close() // 创建文件 defer 关闭
 
-	_, copyErr := io.Copy(out, f) // 传输（拷贝）文件
+	_, copyErr := io.Copy(out, file) // 传输（拷贝）文件
 	if copyErr != nil {
 		log.Errorf("function io.Copy() Filed, %v", copyErr)
-		return copyErr
+		return "", copyErr
 	}
-	return nil
+	return p, nil
 }
 
 func (l *Local) DownloadFile(filename string) (io.ReadCloser, error) {
@@ -82,4 +74,9 @@ func (l *Local) DeleteFile(filename string) error {
 		return errors.New("本地文件删除失败, err:" + err.Error())
 	}
 	return nil
+}
+
+func (l *Local) GetFileMeta(filename string) (map[string][]string, error) {
+	var header = make(map[string][]string)
+	return header, nil
 }

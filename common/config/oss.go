@@ -55,7 +55,7 @@ func (e Oss) Setup() oss.Oss {
 	//case "tencent":
 	//	return oss.NewTencent(e.Tencent.Region, e.Tencent.Bucket, e.Tencent.BaseURL, e.Tencent.PathPrefix...)
 	case "aliyun":
-		return oss.NewAliyun(e.Aliyun.Endpoint, e.Aliyun.AccessKeyId, e.Aliyun.AccessKeySecret, e.Aliyun.BucketName)
+		return oss.NewAliyun(e.Aliyun.Endpoint, e.Aliyun.AccessKeyId, e.Aliyun.AccessKeySecret, e.Aliyun.BucketName, e.Aliyun.BucketUrl)
 	default:
 		return oss.NewLocal(e.Local.Path)
 	}

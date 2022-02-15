@@ -1,12 +1,15 @@
 package middleware
 
 import (
+	"bytes"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"mime/multipart"
 	"net/http"
+	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -18,14 +21,15 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
-const UploadFilePath = "static/upload/"
 const DownloadUrlPrefix = "/public/downloadFile/"
 
 var (
 	failedInitFilePath = cerr.New(4500, "初始化路径失败", "failed to initialize upload path")
 	failedSavingFile = cerr.New(4501, "未能保存文件", "failed to save the uploaded file")
-	failedUploadToOss = cerr.New(500, "上传第三方失败", "failed to upload third party")
-	requiredPicFileErr = cerr.New(500, "图片不能为空", "picture file cannot be empty")
+	failedUploadToOss = cerr.New(4502, "上传OSS失败", "failed to upload to oss")
+	requiredFileErr = cerr.New(4503, "文件不能为空", "file cannot be empty")
+	failedDownloadFromOss = cerr.New(4504, "OSS下载失败", "failed to download from oss")
+	failedUploadingfile = cerr.New(4505, "未能上传文件", "failed to upload")
 )
 
 type FileResponse struct {
@@ -62,35 +66,26 @@ func (e File) UploadFile(c *gin.Context) {
 	}
 
 	tag, _ := c.GetPostForm("type")
-	urlPrefix := DownloadUrlPrefix
 
+	urlPrefix := DownloadUrlPrefix
+	var response interface{}
+	var err error
 	switch tag {
 	case "1": // 单图
-		fileResponse, err := e.singleFile(c, urlPrefix)
-		if err != nil {
-			e.Error(err)
-			return
-		}
-		e.OK(fileResponse, "上传成功")
-		return
+		response, err = e.singleFile(c, urlPrefix)
 	case "2": // 多图
-		multipartFile := e.multipleFile(c, urlPrefix)
-		e.OK(multipartFile, "上传成功")
-		return
+		response, err = e.multipleFile(c, urlPrefix)
 	case "3": // base64
-		fileResponse := e.baseImg(c, urlPrefix)
-		e.OK(fileResponse, "上传成功")
+		response, err = e.baseImg(c, urlPrefix)
 	default:
-		fileResponse, err := e.singleFile(c, urlPrefix)
-		if err != nil {
-			e.Error(err)
-			return
-		}
-		e.OK(fileResponse, "上传成功")
-		return
+		response, err = e.singleFile(c, urlPrefix)
+	}
+	if err != nil {
+		e.Error(err)
+	} else {
+		e.OK(response, "上传成功")
 	}
 }
-
 
 // DownloadFile 下载文件
 // @Summary 下载文件
@@ -122,74 +117,94 @@ func (e File) DownloadFile(c *gin.Context) {
 		oss := common.Runtime.GetOss()
 		reader, err := oss.DownloadFile(req.Filename)
 		if err != nil {
-			_ = e.Context.AbortWithError(400, failedUploadToOss.Wrap(err))
+			_ = e.Context.AbortWithError(400, failedDownloadFromOss.Wrap(err))
 			return
 		}
 		defer reader.Close()
 
-		// TODO: remove ReadAll, bad efficency
-		data, err := ioutil.ReadAll(reader)
+		// try to get the heaers
+		headers, err := oss.GetFileMeta(req.Filename)
 		if err != nil {
-			_ = e.Context.AbortWithError(400, failedUploadToOss.Wrap(err))
+			_ = e.Context.AbortWithError(400, failedDownloadFromOss.Wrap(err))
 			return
 		}
 
-		contentType := http.DetectContentType(data)
-		e.Context.Data(200, contentType, data)
-	}
-}
-
-
-func (e File) baseImg(c *gin.Context, urlPerfix string) *FileResponse {
-	files, _ := c.GetPostForm("file")
-	file2list := strings.Split(files, ",")
-	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
-	guid := uuid.New().String()
-	fileName := guid + ".jpg"
-
-	base64File := UploadFilePath + fileName
-	_ = ioutil.WriteFile(base64File, ddd, 0666)
-	//typeStr := strings.Replace(strings.Replace(file2list[0], "data:", "", -1), ";base64", "", -1)
-	fileResponse := &FileResponse{
-		Path:     base64File,
-		FullPath: urlPerfix + base64File,
-		Name:     "",
-	}
-	err := upload(fileName, base64File)
-	if err != nil {
-		e.Error(failedUploadToOss.Wrap(err))
-		return fileResponse
-	}
-	return fileResponse
-}
-
-func (e File) multipleFile(c *gin.Context, urlPerfix string) []FileResponse {
-	files := c.Request.MultipartForm.File["file"]
-	var multipartFile []FileResponse
-	for _, f := range files {
-		guid := uuid.New().String()
-		fileName := guid + utils.GetExt(f.Filename)
-
-		multipartFileName := UploadFilePath + fileName
-		err1 := c.SaveUploadedFile(f, multipartFileName)
-		if err1 == nil {
-			err := upload(fileName, multipartFileName)
+		types, ok1 := headers["Content-Type"]
+		lengths, ok2 := headers["Content-Length"]
+		if ok1 && ok2 && len(types) > 0 && len(lengths) > 0 {
+			contentType := types[0]
+			contentLength, _ := strconv.ParseInt(lengths[0], 10, 0)
+			e.Context.DataFromReader(200, contentLength, contentType, reader, nil)
+		} else {
+			data, err := ioutil.ReadAll(reader)
 			if err != nil {
-				e.Error(failedUploadToOss.Wrap(err))
-			} else {
-				fileResponse := FileResponse{
-					Path:     multipartFileName,
-					FullPath: urlPerfix + multipartFileName,
-					Name:     f.Filename,
-				}
-				multipartFile = append(multipartFile, fileResponse)
+				_ = e.Context.AbortWithError(400, failedDownloadFromOss.Wrap(err))
+				return
 			}
+			contentType := http.DetectContentType(data)
+			e.Context.Data(200, contentType, data)
 		}
 	}
-	return multipartFile
 }
 
-func (e File) saveFile(file *multipart.FileHeader, filename string) error {
+
+func (e File) baseImg(c *gin.Context, urlPerfix string) (*FileResponse, error) {
+	files, ok := c.GetPostForm("file")
+	if !ok {
+		return nil, requiredFileErr
+	}
+	file2list := strings.Split(files, ",")
+	if len(file2list) < 2 {
+		return nil, requiredFileErr.Wrapf("wrong base64 image format")
+	}
+	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
+
+	// get ext name from file2list[0]
+	filename := e.filename("*.jpg")
+	err := e.saveFile(bytes.NewReader(ddd), filename)
+	if err != nil {
+		return nil, err
+	}
+
+	fileResponse := &FileResponse{
+		Path:     filename,
+		FullPath: urlPerfix + filename,
+		Name:     "",
+	}
+	return fileResponse, nil
+}
+
+func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, error) {
+	files, ok := c.Request.MultipartForm.File["file"]
+	if !ok {
+		return nil, requiredFileErr
+	}
+
+	var multipartFile []FileResponse
+	for _, f := range files {
+		filename := e.filename(f.Filename)
+		reader, err := f.Open()
+		if err != nil {
+			continue
+		}
+
+		err = e.saveFile(reader, filename)
+		reader.Close()
+		if err != nil {
+			continue
+		}
+
+		fileResponse := FileResponse{
+			Path:     filename,
+			FullPath: urlPerfix + filename,
+			Name:     f.Filename,
+		}
+		multipartFile = append(multipartFile, fileResponse)
+	}
+	return multipartFile, nil
+}
+
+func (e File) saveFile(file io.Reader, filename string) error {
 	var err error
 	if config.FileConfig.Path != "" {
 		dir := path.Join(config.FileConfig.Path, e.GetIdentity().Username)
@@ -198,13 +213,21 @@ func (e File) saveFile(file *multipart.FileHeader, filename string) error {
 			return failedInitFilePath.Wrap(err)
 		}
 		fullname := path.Join(config.FileConfig.Path, filename)
-		err = e.Context.SaveUploadedFile(file, fullname)
+		//err = e.Context.SaveUploadedFile(file, fullname)
+
+		out, err := os.Create(fullname)
+		if err != nil {
+			return failedSavingFile.Wrap(err)
+		}
+		defer out.Close()
+
+		_, err = io.Copy(out, file)
 		if err != nil {
 			return failedSavingFile.Wrap(err)
 		}
 	} else {
 		oss := common.Runtime.GetOss()
-		err = oss.UploadFile(file, filename)
+		_, err = oss.UploadFile(file, filename)
 		if err != nil {
 			return failedUploadToOss.Wrap(err)
 		}
@@ -215,10 +238,16 @@ func (e File) saveFile(file *multipart.FileHeader, filename string) error {
 func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		return nil, requiredPicFileErr.Wrap(err)
+		return nil, requiredFileErr.Wrap(err)
 	}
 	filename := e.filename(file.Filename)
-	err = e.saveFile(file, filename)
+	reader, err := file.Open()
+	if err != nil {
+		return nil, failedUploadingfile.Wrap(err)
+	}
+	defer reader.Close()
+
+	err = e.saveFile(reader, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -228,38 +257,9 @@ func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error
 		FullPath: urlPerfix + filename,
 		Name:     file.Filename,
 	}
-	//fileType, _ := utils.GetType(singleFile)
-	//fileResponse = FileResponse{
-	//	Size:     utils.GetFileSize(singleFile),
-	//	Path:     filename,
-	//	FullPath: urlPerfix + singleFile,
-	//	Name:     files.Filename,
-	//	Type:     fileType,
-	//}
-	//err = upload(fileName, singleFile)
-	//if err != nil {
-	//	e.Error(err)
-	//	return FileResponse{}, true
-	//}
-	//fileResponse.Path = "/static/uploadfile/" + fileName
-	//fileResponse.FullPath = "/static/uploadfile/" + fileName
 	return fileResponse, nil
 }
 
 func (e File) filename(oldname string) string {
 	return fmt.Sprintf("[%s]%s%s", e.GetIdentity().Username, uuid.New().String(), utils.GetExt(oldname))
 }
-//
-//func (e File) save(file *multipart.FileHeader, filename string) {
-//	singleFile := UploadFilePath + fileName
-//	_ = c.SaveUploadedFile(files, singleFile)
-//
-//}
-
-func upload(name string, path string) error {
-	log.Infof("uploading name=%s, path=%s", name, path)
-
-	_ = common.Runtime.GetOss().UpLoadLocalFile(name, path)
-	return nil
-}
-

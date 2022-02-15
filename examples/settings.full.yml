@@ -83,6 +83,16 @@ settings:
       base-url: https://gin.vue.admin
       path-prefix: gin-vue-admin
 
+  file:
+    path:
+
+  sms:
+    which: aliyun
+    mock:
+      sss: sss111
+    aliyun:
+      access-key-id: yourAccessKeyId
+      access-key-secret: yourAccessKeySecret
 
   extend: # 扩展项使用说明
     demo:
