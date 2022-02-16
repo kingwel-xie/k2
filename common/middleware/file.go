@@ -21,7 +21,7 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
-const DownloadUrlPrefix = "/public/downloadFile/"
+const DownloadUrlPrefix = "public/downloadFile/"
 
 var (
 	failedInitFilePath = cerr.New(4500, "初始化路径失败", "failed to initialize upload path")
@@ -67,7 +67,7 @@ func (e File) UploadFile(c *gin.Context) {
 
 	tag, _ := c.GetPostForm("type")
 
-	urlPrefix := DownloadUrlPrefix
+	urlPrefix := fmt.Sprintf("http://%s/%s", c.Request.Host, DownloadUrlPrefix)
 	var response interface{}
 	var err error
 	switch tag {
@@ -95,10 +95,11 @@ func (e File) UploadFile(c *gin.Context) {
 // @Success 200
 // @Failure 503
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
-// @Router /public/downloadFile/{filename} [get]
+// @Router /public/downloadFile/{pathname}/{filename} [get]
 // @Security Bearer
 func (e File) DownloadFile(c *gin.Context) {
 	var req struct {
+		Pathname string `uri:"pathname"`
 		Filename string `uri:"filename"`
 	}
 	err := e.MakeContext(c).
@@ -111,11 +112,12 @@ func (e File) DownloadFile(c *gin.Context) {
 
 	// local path as file storage
 	if config.FileConfig.Path != "" {
-		fullname := path.Join(config.FileConfig.Path, req.Filename)
+		fullname := path.Join(config.FileConfig.Path, req.Pathname, req.Filename)
 		e.Context.File(fullname)
 	} else {
 		oss := common.Runtime.GetOss()
-		reader, err := oss.DownloadFile(req.Filename)
+		filename := req.Pathname + "/" + req.Filename
+		reader, err := oss.DownloadFile(filename)
 		if err != nil {
 			_ = e.Context.AbortWithError(400, failedDownloadFromOss.Wrap(err))
 			return
@@ -123,7 +125,7 @@ func (e File) DownloadFile(c *gin.Context) {
 		defer reader.Close()
 
 		// try to get the heaers
-		headers, err := oss.GetFileMeta(req.Filename)
+		headers, err := oss.GetFileMeta(filename)
 		if err != nil {
 			_ = e.Context.AbortWithError(400, failedDownloadFromOss.Wrap(err))
 			return
