@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/google/uuid"
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/api"
@@ -36,6 +37,7 @@ type FileResponse struct {
 	Path     string `json:"path"`
 	FullPath string `json:"full_path"`
 	Name     string `json:"name"`
+	Size	 int64  `json:"size"`
 }
 
 type File struct {
@@ -91,7 +93,9 @@ func (e File) UploadFile(c *gin.Context) {
 // @Summary 下载文件
 // @Description 下载文件
 // @Tags 公共接口
-// @Param id filename string true "filename"
+// @Param pathname path string true "pathname"
+// @Param filename path string true "filename"
+// @Param as query string true "as"
 // @Success 200
 // @Failure 503
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
@@ -101,9 +105,10 @@ func (e File) DownloadFile(c *gin.Context) {
 	var req struct {
 		Pathname string `uri:"pathname"`
 		Filename string `uri:"filename"`
+		As string `form:"as"`
 	}
 	err := e.MakeContext(c).
-		Bind(&req, nil).
+		Bind(&req, nil, binding.Query).
 		Errors
 	if err != nil {
 		_ = e.Context.AbortWithError(400, err)
@@ -131,12 +136,19 @@ func (e File) DownloadFile(c *gin.Context) {
 			return
 		}
 
+		// save as
+		var extraHeaders map[string]string
+		if len(req.As) > 0 {
+			extraHeaders = map[string]string{
+				"Content-Disposition": fmt.Sprintf("attachment; filename=%s", req.As),
+			}
+		}
 		types, ok1 := headers["Content-Type"]
 		lengths, ok2 := headers["Content-Length"]
 		if ok1 && ok2 && len(types) > 0 && len(lengths) > 0 {
 			contentType := types[0]
 			contentLength, _ := strconv.ParseInt(lengths[0], 10, 0)
-			e.Context.DataFromReader(200, contentLength, contentType, reader, nil)
+			e.Context.DataFromReader(200, contentLength, contentType, reader, extraHeaders)
 		} else {
 			data, err := ioutil.ReadAll(reader)
 			if err != nil {
@@ -144,7 +156,9 @@ func (e File) DownloadFile(c *gin.Context) {
 				return
 			}
 			contentType := http.DetectContentType(data)
-			e.Context.Data(200, contentType, data)
+			contentLength := int64(len(data))
+			//e.Context.Data(200, contentType, data)
+			e.Context.DataFromReader(200, contentLength, contentType, bytes.NewReader(data), extraHeaders)
 		}
 	}
 }
@@ -172,6 +186,7 @@ func (e File) baseImg(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 		Path:     filename,
 		FullPath: urlPerfix + filename,
 		Name:     "",
+		Size: 	  int64(len(ddd)),
 	}
 	return fileResponse, nil
 }
@@ -200,6 +215,7 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, er
 			Path:     filename,
 			FullPath: urlPerfix + filename,
 			Name:     f.Filename,
+			Size:     f.Size,
 		}
 		multipartFile = append(multipartFile, fileResponse)
 	}
@@ -256,6 +272,8 @@ func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error
 		Path:     filename,
 		FullPath: urlPerfix + filename,
 		Name:     file.Filename,
+		Size:	  file.Size,
+
 	}
 	return fileResponse, nil
 }
