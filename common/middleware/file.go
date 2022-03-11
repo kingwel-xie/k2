@@ -251,6 +251,11 @@ func (e File) saveFile(file io.Reader, filename string) error {
 	return nil
 }
 
+func (e File) SingleFile(c *gin.Context, urlPrefix string) (*FileResponse, error) {
+	return e.singleFile(c, urlPrefix)
+}
+
+
 func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 	file, err := c.FormFile("file")
 	if err != nil {
