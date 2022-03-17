@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -22,7 +22,7 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
-const DownloadUrlPrefix = "public/downloadFile/"
+const DownloadUrlPrefix = "/public/downloadFile/"
 
 var (
 	failedInitFilePath = cerr.New(4500, "初始化路径失败", "failed to initialize upload path")
@@ -69,18 +69,17 @@ func (e File) UploadFile(c *gin.Context) {
 
 	tag, _ := c.GetPostForm("type")
 
-	urlPrefix := fmt.Sprintf("http://%s/%s", c.Request.Host, DownloadUrlPrefix)
 	var response interface{}
 	var err error
 	switch tag {
 	case "1": // 单图
-		response, err = e.singleFile(c, urlPrefix)
+		response, err = e.singleFile(c)
 	case "2": // 多图
-		response, err = e.multipleFile(c, urlPrefix)
+		response, err = e.multipleFile(c)
 	case "3": // base64
-		response, err = e.baseImg(c, urlPrefix)
+		response, err = e.baseImg(c)
 	default:
-		response, err = e.singleFile(c, urlPrefix)
+		response, err = e.singleFile(c)
 	}
 	if err != nil {
 		e.Error(err)
@@ -117,7 +116,7 @@ func (e File) DownloadFile(c *gin.Context) {
 
 	// local path as file storage
 	if config.FileConfig.Path != "" {
-		fullname := path.Join(config.FileConfig.Path, req.Pathname, req.Filename)
+		fullname := filepath.Join(config.FileConfig.Path, req.Pathname, req.Filename)
 		e.Context.File(fullname)
 	} else {
 		oss := common.Runtime.GetOss()
@@ -163,8 +162,10 @@ func (e File) DownloadFile(c *gin.Context) {
 	}
 }
 
+func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
+	class, _ := c.GetPostForm("class")
+	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
 
-func (e File) baseImg(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 	files, ok := c.GetPostForm("file")
 	if !ok {
 		return nil, requiredFileErr
@@ -176,7 +177,7 @@ func (e File) baseImg(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
 
 	// get ext name from file2list[0]
-	filename := e.filename("*.jpg")
+	filename := e.filename(class,"*.jpg")
 	err := e.saveFile(bytes.NewReader(ddd), filename)
 	if err != nil {
 		return nil, err
@@ -184,14 +185,17 @@ func (e File) baseImg(c *gin.Context, urlPerfix string) (*FileResponse, error) {
 
 	fileResponse := &FileResponse{
 		Path:     filename,
-		FullPath: urlPerfix + filename,
+		FullPath: urlPrefix + filename,
 		Name:     "",
 		Size: 	  int64(len(ddd)),
 	}
 	return fileResponse, nil
 }
 
-func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, error) {
+func (e File) multipleFile(c *gin.Context) ([]FileResponse, error) {
+	class, _ := c.GetPostForm("class")
+	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
+
 	files, ok := c.Request.MultipartForm.File["file"]
 	if !ok {
 		return nil, requiredFileErr
@@ -199,7 +203,7 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, er
 
 	var multipartFile []FileResponse
 	for _, f := range files {
-		filename := e.filename(f.Filename)
+		filename := e.filename(class, f.Filename)
 		reader, err := f.Open()
 		if err != nil {
 			continue
@@ -213,7 +217,7 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, er
 
 		fileResponse := FileResponse{
 			Path:     filename,
-			FullPath: urlPerfix + filename,
+			FullPath: urlPrefix + filename,
 			Name:     f.Filename,
 			Size:     f.Size,
 		}
@@ -225,12 +229,11 @@ func (e File) multipleFile(c *gin.Context, urlPerfix string) ([]FileResponse, er
 func (e File) saveFile(file io.Reader, filename string) error {
 	var err error
 	if config.FileConfig.Path != "" {
-		dir := path.Join(config.FileConfig.Path, e.GetIdentity().Username)
-		err = utils.IsNotExistMkDir(dir)
+		fullname := filepath.Join(config.FileConfig.Path, filename)
+		err = utils.IsNotExistMkDir(filepath.Dir(fullname))
 		if err != nil {
 			return failedInitFilePath.Wrap(err)
 		}
-		fullname := path.Join(config.FileConfig.Path, filename)
 		out, err := os.Create(fullname)
 		if err != nil {
 			return failedSavingFile.Wrap(err)
@@ -251,17 +254,53 @@ func (e File) saveFile(file io.Reader, filename string) error {
 	return nil
 }
 
-func (e File) SingleFile(c *gin.Context, urlPrefix string) (*FileResponse, error) {
-	return e.singleFile(c, urlPrefix)
-}
-
-
-func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error) {
+// ImportTempFile upload a temp file
+func (e File) ImportTempFile(c *gin.Context) (*FileResponse, error) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return nil, requiredFileErr.Wrap(err)
 	}
-	filename := e.filename(file.Filename)
+	filename := e.filename("", file.Filename)
+	reader, err := file.Open()
+	if err != nil {
+		return nil, failedUploadingfile.Wrap(err)
+	}
+	defer reader.Close()
+
+	fullname := filepath.Join(os.TempDir(), filename)
+	err = utils.IsNotExistMkDir(filepath.Dir(fullname))
+	if err != nil {
+		return nil, failedInitFilePath.Wrap(err)
+	}
+	out, err := os.Create(fullname)
+	if err != nil {
+		return nil, failedSavingFile.Wrap(err)
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, reader)
+	if err != nil {
+		return nil, failedSavingFile.Wrap(err)
+	}
+
+	fileResponse := &FileResponse{
+		Path:     filename,
+		FullPath: fullname,
+		Name:     file.Filename,
+		Size:	  file.Size,
+	}
+	return fileResponse, nil
+}
+
+func (e File) singleFile(c *gin.Context) (*FileResponse, error) {
+	class, _ := c.GetPostForm("class")
+	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		return nil, requiredFileErr.Wrap(err)
+	}
+	filename := e.filename(class, file.Filename)
 	reader, err := file.Open()
 	if err != nil {
 		return nil, failedUploadingfile.Wrap(err)
@@ -275,7 +314,7 @@ func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error
 
 	fileResponse := &FileResponse{
 		Path:     filename,
-		FullPath: urlPerfix + filename,
+		FullPath: urlPrefix + filename,
 		Name:     file.Filename,
 		Size:	  file.Size,
 
@@ -283,6 +322,10 @@ func (e File) singleFile(c *gin.Context, urlPerfix string) (*FileResponse, error
 	return fileResponse, nil
 }
 
-func (e File) filename(oldname string) string {
-	return fmt.Sprintf("%s/%s%s", e.GetIdentity().Username, uuid.New().String(), utils.GetExt(oldname))
+func (e File) filename(class, oldname string) string {
+	// no class specified, use Identity.Username
+	if class == "" {
+		class = e.GetIdentity().Username
+	}
+	return fmt.Sprintf("%s/%s%s", class, uuid.New().String(), utils.GetExt(oldname))
 }
