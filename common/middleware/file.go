@@ -163,7 +163,7 @@ func (e File) DownloadFile(c *gin.Context) {
 }
 
 func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
-	class, _ := c.GetPostForm("class")
+	category, _ := c.GetPostForm("category")
 	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
 
 	files, ok := c.GetPostForm("file")
@@ -177,7 +177,7 @@ func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
 	ddd, _ := base64.StdEncoding.DecodeString(file2list[1])
 
 	// get ext name from file2list[0]
-	filename := e.filename(class,"*.jpg")
+	filename := e.filename(category,"*.jpg")
 	err := e.saveFile(bytes.NewReader(ddd), filename)
 	if err != nil {
 		return nil, err
@@ -193,7 +193,7 @@ func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
 }
 
 func (e File) multipleFile(c *gin.Context) ([]FileResponse, error) {
-	class, _ := c.GetPostForm("class")
+	category, _ := c.GetPostForm("category")
 	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
 
 	files, ok := c.Request.MultipartForm.File["file"]
@@ -203,7 +203,7 @@ func (e File) multipleFile(c *gin.Context) ([]FileResponse, error) {
 
 	var multipartFile []FileResponse
 	for _, f := range files {
-		filename := e.filename(class, f.Filename)
+		filename := e.filename(category, f.Filename)
 		reader, err := f.Open()
 		if err != nil {
 			continue
@@ -293,14 +293,14 @@ func (e File) ImportTempFile(c *gin.Context) (*FileResponse, error) {
 }
 
 func (e File) singleFile(c *gin.Context) (*FileResponse, error) {
-	class, _ := c.GetPostForm("class")
+	category, _ := c.GetPostForm("category")
 	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
 
 	file, err := c.FormFile("file")
 	if err != nil {
 		return nil, requiredFileErr.Wrap(err)
 	}
-	filename := e.filename(class, file.Filename)
+	filename := e.filename(category, file.Filename)
 	reader, err := file.Open()
 	if err != nil {
 		return nil, failedUploadingfile.Wrap(err)
@@ -322,10 +322,10 @@ func (e File) singleFile(c *gin.Context) (*FileResponse, error) {
 	return fileResponse, nil
 }
 
-func (e File) filename(class, oldname string) string {
-	// no class specified, use Identity.Username
-	if class == "" {
-		class = e.GetIdentity().Username
+func (e File) filename(category, oldname string) string {
+	// no category specified, use Identity.Username
+	if category == "" {
+		category = e.GetIdentity().Username
 	}
-	return fmt.Sprintf("%s/%s%s", class, uuid.New().String(), utils.GetExt(oldname))
+	return fmt.Sprintf("%s/%s%s", category, uuid.New().String(), utils.GetExt(oldname))
 }
