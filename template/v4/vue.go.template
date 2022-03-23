@@ -13,7 +13,7 @@
           {{- if ($x) -}}
           <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
             {{ if ne .FkTableName "" -}}
-            <DictSelect v-model="queryParams.{{.JsonField}}" dict="{{.FkTableName}}" placeholder="请选择" clearable size="small" />
+            <DictSelect v-model="queryParams.{{.JsonField}}" dict="{{.FkClassName}}" placeholder="请选择" clearable size="small" />
             {{- else -}}
               {{- if eq .DictType "" -}}
             <el-input{{- if or ($isFloat) ($isInteger) -}}-number{{- end }} v-model="queryParams.{{.JsonField}}" {{- if ($isInteger) }} :precision="0" {{- end }} placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
@@ -54,7 +54,7 @@
           {{- $x := .NotOnList -}}
           {{- if not ($x) -}}
             {{- if ne .FkTableName "" -}}
-          <el-table-column v-fmt.dict="'{{.FkTableName}}'" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
+          <el-table-column v-fmt.dict="'{{.FkClassName}}'" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
               {{- else -}}
                 {{- if ne .DictType "" -}}
           <el-table-column v-fmt.dict="'{{.DictType}}'" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
@@ -71,6 +71,8 @@
                   {{- else -}}
                     {{- if eq .GoType "float64" -}}
           <el-table-column v-fmt.float label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
+                    {{- else if eq .GoType "bool" -}}
+          <el-table-column v-fmt.bool="['是', '否']" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
                     {{- else -}}
           <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
                     {{- end -}}
@@ -119,12 +121,16 @@
                   <el-input{{- if or ($isFloat) ($isInteger) -}}-number{{- end }} v-model="form.{{.JsonField}}" {{- if ($isInteger) }} :precision="0" {{- end }} placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                   {{- else if eq "select" .HtmlType -}}
                     {{- if ne .FkTableName "" -}}
-                  <DictSelect v-model="form.{{.JsonField}}" dict="{{.FkTableName}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
+                  <DictSelect v-model="form.{{.JsonField}}" dict="{{.FkClassName}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                     {{- else -}}
                   <DictSelect v-model="form.{{.JsonField}}" dict="{{.DictType}}" placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                     {{- end -}}
                   {{- else if eq "radio" .HtmlType -}}
+                    {{- if ne .FkTableName "" -}}
+                  <DictRadioGroup v-model="form.{{.JsonField}}" dict="{{.FkClassName}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
+                    {{- else -}}
                   <DictRadioGroup v-model="form.{{.JsonField}}" dict="{{.DictType}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
+                    {{- end -}}
                   {{- else if eq "file" .HtmlType -}}
                   <el-input v-model="form.{{.JsonField}}" placeholder="图片" />
                   <el-button type="primary" @click="fileShow{{.GoField}}">选择文件</el-button>
@@ -156,12 +162,6 @@
 
 <script>
 import { add{{.ClassName}}, del{{.ClassName}}, get{{.ClassName}}, list{{.ClassName}}, update{{.ClassName}} } from '@/api/{{ .PackageName}}/{{ .ModuleFrontName}}'
-{{ $package:=.PackageName }}
-{{range .Columns -}}
-{{- if ne .FkTableName "" -}}
-import { list{{.FkClassName}} } from '@/api/{{ $package }}/{{ .FkModuleFrontName}}'
-{{ end -}}
-{{- end -}}
 {{ if (.HasExport) -}}
 import { formatJson } from '@/utils'
 {{- end }}
