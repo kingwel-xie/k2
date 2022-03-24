@@ -12,15 +12,11 @@
           {{- $x := .Queryable -}}
           {{- if ($x) -}}
           <el-form-item label="{{.ColumnComment}}" prop="{{.JsonField}}">
-            {{ if ne .FkTableName "" -}}
-            <DictSelect v-model="queryParams.{{.JsonField}}" dict="{{.FkClassName}}" placeholder="请选择" clearable size="small" />
-            {{- else -}}
-              {{- if eq .DictType "" -}}
-            <el-input{{- if or ($isFloat) ($isInteger) -}}-number{{- end }} v-model="queryParams.{{.JsonField}}" {{- if ($isInteger) }} :precision="0" {{- end }} placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
+            {{ if ne .DictType "" -}}
+            <DictSelect v-model="queryParams.{{.JsonField}}" dict="{{.DictType}}" placeholder="{{.ColumnComment}}" clearable size="small" />
               {{- else -}}
-            <DictSelect v-model="queryParams.{{.JsonField}}" dict="{{.DictType}}" placeholder="{{$tableComment}}{{.ColumnComment}}" clearable size="small" />
+            <el-input{{- if or ($isFloat) ($isInteger) -}}-number{{- end }} v-model="queryParams.{{.JsonField}}" {{- if ($isInteger) }} :precision="0" {{- end }} placeholder="请输入{{.ColumnComment}}" clearable size="small" @keyup.enter.native="handleQuery" />
             {{- end }}
-          {{- end }}
           </el-form-item>
           {{ end -}}
           {{- end -}}
@@ -53,14 +49,10 @@
           {{ range .Columns -}}
           {{- $x := .NotOnList -}}
           {{- if not ($x) -}}
-            {{- if ne .FkTableName "" -}}
-          <el-table-column v-fmt.dict="'{{.FkClassName}}'" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
-              {{- else -}}
-                {{- if ne .DictType "" -}}
+            {{- if ne .DictType "" -}}
           <el-table-column v-fmt.dict="'{{.DictType}}'" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
-                {{- end -}}
-                {{- if eq .DictType "" -}}
-                  {{- if eq .HtmlType "datetime" -}}
+              {{- else -}}
+                {{- if eq .HtmlType "datetime" -}}
           <el-table-column v-fmt.datetime label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
                   {{- else if eq .HtmlType "el-rate" -}}
           <el-table-column label="{{.ColumnComment}}" align="center" :show-overflow-tooltip="true">
@@ -76,7 +68,6 @@
                     {{- else -}}
           <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
                     {{- end -}}
-                  {{- end -}}
                 {{- end -}}
               {{- end -}}
             {{ end }}
@@ -120,15 +111,11 @@
                   {{ if eq "input" .HtmlType -}}
                   <el-input{{- if or ($isFloat) ($isInteger) -}}-number{{- end }} v-model="form.{{.JsonField}}" {{- if ($isInteger) }} :precision="0" {{- end }} placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                   {{- else if eq "select" .HtmlType -}}
-                    {{- if ne .FkTableName "" -}}
-                  <DictSelect v-model="form.{{.JsonField}}" dict="{{.FkClassName}}" placeholder="请选择" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
-                    {{- else -}}
+                    {{- if ne .DictType "" -}}
                   <DictSelect v-model="form.{{.JsonField}}" dict="{{.DictType}}" placeholder="{{.ColumnComment}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                     {{- end -}}
                   {{- else if eq "radio" .HtmlType -}}
-                    {{- if ne .FkTableName "" -}}
-                  <DictRadioGroup v-model="form.{{.JsonField}}" dict="{{.FkClassName}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
-                    {{- else -}}
+                    {{- if ne .DictType "" -}}
                   <DictRadioGroup v-model="form.{{.JsonField}}" dict="{{.DictType}}" {{- if or (.NotOnUpdate) (.IsPk) }} :disabled="isEdit" {{- end }} />
                     {{- end -}}
                   {{- else if eq "file" .HtmlType -}}

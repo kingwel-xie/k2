@@ -89,16 +89,6 @@ func preprocessTable(tab *SysTables) error {
 			tab.Columns[index].QueryType = "EQ"
 		}
 
-		// set FkTableName if not specified
-		if len(v.FkTableName) == 0 {
-			tab.Columns[index].FkTableName = ns.TableName(v.FkClassName)
-		}
-		// set FkModuleFrontName if not specified
-		if len(v.FkModuleFrontName) == 0 {
-			s := ns.TableName(v.FkClassName)
-			tab.Columns[index].FkModuleFrontName = strings.Replace(s, "_", "-", -1)
-		}
-
 		// in the end, extract the PK information
 		if v.IsPk {
 			tab.PkGoField = tab.Columns[index].GoField

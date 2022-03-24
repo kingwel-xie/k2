@@ -47,9 +47,4 @@ type SysColumns struct {
 	HtmlType      string `json:"htmlType"`      // vue, datetime/file/radio/select/input/textarea/switch, 缺省 input
 	DictType      string `json:"dictType"`      // vue, 字典類型
 	//Sort               int          `gorm:"column:sort;" json:"sort"`								// ?
-	FkClassName       string `json:"fkClassName"`       // vue, 外键类名 TbxCountry, 由此生成 FkTableName+FkModuleFrontName
-	FkTableName       string `json:"fkTableName"`       // vue, 外键表名 tbx_country, 缺省由FkClassName生成
-	FkModuleFrontName string `json:"fkModuleFrontName"` // vue, 外键前端模块名 tbx-country, 缺省由FkClassName生成
-	FkLabelId         string `json:"fkLabelId"`         // vue, 外键id json 字段名, f.g., id
-	FkLabelName       string `json:"fkLabelName"`       // vue, 外键name json 字段名, f.g., name
 }
