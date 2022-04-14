@@ -22,14 +22,7 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="岗位状态" clearable size="small">
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            <DictSelect v-model="queryParams.status" dict="sys_normal_disable" placeholder="岗位状态" clearable size="small" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -84,12 +77,12 @@
           <el-table-column label="岗位编码" align="center" prop="postCode" />
           <el-table-column label="岗位名称" align="center" prop="postName" />
           <el-table-column label="岗位排序" align="center" prop="sort" />
-          <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat">
+          <el-table-column label="状态" align="center" prop="status">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.status === 1 ? 'danger' : 'success'"
+                :type="scope.row.status === 2 ? 'success' : 'danger'"
                 disable-transitions
-              >{{ statusFormat(scope.row) }}</el-tag>
+              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
@@ -135,16 +128,10 @@
               <el-input v-model="form.postCode" placeholder="请输入编码名称" />
             </el-form-item>
             <el-form-item label="岗位顺序" prop="sort">
-              <el-input-number v-model="form.sort" controls-position="right" :min="0" />
+              <el-input-number v-model="form.sort" :precision="0" />
             </el-form-item>
             <el-form-item label="岗位状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}</el-radio>
-              </el-radio-group>
+              <DictRadioGroup v-model="form.status" dict="sys_normal_disable" />
             </el-form-item>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -184,8 +171,6 @@ export default {
       title: '',
       // 是否显示弹出层
       open: false,
-      // 状态数据字典
-      statusOptions: [],
       // 查询参数
       queryParams: {
         pageIndex: 1,
@@ -212,9 +197,6 @@ export default {
   },
   created() {
     this.getList()
-    this.getDicts('sys_normal_disable').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询岗位列表 */
@@ -225,10 +207,6 @@ export default {
         this.total = response.data.count
         this.loading = false
       })
-    },
-    // 岗位状态字典翻译
-    statusFormat(row) {
-      return this.selectDictLabel(this.statusOptions, row.status)
     },
     // 取消按钮
     cancel() {

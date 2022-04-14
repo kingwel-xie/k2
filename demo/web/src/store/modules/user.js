@@ -28,11 +28,7 @@ const mutations = {
     state.userName = userName
   },
   SET_AVATAR: (state, avatar) => {
-    if (avatar.indexOf('http') !== -1) {
-      state.avatar = avatar
-    } else {
-      state.avatar = process.env.VUE_APP_BASE_API + avatar
-    }
+    state.avatar = avatar !== '' ? avatar : require('@/assets/avatar/default.gif')
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
@@ -147,6 +143,10 @@ const actions = {
 
       resolve()
     })
+  },
+
+  setAvatar({ commit }, avatar) {
+    commit('SET_AVATAR', avatar)
   }
 }
 

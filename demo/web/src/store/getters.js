@@ -1,3 +1,5 @@
+import store from '@/store'
+
 const getters = {
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
@@ -18,7 +20,31 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   messageLogs: state => state.errorLog.messages,
   appInfo: state => state.system.info,
-  dict: state => state.dict.sys,
-  countryList: state => state.dict.countryList
+  dictRegistry: (state) => {
+    return (kind) => {
+      let dicts = state.dictionary.dictRegistry[kind]
+      if (!dicts) {
+        console.trace(`missing dicts of '${kind}'`)
+        dicts = {}
+        store.dispatch('dictionary/registryMissingDicts', { kind, dicts }).catch((err) => {
+          console.log(`failure to dispatch 'dictionary/registryMissingDicts' of ${kind}`, err)
+        })
+      }
+      return dicts
+    }
+  },
+  listRegistry: (state) => {
+    return (kind) => {
+      let list = state.dictionary.listRegistry[kind]
+      if (!list) {
+        console.trace(`missing dict list of '${kind}'`)
+        list = []
+        store.dispatch('dictionary/registryMissingList', { kind, list }).catch((err) => {
+          console.log(`failure to dispatch 'dictionary/registryMissingList' of ${kind}`, err)
+        })
+      }
+      return list
+    }
+  }
 }
 export default getters

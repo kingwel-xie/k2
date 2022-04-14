@@ -1,13 +1,16 @@
 <template>
   <div class="upload-container">
     <el-upload
+      :action="url"
+      :headers="headers"
       :data="dataObj"
       :multiple="false"
       :show-file-list="false"
+      :before-upload="beforeUpload"
       :on-success="handleImageSuccess"
+      accept="image/*"
       class="image-uploader"
       drag
-      action="https://httpbin.org/post"
     >
       <i class="el-icon-upload" />
       <div class="el-upload__text">
@@ -16,17 +19,22 @@
     </el-upload>
     <div class="image-preview">
       <div v-show="imageUrl.length>1" class="image-preview-wrapper">
-        <img :src="imageUrl+'?imageView2/1/w/200/h/200'">
+        <img :src="imageUrl">
         <div class="image-preview-action">
+          <i class="el-icon-zoom-in" @click="previewImage" />
           <i class="el-icon-delete" @click="rmImage" />
         </div>
       </div>
     </div>
+    <K2Dialog :visible.sync="dialogVisible" title="预览" append-to-body>
+      <img width="100%" :src="imageUrl" alt="">
+    </K2Dialog>
   </div>
 </template>
 
 <script>
-// import { getToken } from '@/api/qiniu'
+
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'SingleImageUpload',
@@ -38,8 +46,10 @@ export default {
   },
   data() {
     return {
-      tempUrl: '',
-      dataObj: { token: '', key: '' }
+      url: process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      dataObj: { type: '1', category: 'image' },
+      dialogVisible: false
     }
   },
   computed: {
@@ -48,30 +58,31 @@ export default {
     }
   },
   methods: {
+    beforeUpload(file) {
+      const isJPG = file.type.indexOf('image/') !== -1
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传文件只能是图片格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+        return false
+      }
+      return true
+    },
     rmImage() {
       this.emitInput('')
+    },
+    previewImage() {
+      this.dialogVisible = true
     },
     emitInput(val) {
       this.$emit('input', val)
     },
-    handleImageSuccess() {
-      this.emitInput(this.tempUrl)
-    },
-    beforeUpload() {
-      const _self = this
-      return new Promise((resolve, reject) => {
-        // getToken().then(response => {
-        //   const key = response.data.qiniu_key
-        //   const token = response.data.qiniu_token
-        //   _self._data.dataObj.token = token
-        //   _self._data.dataObj.key = key
-        //   this.tempUrl = response.data.qiniu_url
-        //   resolve(true)
-        // }).catch(err => {
-        //   console.log(err)
-        //   reject(false)
-        // })
-      })
+    handleImageSuccess(res) {
+      this.emitInput(res.data.full_path)
     }
   }
 }
@@ -119,6 +130,9 @@ export default {
                 cursor: pointer;
                 text-align: center;
                 line-height: 200px;
+                .el-icon-zoom-in {
+                  font-size: 36px;
+                };
                 .el-icon-delete {
                     font-size: 36px;
                 }

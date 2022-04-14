@@ -1,40 +1,7 @@
-
-export function timeFormatter(r, c, time) {
-  return parseTime(time)
-}
-
-export function dateFormatter(r, c, date) {
-  if (!date) {
-    return null
-  }
-  return new Date(date).toLocaleDateString()
-}
-
-export function floatFormatter2(r, c, value) {
-  return value.toFixed(2)
-}
-
-export function floatFormatter3(r, c, value) {
-  return value.toFixed(3)
-}
-
-export function boolFormatter(r, c, value) {
-  return parseBoolean(value)
-}
-
-export function percentageFormatter(r, c, value) {
-  let p = Number(value * 100).toFixed(2)
-  p += '%'
-  return p
-}
-
 // 日期格式化
 export function parseTime(time, pattern) {
   if (arguments.length === 0 || !time) {
     return null
-  }
-  if (time.indexOf('01-01-01') > -1) {
-    return '-'
   }
   const format = pattern || '{y}-{m}-{d} {h}:{i}:{s}'
   let date
@@ -67,7 +34,15 @@ export function parseTime(time, pattern) {
     }
     return value || 0
   })
+  if (time_str.indexOf('01-01-01') > -1) {
+    return '-'
+  }
   return time_str
+}
+
+// float格式化
+export function toFloat(val, d) {
+  return val !== undefined ? val.toFixed(d || 2) : '-'
 }
 
 // 日期格式化
@@ -98,29 +73,6 @@ export function addDateRange(params, dateRange) {
   return search
 }
 
-// 回显数据字典
-export function selectDictLabel(datas, value) {
-  var actions = []
-  Object.keys(datas).map((key) => {
-    if (datas[key].value === ('' + value)) {
-      actions.push(datas[key].label)
-      return false
-    }
-  })
-  return actions.join('')
-}
-
-export function selectItemsLabel(datas, value) {
-  var actions = []
-  Object.keys(datas).map((key) => {
-    if (datas[key].key === ('' + value)) {
-      actions.push(datas[key].value)
-      return false
-    }
-  })
-  return actions.join('')
-}
-
 // 字符串格式化(%s )
 export function sprintf(str) {
   var args = arguments; var flag = true; var i = 1
@@ -141,4 +93,18 @@ export function praseStrEmpty(str) {
     return ''
   }
   return str
+}
+
+// a trick to generate UUID
+export function genUuid() {
+  const temp_url = URL.createObjectURL(new Blob())
+  const uuid = temp_url.toString() // blob:https://xxx.com/b250d159-e1b6-4a87-9002-885d90033be3
+  URL.revokeObjectURL(temp_url)
+  return uuid.substr(uuid.lastIndexOf('/') + 1)
+}
+
+// split a string with [, \s or \n] to a string array
+// used to split delimited serial numbers
+export function stringToArray(str) {
+  return str ? str.split(/[,\s\n]/).filter(x => x !== '') : undefined
 }

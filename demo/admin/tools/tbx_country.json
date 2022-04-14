@@ -11,15 +11,15 @@
 			"goField": "Code",
 			"goType": "string",
 			"columnComment": "编码",
-			"gormTag": "unique",
+			"gormTag": "size:63",
 			"isPk": true,
 			"queryable": true
 		},
 		{
 			"goField": "NameCN",
 			"goType": "string",
+			"gormTag": "size:63;unique_index",
 			"columnComment": "中文名",
-			"gormTag": "size:64;unique",
 			"validator": "@:len($)>0; msg:'中文名不能为空'",
 			"queryable": true,
 			"queryType": "LIKE"
@@ -27,9 +27,9 @@
 		{
 			"goField": "NameEN",
 			"goType": "string",
+			"gormTag": "size:63;unique_index",
 			"columnComment": "英文名",
 			"comment": "Country name in English",
-			"gormTag": "size:64;unique",
 			"validator": "@:len($)>0; msg:'English Name is empty'",
 			"queryable": true,
 			"queryType": "LIKE"
@@ -37,12 +37,14 @@
 		{
 			"goField": "TeleCode",
 			"goType": "string",
+			"gormTag": "size:63",
 			"columnComment": "电话代码",
 			"queryable": true
 		},
 		{
 			"goField": "Alias",
 			"goType": "string",
+
 			"columnComment": "描述",
 			"queryable": true,
 			"queryType": "LIKE",

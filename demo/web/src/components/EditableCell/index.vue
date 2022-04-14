@@ -36,7 +36,7 @@ export default {
   inheritAttrs: false,
   props: {
     value: {
-      type: [String, Number, Object],
+      type: [String, Number, Object, Date],
       default: ''
     },
     initValue: {
@@ -138,15 +138,14 @@ export default {
 .edit-enabled-cell-greater {
   border: 1px dashed #ff0000;
 }
-</style>
-
-<style scoped>
-
-.class /deep/  .a input::-webkit-outer-spin-button,
-.class /deep/  .a input::-webkit-inner-spin-button {
+/* Chrome, Safari, Edge, Opera */
+.edit-cell input[type=number]::-webkit-outer-spin-button,.edit-cell input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  margin: 0;
 }
-.class /deep/  .a input[type="number"]{
+
+/* Firefox */
+.edit-cell input[type=number] {
   -moz-appearance: textfield;
 }
 </style>

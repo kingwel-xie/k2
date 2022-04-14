@@ -23,14 +23,7 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-select v-model="queryParams.status" placeholder="数据状态" clearable size="small">
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            <DictSelect v-model="queryParams.status" dict="sys_normal_disable" placeholder="数据状态" clearable size="small" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -72,11 +65,18 @@
 
         <el-table ref="mainTable" v-loading="loading" :data="dataList" border highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="字典编码" width="80" align="center" prop="dictCode" />
-          <el-table-column label="字典标签" align="center" prop="dictLabel" />
-          <el-table-column label="字典键值" align="center" prop="dictValue" />
-          <el-table-column label="字典排序" align="center" prop="dictSort" />
-          <el-table-column label="状态" align="center" prop="status" :formatter="statusFormat" />
+          <el-table-column label="编码" width="80" align="center" prop="dictCode" />
+          <el-table-column label="数据标签" align="center" prop="dictLabel" />
+          <el-table-column label="数据键值" align="center" prop="dictValue" />
+          <el-table-column label="显示排序" align="center" prop="dictSort" />
+          <el-table-column label="状态" align="center" prop="status">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.status === 2 ? 'success' : 'danger'"
+                disable-transitions
+              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
           <el-table-column label="创建时间" align="center" prop="createdAt" width="180">
             <template slot-scope="scope">
@@ -124,16 +124,10 @@
               <el-input v-model="form.dictValue" placeholder="请输入数据键值" :disabled="isEdit" />
             </el-form-item>
             <el-form-item label="显示排序" prop="dictSort">
-              <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
+              <el-input-number v-model="form.dictSort" :precision="0" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}</el-radio>
-              </el-radio-group>
+              <DictRadioGroup v-model="form.status" dict="sys_normal_disable" />
             </el-form-item>
             <el-form-item label="备注" prop="remark">
               <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -176,8 +170,6 @@ export default {
       isEdit: false,
       // 是否显示弹出层
       open: false,
-      // 状态数据字典
-      statusOptions: [],
       // 类型数据字典
       typeOptions: [],
       // 查询参数
@@ -208,9 +200,6 @@ export default {
     const dictId = this.$route.params && this.$route.params.dictId
     this.getType(dictId)
     this.getTypeList()
-    this.getDicts('sys_normal_disable').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询字典类型详细 */
@@ -235,10 +224,6 @@ export default {
         this.total = response.data.count
         this.loading = false
       })
-    },
-    // 数据状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status)
     },
     // 取消按钮
     cancel() {

@@ -6,6 +6,10 @@ const state = {
 
 const mutations = {
   SET_INFO: (state, data) => {
+    // use default logo if sys_app_logo doesn't exist
+    if (data.sys_app_logo === '') {
+      data.sys_app_logo = require('@/assets/logo/default.png')
+    }
     state.info = data
     storage.set('app_info', data)
   }

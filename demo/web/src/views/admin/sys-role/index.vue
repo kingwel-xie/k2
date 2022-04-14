@@ -24,20 +24,14 @@
             />
           </el-form-item>
           <el-form-item label="状态" prop="status">
-            <el-select
+            <DictSelect
               v-model="queryParams.status"
+              dict="sys_normal_disable"
               placeholder="角色状态"
               clearable
               size="small"
               style="width: 160px"
-            >
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            />
           </el-form-item>
           <!-- <el-form-item label="创建时间">
             <el-date-picker
@@ -178,16 +172,10 @@
               <el-input v-model="form.roleKey" placeholder="请输入权限字符" :disabled="isEdit" />
             </el-form-item>
             <el-form-item label="角色顺序" prop="roleSort">
-              <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
+              <el-input-number v-model="form.roleSort" :precision="0" />
             </el-form-item>
             <el-form-item label="状态">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in statusOptions"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}</el-radio>
-              </el-radio-group>
+              <DictRadioGroup v-model="form.status" dict="sys_normal_disable" />
             </el-form-item>
             <el-form-item label="菜单权限">
               <el-tree
@@ -285,8 +273,6 @@ export default {
       isEdit: false,
       // 日期范围
       dateRange: [],
-      // 状态数据字典
-      statusOptions: [],
       // 数据范围选项
       dataScopeOptions: [
         {
@@ -349,9 +335,6 @@ export default {
   created() {
     this.getList()
     this.getMenuTreeselect()
-    this.getDicts('sys_normal_disable').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询角色列表 */

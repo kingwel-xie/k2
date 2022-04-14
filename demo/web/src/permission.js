@@ -32,7 +32,7 @@ router.beforeEach(async(to, from, next) => {
         next()
       } else {
         try {
-          const loadingDict = store.dispatch('dict/getAllDict')
+          const loadingDict = store.dispatch('dictionary/getAllDict')
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','user']
           const { roles } = await store.dispatch('user/getInfo')

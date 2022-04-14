@@ -58,7 +58,7 @@
         <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageIndex" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
         <!-- 添加或修改对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="500px">
+        <K2Dialog :title="title" :visible.sync="open" width="500px">
           <el-form ref="form" :model="form" :rules="rules" label-width="100px">
             <el-row :gutter="10" class="mb8">
               <el-col :span="24">
@@ -84,16 +84,16 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item label="描述" prop="alias">
-                  <el-input v-model="form.alias" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
+                  <el-input v-model="form.alias" type="textarea" :rows="2" placeholder="请输入内容" />
                 </el-form-item>
               </el-col>
-              </el-row>
+            </el-row>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
             <el-button @click="cancel">取 消</el-button>
           </div>
-        </el-dialog>
+        </K2Dialog>
       </el-card>
     </template>
   </BasicLayout>
@@ -140,7 +140,7 @@ export default {
         nameCN: undefined,
         nameEN: undefined,
         teleCode: undefined,
-        alias: undefined,
+        alias: undefined
 
       },
       // 表单参数
@@ -150,16 +150,12 @@ export default {
       rules: {
         code: [{ required: true, message: '编码不能为空', trigger: 'blur' }],
         nameCN: [{ required: true, message: '中文名不能为空', trigger: 'blur' }],
-        nameEN: [{ required: true, message: '英文名不能为空', trigger: 'blur' }],
-        teleCode: [{ required: true, message: '电话代码不能为空', trigger: 'blur' }],
-        alias: [{ required: true, message: '描述不能为空', trigger: 'blur' }],
-
+        nameEN: [{ required: true, message: '英文名不能为空', trigger: 'blur' }]
       }
     }
   },
   created() {
     this.getList()
-
   },
   methods: {
     /** 查询参数列表 */
@@ -181,13 +177,12 @@ export default {
     // 表单重置
     reset() {
       this.form = {
-
         code: undefined,
         nameCN: undefined,
         nameEN: undefined,
         teleCode: undefined,
-        alias: undefined,
-    }
+        alias: undefined
+      }
       this.resetForm('form')
     },
     // 关系
@@ -289,8 +284,8 @@ export default {
         type: 'info'
       }).then(() => {
         import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['编码','中文名','英文名','电话代码','描述',]
-          const filterVal = ['code','nameCN','nameEN','teleCode','alias',]
+          const tHeader = ['编码', '中文名', '英文名', '电话代码', '描述']
+          const filterVal = ['code', 'nameCN', 'nameEN', 'teleCode', 'alias']
           const params = Object.assign({}, this.queryParams)
           params.pageIndex = 1
           params.pageSize = 10000

@@ -9,8 +9,9 @@ import (
 type TbxCountryGetPageReq struct {
 	dto.Pagination     `search:"-"`
     Code string `form:"code"  search:"type:exact;column:code;table:tbx_country" comment:"编码"`
-    NameCN string `form:"nameCN"  search:"type:contains;column:name_cn;table:tbx_country" comment:"中文名称"`
-    NameEN string `form:"nameEN"  search:"type:contains;column:name_en;table:tbx_country" comment:"English Name"`
+    NameCN string `form:"nameCN"  search:"type:contains;column:name_cn;table:tbx_country" comment:"中文名"`
+    NameEN string `form:"nameEN"  search:"type:contains;column:name_en;table:tbx_country" comment:"英文名"`
+    TeleCode string `form:"teleCode"  search:"type:exact;column:tele_code;table:tbx_country" comment:"电话代码"`
     Alias string `form:"alias"  search:"type:contains;column:alias;table:tbx_country" comment:"描述"`
     TbxCountryOrder
 }
@@ -24,8 +25,9 @@ func (m *TbxCountryGetPageReq) GetNeedSearch() interface{} {
 
 type TbxCountryInsertReq struct {
     Code string `json:"code" comment:"编码"`
-    NameCN string `json:"nameCN" comment:"中文名称" vd:"@:len($)>0; msg:'中文名不能为空'"`
-    NameEN string `json:"nameEN" comment:"English Name" vd:"@:len($)>0; msg:'English Name is empty'"`
+    NameCN string `json:"nameCN" comment:"中文名" vd:"@:len($)>0; msg:'中文名不能为空'"`
+    NameEN string `json:"nameEN" comment:"英文名" vd:"@:len($)>0; msg:'English Name is empty'"`
+    TeleCode string `json:"teleCode" comment:"电话代码"`
     Alias string `json:"alias" comment:"描述"`
 }
 
@@ -33,6 +35,7 @@ func (s *TbxCountryInsertReq) Generate(model *models.TbxCountry)  {
     model.Code = s.Code
     model.NameCN = s.NameCN
     model.NameEN = s.NameEN
+    model.TeleCode = s.TeleCode
     model.Alias = s.Alias
 }
 
@@ -42,8 +45,9 @@ func (s *TbxCountryInsertReq) GetId() interface{} {
 
 type TbxCountryUpdateReq struct {
     Code string `uri:"code" comment:"编码"`
-    NameCN string `json:"nameCN" comment:"中文名称" vd:"@:len($)>0; msg:'中文名不能为空'"`
-    NameEN string `json:"nameEN" comment:"English Name" vd:"@:len($)>0; msg:'English Name is empty'"`
+    NameCN string `json:"nameCN" comment:"中文名" vd:"@:len($)>0; msg:'中文名不能为空'"`
+    NameEN string `json:"nameEN" comment:"英文名" vd:"@:len($)>0; msg:'English Name is empty'"`
+    TeleCode string `json:"teleCode" comment:"电话代码"`
     Alias string `json:"alias" comment:"描述"`
 }
 
@@ -51,6 +55,7 @@ func (s *TbxCountryUpdateReq) Generate(model *models.TbxCountry)  {
     model.Code = s.Code
     model.NameCN = s.NameCN
     model.NameEN = s.NameEN
+    model.TeleCode = s.TeleCode
     model.Alias = s.Alias
 }
 

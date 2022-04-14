@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import store from '@/store'
 
 // 查询字典数据列表
 export function listData(query) {
@@ -25,18 +24,6 @@ export function getData(dictCode) {
     url: '/api/v1/dict/data/' + dictCode,
     method: 'get'
   })
-}
-
-// 根据字典类型查询字典数据信息
-export function getDicts(dictType) {
-  const dict = store.getters.dict
-  return Promise.resolve({ data: dict[dictType] || [] })
-  /*
-  return request({
-    url: '/api/v1/dict-data/option-select?dictType=' + dictType,
-    method: 'get'
-  })
-   */
 }
 
 // 新增字典数据

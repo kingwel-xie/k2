@@ -21,6 +21,7 @@
 <script>
 import { getSetConfig, updateSetConfig } from '@/api/admin/sys-config'
 import Parser from '@/components/FormGenParser/Parser'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'SysConfigSet',
@@ -95,8 +96,9 @@ export default {
         '__slot__': {
           'list-type': true
         },
-        // TODO: auth token ???
         'action': process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
+        'headers': { 'Authorization': 'Bearer ' + getToken() },
+        'data': { type: '1', category: 'logo' },
         'disabled': false,
         'accept': 'image/*',
         'name': 'file',
@@ -261,10 +263,6 @@ export default {
       this.fillFormData(this.formConf, data)
       // 更新表单
       this.key2 = +new Date()
-    },
-    // 参数系统内置字典翻译
-    typeFormat(row, column) {
-      return this.selectDictLabel(this.typeOptions, row.configType)
     },
     /** 搜索按钮操作 */
     handleQuery() {

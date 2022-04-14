@@ -1,10 +1,11 @@
 package service
 
 import (
+	"bytes"
 	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
-	"io/ioutil"
 	"admin/service/dto"
+	"os"
 	"sync"
 	"time"
 )
@@ -18,14 +19,12 @@ type TbxMisc struct {
 
 type dataDescriptor struct {
 	ContentType string	// 'application/pdf' ...
-	Data []byte			// file data if Data is not nil
+	Data *bytes.Buffer	// buffer to the data
 	Uuid string			// or an uuid pointed to the FileStore
 }
 
 // LimitedDownload 受限下载
 func (e *TbxMisc) LimitedDownload(c *dto.TbxLimitedDownloadReq) error {
-	var err error
-
 	//config.Extend.LabelCache
 	lock.RLock()
 	entry, ok := uuidMap[c.Uuid]
@@ -37,18 +36,25 @@ func (e *TbxMisc) LimitedDownload(c *dto.TbxLimitedDownloadReq) error {
 	}
 	c.ContentType = entry.ContentType
 	if entry.Data != nil {
-		c.Data = entry.Data
+		// construct the reader, based on the underlay buffer
+		c.Reader = bytes.NewReader(entry.Data.Bytes())
+		c.ContentLength = int64(entry.Data.Len())
 	} else {
 		// TODO: loading data from FileStore
-		c.Data, err = ioutil.ReadFile(entry.Uuid)
+		reader, err := os.Open(entry.Uuid)
 		if err != nil {
 			return err
 		}
+		c.ContentLength, err = reader.Seek(0, 2)
+		if err != nil {
+			return err
+		}
+		c.Reader = reader
 	}
 	return nil
 }
 
-func AddLimitedDownload(url, contentType string, data []byte, duration time.Duration) {
+func AddLimitedDownload(url, contentType string, data *bytes.Buffer, duration time.Duration) {
 	lock.Lock()
 	_, ok := uuidMap[url]
 	if ok {
@@ -58,8 +64,8 @@ func AddLimitedDownload(url, contentType string, data []byte, duration time.Dura
 	lock.Unlock()
 
 	go func() {
-		// start a timer to delete the url after a while, 10s
-		timer := time.NewTimer(10 * time.Second)
+		// start a timer to delete the url after a while, duration
+		timer := time.NewTimer(duration)
 		<-timer.C
 		lock.Lock()
 		delete(uuidMap, url)

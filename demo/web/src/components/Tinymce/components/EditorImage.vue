@@ -1,57 +1,61 @@
 <template>
   <div class="upload-container">
-    <el-button :style="{background:color,borderColor:color}" icon="el-icon-upload" size="mini" type="primary" @click="handleFile">
-      upload
-    </el-button>
-<!--    <file-choose :dialog-form-visible="dialogVisible" @close="handleFileClose" @confirm="handleFileConfirm" />-->
+    <el-upload
+      ref="upload"
+      accept="image/*"
+      class="image-uploader"
+      :action="url"
+      :headers="headers"
+      :data="dataObj"
+      :multiple="false"
+      :show-file-list="false"
+      :before-upload="beforeUpload"
+      :on-success="handleImageSuccess">
+      <el-button icon="el-icon-upload" size="mini" type="primary">上传</el-button>
+    </el-upload>
   </div>
 </template>
 
 <script>
-// import { getToken } from 'api/qiniu'
 
-// import FileChoose from '../../FileChoose/index'
+import { getToken } from '@/utils/auth'
+
 export default {
   name: 'EditorSlideUpload',
   components: {
-    // FileChoose
   },
   props: {
-    color: {
-      type: String,
-      default: '#1890ff'
-    }
   },
   data() {
     return {
-      dialogVisible: false,
-      listObj: {},
+      url: process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
+      headers: { 'Authorization': 'Bearer ' + getToken() },
+      dataObj: { type: '1', category: 'tinymce' },
       fileList: []
     }
   },
   methods: {
-    checkAllSuccess() {
-      return Object.keys(this.listObj).every(item => this.listObj[item].hasSuccess)
+    beforeUpload(file) {
+      const isJPG = file.type.indexOf('image/') !== -1
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isJPG) {
+        this.$message.error('上传文件只能是图片格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('上传图片大小不能超过 2MB!')
+        return false
+      }
+      return true
     },
-    handleFile() {
-      this.dialogVisible = !this.dialogVisible
-    },
-    handleFileClose() {
-      this.dialogVisible = false
-    },
-    handleFileConfirm(e) {
-      this.dialogVisible = false
-      this.$emit('successCBK', e)
+    handleImageSuccess(res) {
+      // this.$emit('input', res.data.full_path)
+      this.$emit('successCBK', [res.data.full_path])
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.editor-slide-upload {
-  margin-bottom: 20px;
-  ::v-deep .el-upload--picture-card {
-    width: 100%;
-  }
-}
 </style>

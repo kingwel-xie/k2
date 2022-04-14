@@ -15,7 +15,7 @@ type SysMenu struct {
 	ParentId   int       `json:"parentId" gorm:"size:11;"`
 	NoCache    bool      `json:"noCache" gorm:"size:8;"`
 	Component  string    `json:"component" gorm:"size:255;"`
-	Sort       int       `json:"sort" gorm:"size:4;"`
+	Sort       int       `json:"sort" gorm:"size:32;"`
 	Visible    string    `json:"visible" gorm:"size:1;"`
 	IsFrame    string    `json:"isFrame" gorm:"size:1;DEFAULT:0;"`
 	SysApi     []SysApi  `json:"sysApi" gorm:"many2many:sys_menu_api_rule"`

@@ -51,20 +51,14 @@
                 />
               </el-form-item>
               <el-form-item label="状态" prop="status">
-                <el-select
+                <DictSelect
                   v-model="queryParams.status"
+                  dict="sys_normal_disable"
                   placeholder="用户状态"
                   clearable
                   size="small"
                   style="width: 160px"
-                >
-                  <el-option
-                    v-for="dict in statusOptions"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                  />
-                </el-select>
+                />
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -260,25 +254,12 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="用户性别">
-                <el-select v-model="form.sex" placeholder="请选择">
-                  <el-option
-                    v-for="dict in sexOptions"
-                    :key="dict.value"
-                    :label="dict.label"
-                    :value="dict.value"
-                  />
-                </el-select>
+                <DictSelect v-model="form.sex" placeholder="请选择" dict="sys_user_sex" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="状态">
-                <el-radio-group v-model="form.status">
-                  <el-radio
-                    v-for="dict in statusOptions"
-                    :key="dict.value"
-                    :label="dict.value"
-                  >{{ dict.label }}</el-radio>
-                </el-radio-group>
+                <DictRadioGroup v-model="form.status" dict="sys_normal_disable" />
               </el-form-item>
             </el-col>
 
@@ -379,10 +360,6 @@ export default {
       initPassword: undefined,
       // 日期范围
       dateRange: [],
-      // 状态数据字典
-      statusOptions: [],
-      // 性别状态字典
-      sexOptions: [],
       // 岗位选项
       postOptions: [],
       // 角色选项
@@ -444,12 +421,6 @@ export default {
   created() {
     this.getList()
     this.getTreeselect()
-    this.getDicts('sys_normal_disable').then(response => {
-      this.statusOptions = response.data
-    })
-    this.getDicts('sys_user_sex').then(response => {
-      this.sexOptions = response.data
-    })
     this.getConfigKey('sys_user_initPassword').then(response => {
       this.initPassword = response.data.configValue
     })
@@ -458,7 +429,7 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listUserWithoutCustomer(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.userList = response.data.list
         this.total = response.data.count
         this.loading = false
@@ -682,7 +653,7 @@ export default {
           params.pageIndex = 1
           params.pageSize = 10000
           this.loading = true
-          listUser(this.addDateRange(params, this.dateRange)).then(response => {
+          listUserWithoutCustomer(this.addDateRange(params, this.dateRange)).then(response => {
             this.loading = false
             const data = formatJson(filterVal, response.data.list)
             excel.export_json_to_excel({

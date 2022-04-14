@@ -9,10 +9,12 @@
 
     <el-upload
       v-show="false"
+      accept="image/*"
       ref="upload"
-      :data="{type:'1'}"
+      :data="{type:'1', category:'richtext'}"
       class="upload-demo"
       :action="url"
+      :headers="headers"
       :on-success="upScuccess"
     />
   </div>
@@ -24,14 +26,23 @@ import { quillEditor } from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+import { getToken } from '@/utils/auth'
+
 export default {
   name: 'Richtext',
   components: {
     quillEditor
   },
+  props: {
+    value: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       url: process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
+      headers: { 'Authorization': 'Bearer ' + getToken() },
       content: null,
       // 富文本编辑器配置
       editorOption: {
@@ -69,6 +80,19 @@ export default {
       }
     }
   },
+  watch: {
+    content: {
+      handler(val) {
+        this.$emit('input', val)
+      }
+    },
+    value: {
+      immediate: true,
+      handler(val) {
+        this.content = val
+      }
+    }
+  },
   methods: {
     upScuccess(res, file) {
       // 附件上传
@@ -83,9 +107,6 @@ export default {
         ) // 插入图片
         quill.setSelection(length + 1) // 调整光标位置到最后
       }
-    },
-    getValue(e) {
-      return this.content
     }
   }
 }

@@ -13,14 +13,7 @@
             />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.visible" placeholder="菜单状态" clearable size="small">
-              <el-option
-                v-for="dict in visibleOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            <DictSelect v-model="queryParams.visible" dict="sys_show_hide" placeholder="菜单状态" clearable size="small" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -85,8 +78,9 @@
 
                 </el-table>
                 <div slot="reference" class="name-wrapper">
+                  <span>☀ </span>
                   <span v-if="scope.row.permission==''">-</span>
-                  <span v-else>{{ scope.row.permission }}</span>
+                  <span v-else class="link-type">{{ scope.row.permission }}</span>
                 </div>
               </el-popover>
               <span v-else>
@@ -173,7 +167,7 @@
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>
-                    <el-input-number v-model="form.sort" controls-position="right" :min="0" />
+                    <el-input-number v-model="form.sort" :precision="0" />
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -234,21 +228,15 @@
                     </el-radio-group>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
-                  <el-form-item v-if="form.menuType != 'F'">
+                <el-col v-if="form.menuType != 'F'" :span="12">
+                  <el-form-item prop="visible">
                     <span slot="label">
                       菜单状态
                       <el-tooltip content="出现在菜单列表的菜单项设置为显示，否则设置为隐藏" placement="top">
                         <i class="el-icon-question" />
                       </el-tooltip>
                     </span>
-                    <el-radio-group v-model="form.visible">
-                      <el-radio
-                        v-for="dict in visibleOptions"
-                        :key="dict.value"
-                        :label="dict.value"
-                      >{{ dict.label }}</el-radio>
-                    </el-radio-group>
+                    <DictRadioGroup v-model="form.visible" dict="sys_show_hide" />
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -287,7 +275,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item>
+                  <el-form-item prop="isFrame">
                     <span slot="label">
                       是否外链
                       <el-tooltip content="可以通过iframe打开指定地址" placement="top">
@@ -310,7 +298,7 @@
               </el-row>
               <el-row v-if="form.menuType == 'F'">
                 <el-col :span="12">
-                  <el-form-item>
+                  <el-form-item prop="permission">
                     <span slot="label">
                       权限标识
                       <el-tooltip content="前端权限控制按钮是否显示" placement="top">
@@ -321,10 +309,9 @@
                   </el-form-item>
                 </el-col>
               </el-row>
-              <el-row />
-              <el-row>
+              <el-row v-if="form.menuType == 'F'">
                 <el-col :span="24">
-                  <el-form-item v-if="form.menuType == 'F' || form.menuType == 'C'">
+                  <el-form-item prop="apis">
                     <span slot="label">
                       api权限
                       <el-tooltip content="配置此条目需要使用到的API接口，否则在设置用户角色时，接口将无权访问。" placement="top">
@@ -391,8 +378,6 @@ export default {
       title: '',
       // 是否显示弹出层
       open: false,
-      // 菜单状态数据字典
-      visibleOptions: [],
       // 查询参数
       queryParams: {
         title: undefined,
@@ -414,9 +399,6 @@ export default {
     this.getList()
 
     this.getApiList()
-    this.getDicts('sys_show_hide').then(response => {
-      this.visibleOptions = response.data
-    })
   },
   methods: {
     handleChange(value, direction, movedKeys) {
@@ -513,7 +495,7 @@ export default {
       if (row.menuType === 'F') {
         return '-- --'
       }
-      return this.selectDictLabel(this.visibleOptions, row.visible)
+      return this.$options.filters.dict(row.visible, 'sys_show_hide')
     },
     // 取消按钮
     cancel() {
@@ -528,6 +510,8 @@ export default {
         menuName: undefined,
         icon: undefined,
         menuType: 'M',
+        path: '',
+        component: '',
         apis: [],
         sort: 0,
         action: this.form.menuType === 'A' ? this.form.action : '',

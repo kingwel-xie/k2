@@ -4,20 +4,14 @@
       <el-card class="box-card">
         <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
           <el-form-item label="状态" prop="status">
-            <el-select
+            <DictSelect
               v-model="queryParams.status"
+              dict="sys_normal_disable"
               placeholder="操作状态"
               clearable
               size="small"
               style="width: 160px"
-            >
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            />
           </el-form-item>
           <el-form-item label="创建时间">
             <DatetimeRanger v-model="dateRange" />
@@ -93,8 +87,10 @@
             :show-overflow-tooltip="true"
           >
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.status=='2'" type="success">{{ statusFormat(scope.row,scope.row.status) }}</el-tag>
-              <el-tag v-if="scope.row.status=='1'" type="danger">{{ statusFormat(scope.row,scope.row.status) }}</el-tag>
+              <el-tag
+                :type="scope.row.status === '2' ? 'success' : 'danger'"
+                disable-transitions
+              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作日期" prop="operTime" width="160">
@@ -194,8 +190,6 @@ export default {
       list: [],
       // 是否显示弹出层
       open: false,
-      // 类型数据字典
-      statusOptions: [],
       // 日期范围
       dateRange: [],
       // 表单参数
@@ -214,10 +208,6 @@ export default {
   },
   created() {
     this.getList()
-
-    this.getDicts('sys_common_status').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询登录日志 */
@@ -230,10 +220,6 @@ export default {
       }).catch(_ => {
         this.loading = false
       })
-    },
-    // 操作日志状态字典翻译
-    statusFormat(row, column) {
-      return this.selectDictLabel(this.statusOptions, row.status)
     },
     /** 搜索按钮操作 */
     handleQuery() {

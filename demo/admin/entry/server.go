@@ -22,6 +22,8 @@ import (
 	"github.com/kingwel-xie/k2/common/database"
 	"github.com/kingwel-xie/k2/common/global"
 	"github.com/kingwel-xie/k2/common/middleware"
+	"github.com/kingwel-xie/k2/common/oss"
+	"github.com/kingwel-xie/k2/common/sms"
 	"github.com/kingwel-xie/k2/common/storage"
 	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/utils"
@@ -64,6 +66,8 @@ func setup() {
 		database.Setup,
 		storage.Setup,
 		cronjob.Setup,
+		oss.Setup,
+		sms.Setup,
 		ws.Setup,
 	)
 	//注册监听函数

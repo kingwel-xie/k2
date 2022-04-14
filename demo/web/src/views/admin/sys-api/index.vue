@@ -319,9 +319,6 @@ export default {
       }
       this.resetForm('form')
     },
-    parentIdFormat(row) {
-      return this.selectItemsLabel(this.parentIdOptions, row.parentId)
-    },
     // 文件
     /** 搜索按钮操作 */
     handleQuery() {

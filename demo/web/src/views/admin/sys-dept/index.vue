@@ -13,14 +13,7 @@
             />
           </el-form-item>
           <el-form-item label="状态">
-            <el-select v-model="queryParams.status" placeholder="部门状态" clearable size="small">
-              <el-option
-                v-for="dict in statusOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            <DictSelect v-model="queryParams.status" dict="sys_normal_disable" placeholder="部门状态" clearable size="small" />
           </el-form-item>
           <el-form-item>
             <el-button
@@ -52,12 +45,12 @@
         >
           <el-table-column prop="deptName" label="部门名称" />
           <el-table-column prop="sort" label="排序" width="200" />
-          <el-table-column prop="status" label="状态" :formatter="statusFormat" width="100">
+          <el-table-column label="状态" align="center" prop="status" width="100">
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.status === 1 ? 'danger' : 'success'"
+                :type="scope.row.status === 2 ? 'success' : 'danger'"
                 disable-transitions
-              >{{ statusFormat(scope.row) }}</el-tag>
+              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="创建时间" align="center" prop="createdAt" width="200">
@@ -116,7 +109,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="显示排序" prop="orderNum">
-                  <el-input-number v-model="form.sort" controls-position="right" :min="0" />
+                  <el-input-number v-model="form.sort" :precision="0" />
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -136,13 +129,7 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item label="部门状态">
-                  <el-radio-group v-model="form.status">
-                    <el-radio
-                      v-for="dict in statusOptions"
-                      :key="dict.value"
-                      :label="dict.value"
-                    >{{ dict.label }}</el-radio>
-                  </el-radio-group>
+                  <DictRadioGroup v-model="form.status" dict="sys_normal_disable" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -178,8 +165,6 @@ export default {
       isEdit: false,
       // 是否显示弹出层
       open: false,
-      // 状态数据字典
-      statusOptions: [],
       // 查询参数
       queryParams: {
         deptName: undefined,
@@ -221,9 +206,6 @@ export default {
   },
   created() {
     this.getList()
-    this.getDicts('sys_normal_disable').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询部门列表 */
@@ -260,10 +242,6 @@ export default {
           this.deptOptions.push(dept)
         }
       })
-    },
-    // 字典状态字典翻译
-    statusFormat(row) {
-      return this.selectDictLabel(this.statusOptions, parseInt(row.status))
     },
     // 取消按钮
     cancel() {

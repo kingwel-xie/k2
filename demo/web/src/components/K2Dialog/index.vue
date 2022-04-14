@@ -7,6 +7,7 @@
       :visible.sync="subVisible"
       :fullscreen="fullscreen"
       @close="handleClosed"
+      v-bind="$attrs"
     >
       <template #title>
         <span class="el-dialog__title">

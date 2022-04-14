@@ -12,19 +12,8 @@
             @keyup.enter.native="handleQuery"
           />
           </el-form-item>
-          <el-form-item label="状态" prop="status"><el-select
-            v-model="queryParams.status"
-            placeholder="系统登录日志状态"
-            clearable
-            size="small"
-          >
-            <el-option
-              v-for="dict in statusOptions"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            />
-          </el-select>
+          <el-form-item label="状态" prop="status">
+            <DictSelect v-model="queryParams.status" dict="sys_normal_disable" placeholder="系统登录日志状态" clearable size="small" />
           </el-form-item>
           <el-form-item label="ip地址" prop="ipaddr"><el-input
             v-model="queryParams.ipaddr"
@@ -81,15 +70,12 @@
             prop="msg"
             :show-overflow-tooltip="true"
           />
-          <el-table-column
-            label="状态"
-            align="center"
-            prop="status"
-            :formatter="statusFormat"
-            width="100"
-          >
+          <el-table-column label="状态" align="center" prop="status">
             <template slot-scope="scope">
-              {{ statusFormat(scope.row) }}
+              <el-tag
+                :type="scope.row.status === '2' ? 'success' : 'danger'"
+                disable-transitions
+              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column
@@ -177,7 +163,6 @@ export default {
       // 类型数据字典
       typeOptions: [],
       sysloginlogList: [],
-      statusOptions: [],
       // 日期范围
       dateRange: [],
       // 关系表类型
@@ -202,9 +187,6 @@ export default {
   },
   created() {
     this.getList()
-    this.getDicts('sys_common_status').then(response => {
-      this.statusOptions = response.data
-    })
   },
   methods: {
     /** 查询参数列表 */
@@ -245,9 +227,6 @@ export default {
     },
     fileClose: function() {
       this.fileOpen = false
-    },
-    statusFormat(row) {
-      return this.selectDictLabel(this.statusOptions, row.status)
     },
     // 关系
     // 文件

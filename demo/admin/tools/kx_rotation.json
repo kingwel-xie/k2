@@ -33,9 +33,7 @@
 			"columnComment": "轮动池标识",
 			"gormTag": "size:16",
 			"htmlType": "select",
-			"fkClassName": "TbCandidatePool",
-			"fkLabelId": "code",
-			"fkLabelName": "name",
+			"dictType": "TbCandidatePool",
 			"notOnUpdate": true
 		},
 		{

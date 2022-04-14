@@ -1,11 +1,13 @@
 package apis
 
 import (
+	"encoding/base64"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/google/uuid"
 	"github.com/kingwel-xie/k2/common/api"
 	cerr "github.com/kingwel-xie/k2/common/error"
+	"io/ioutil"
 	"net/http"
 
 	"admin/models"
@@ -283,28 +285,32 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 		return
 	}
 
-	form, _ := c.MultipartForm()
-	files := form.File["upload[]"]
-	guid := uuid.New().String()
-	filPath := "static/uploadfile/" + guid + ".jpg"
-	for _, file := range files {
-		e.Logger.Debugf("upload avatar file: %s", file.Filename)
-		// 上传文件至指定目录
-		err = c.SaveUploadedFile(file, filPath)
-		if err != nil {
-			e.Error(err)
-			return
-		}
+	file, err := c.FormFile("upload[]")
+	if err != nil {
+		e.Error(err)
+		return
 	}
+	f, err := file.Open()
+	if err != nil {
+		e.Error(err)
+	}
+	defer f.Close()
+
+	buf, err := ioutil.ReadAll(f)
+	if err != nil {
+		e.Error(err)
+	}
+	contentType := http.DetectContentType(buf)
+
 	req.UserId = s.Identity.UserId
-	req.Avatar = "/" + filPath
+	req.Avatar = fmt.Sprintf("data:%s;base64,%s", contentType, base64.StdEncoding.EncodeToString(buf))
 
 	err = s.UpdateAvatar(&req)
 	if err != nil {
 		e.Error(err)
 		return
 	}
-	e.OK(filPath, "修改成功")
+	e.OK(req.Avatar, "修改成功")
 }
 
 // GetProfile
@@ -385,7 +391,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 	}
 	mp["introduction"] = "If I die before I wake"
 	mp["avatar"] = sysUser.Avatar
-	mp["userName"] = sysUser.NickName
+	mp["userName"] = sysUser.Username
 	mp["userId"] = sysUser.UserId
 	mp["deptId"] = sysUser.DeptId
 	mp["name"] = sysUser.NickName

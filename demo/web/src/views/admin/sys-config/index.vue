@@ -24,14 +24,7 @@
             />
           </el-form-item>
           <el-form-item label="内置" prop="configType">
-            <el-select v-model="queryParams.configType" placeholder="系统内置" clearable size="small">
-              <el-option
-                v-for="dict in typeOptions"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+            <DictSelect v-model="queryParams.configType" dict="sys_yes_no" placeholder="系统内置" clearable size="small" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -120,10 +113,10 @@
             </template>
           </el-table-column>
           <el-table-column
+            v-fmt.dict="'sys_yes_no'"
             label="内置"
             sortable="custom"
             prop="configType"
-            :formatter="typeFormat"
             width="80"
           />
           <el-table-column
@@ -186,13 +179,7 @@
               <el-input v-model="form.configValue" placeholder="请输入参数键值" />
             </el-form-item>
             <el-form-item label="系统内置" prop="configType">
-              <el-radio-group v-model="form.configType">
-                <el-radio
-                  v-for="dict in typeOptions"
-                  :key="dict.value"
-                  :label="dict.value"
-                >{{ dict.label }}</el-radio>
-              </el-radio-group>
+              <DictRadioGroup v-model="form.configType" dict="sys_yes_no" />
             </el-form-item>
             <el-form-item label="前台显示" prop="isFrontend">
               <el-select v-model="form.isFrontend" placeholder="是否前台显示" clearable size="small">
@@ -241,8 +228,6 @@ export default {
       isEdit: false,
       // 是否显示弹出层
       open: false,
-      // 类型数据字典
-      typeOptions: [],
       // 日期范围
       dateRange: [],
       // 查询参数
@@ -267,9 +252,6 @@ export default {
   },
   created() {
     this.getList()
-    this.getDicts('sys_yes_no').then(response => {
-      this.typeOptions = response.data
-    })
   },
   methods: {
     /** 查询参数列表 */
@@ -281,10 +263,6 @@ export default {
         this.loading = false
       }
       )
-    },
-    // 参数系统内置字典翻译
-    typeFormat(row, column) {
-      return this.selectDictLabel(this.typeOptions, row.configType)
     },
     // 取消按钮
     cancel() {

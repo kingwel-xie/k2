@@ -1,7 +1,9 @@
 package apis
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/kingwel-xie/k2/common/api"
 	svc "github.com/kingwel-xie/k2/common/service"
 	"admin/models"
@@ -54,6 +56,7 @@ func (e TbxMisc) GetAll(c *gin.Context) {
 // @Description 受限下载
 // @Tags 其他
 // @Param id path string true "uuid"
+// @Param filename query string true "filename"
 // @Success 200
 // @Failure 503
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
@@ -63,7 +66,7 @@ func (e TbxMisc) LimitedDownload(c *gin.Context) {
 	s := service.TbxMisc{}
 	req := dto.TbxLimitedDownloadReq{}
 	err := e.MakeContext(c).
-		Bind(&req, nil).
+		Bind(&req, nil, binding.Query).
 		MakeService(&s.Service).
 		Errors
 	if err != nil {
@@ -71,10 +74,19 @@ func (e TbxMisc) LimitedDownload(c *gin.Context) {
 		return
 	}
 
+	e.Logger.Debugf("limited downloading: %v", req)
+
 	err = s.LimitedDownload(&req)
 	if err != nil {
 		_ = e.Context.AbortWithError(500, err)
 		return
 	}
-	e.Context.Data(200, req.ContentType, req.Data)
+
+	var extraHeaders map[string]string
+	if len(req.Filename) > 0 {
+		extraHeaders = map[string]string{
+			"Content-Disposition": fmt.Sprintf("attachment; filename=%s", req.Filename),
+		}
+	}
+	e.Context.DataFromReader(200, req.ContentLength, req.ContentType, req.Reader, extraHeaders)
 }

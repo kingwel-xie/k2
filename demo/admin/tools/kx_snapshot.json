@@ -38,14 +38,13 @@
 			"goType": "string",
 			"goField": "Record",
 			"columnComment": "快照记录",
-			"gormTag": "size:16384",
+
 			"notOnUpdate": true
 		},
 		{
 			"goType": "string",
 			"goField": "Action",
 			"columnComment": "操作记录",
-			"gormTag": "size:4096",
 			"notOnUpdate": true
 		},
 		{

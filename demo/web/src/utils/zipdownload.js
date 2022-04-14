@@ -19,10 +19,15 @@ export function downLoadZip(str, filename) {
   })
 }
 
-export function downLoadFile(str) {
-  var url = baseUrl + str
+export function downLoadFile(url, blank, filename) {
   const aLink = document.createElement('a')
   aLink.href = url
+  if (blank) {
+    aLink.target = '_blank'
+  }
+  if (filename) {
+    aLink.setAttribute('download', filename) // 设置下载文件名称
+  }
   document.body.appendChild(aLink)
   aLink.click()
   document.body.removeChild(aLink)
@@ -33,19 +38,17 @@ export function downLoadFile(str) {
  * @param {String} mimeType MIME类型
  */
 export function resolveBlob(res, mimeType) {
-  const aLink = document.createElement('a')
   var blob = new Blob([res.data], { type: mimeType })
   // //从response的headers中获取filename, 后端response.setHeader("Content-disposition", "attachment; filename=xxxx.docx") 设置的文件名;
   var patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*')
   var contentDisposition = decodeURI(res.headers['content-disposition'])
   var result = patt.exec(contentDisposition)
   var fileName = result[1]
+
   fileName = fileName.replace(/\"/g, '')
-  aLink.href = URL.createObjectURL(blob)
-  aLink.setAttribute('download', fileName) // 设置下载文件名称
-  document.body.appendChild(aLink)
-  aLink.click()
-  document.body.removeChild(aLink)
+  const url = URL.createObjectURL(blob)
+
+  downLoadFile(url, false, fileName)
 }
 
 export function InlineDownloadPdf(str) {
@@ -56,13 +59,8 @@ export function InlineDownloadPdf(str) {
     responseType: 'blob',
     headers: { 'Authorization': 'Bearer ' + getToken() }
   }).then(res => {
-    const aLink = document.createElement('a')
-    debugger
-    var blob = new Blob([res.data], { type: 'application/pdf' })
-    aLink.href = URL.createObjectURL(blob)
-    aLink.target = '_blank'
-    document.body.appendChild(aLink)
-    aLink.click()
-    document.body.removeChild(aLink)
+    const blob = new Blob([res.data], { type: 'application/pdf' })
+    const url = URL.createObjectURL(blob)
+    downLoadFile(url, true)
   })
 }

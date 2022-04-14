@@ -6,7 +6,7 @@
   >
     <template v-for="(item, index) in topMenus">
       <el-menu-item
-        v-if="index < visibleNumber"
+        v-if="index < visibleNumber && !item.hidden"
         :key="index"
         :index="item.path"
       ><svg-icon :icon-class="item.meta.icon" />
@@ -18,7 +18,7 @@
       <template slot="title">更多菜单</template>
       <template v-for="(item, index) in topMenus">
         <el-menu-item
-          v-if="index >= visibleNumber"
+          v-if="index >= visibleNumber && !item.hidden"
           :key="index"
           :index="item.path"
         ><svg-icon :icon-class="item.meta.icon" />

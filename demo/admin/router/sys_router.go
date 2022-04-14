@@ -37,9 +37,6 @@ func InitSysRouter(r *gin.Engine, authMiddleware *jwt.GinJWTMiddleware) *gin.Rou
 }
 
 func sysBaseRouter(r *gin.RouterGroup) {
-	go ws.WebsocketManager.Start()
-	go ws.WebsocketManager.SendService()
-	go ws.WebsocketManager.SendAllService()
 	if config.ApplicationConfig.Mode != "prod" {
 		//r.GET("/", func(c *gin.Context) {
 		//	c.Redirect(302, "/site/")
@@ -90,6 +87,9 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 
 		v1.GET("/captcha", middleware.GenerateCaptchaHandler)
 	}
+	// download file, no auth check
+	path := middleware.DownloadUrlPrefix + "/:pathname/:filename"
+	r.GET(path, middleware.File{}.DownloadFile)
 
 	registerBaseRouter(v1, authMiddleware)
 }
@@ -103,7 +103,6 @@ func registerBaseRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddlewar
 		v1auth.GET("/roleDeptTreeSelect/:roleId", api2.GetDeptTreeRoleSelect)
 
 		v1auth.POST("/logout", authMiddleware.LogoutHandler)
-		var api = middleware.File{}
-		v1auth.POST("/public/uploadFile", api.UploadFile)
+		v1auth.POST("/public/uploadFile", middleware.File{}.UploadFile)
 	}
 }
