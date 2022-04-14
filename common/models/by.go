@@ -7,8 +7,8 @@ import (
 )
 
 type ControlBy struct {
-	CreateBy string `json:"createBy" gorm:"type:varchar(63);index;comment:创建者"`
-	UpdateBy string `json:"updateBy" gorm:"type:varchar(63);index;comment:更新者"`
+	CreateBy string `json:"createBy" gorm:"size:63;index;comment:创建者"`
+	UpdateBy string `json:"updateBy" gorm:"size:63;index;comment:更新者"`
 }
 
 // SetCreateBy 设置创建人id
