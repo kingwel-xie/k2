@@ -23,8 +23,8 @@ import (
 // LoggerToFile 日志记录到文件
 func LoggerToFile() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// don't care http.MethodOptions
-		if c.Request.Method == http.MethodOptions {
+		// don't care http.MethodOptions & http.MethodGet
+		if c.Request.Method == http.MethodOptions || c.Request.Method == http.MethodGet {
 			return
 		}
 
@@ -35,7 +35,7 @@ func LoggerToFile() gin.HandlerFunc {
 		// make body only when EnabledDB is on
 		if config.LoggerConfig.EnabledDB {
 			switch c.Request.Method {
-			case http.MethodPost, http.MethodPut, http.MethodGet, http.MethodDelete:
+			case http.MethodPost, http.MethodPut, http.MethodDelete:
 				bf := bytes.NewBuffer(nil)
 				wt := bufio.NewWriter(bf)
 				_, err := io.Copy(wt, c.Request.Body)
