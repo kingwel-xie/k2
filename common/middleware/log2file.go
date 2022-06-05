@@ -14,7 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/kingwel-xie/k2/common"
-	"github.com/kingwel-xie/k2/common/api"
 	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/common/global"
 	"github.com/kingwel-xie/k2/common/service"
@@ -70,12 +69,12 @@ func LoggerToFile() gin.HandlerFunc {
 
 		// API code
 		st, bl := c.Get("status")
-		var statusBus = 0
+		var apiCode = 0
 		if bl {
-			statusBus = st.(int)
+			apiCode = st.(int)
 		}
 
-		log.Infow("", "status", statusCode, "api-code", statusBus, "method", reqMethod, "uri", reqUri, "latency", latencyTime, "client", clientIP)
+		log.Infow("", "status", statusCode, "api-code", apiCode, "method", reqMethod, "uri", reqUri, "latency", latencyTime, "client", clientIP)
 
 		if config.LoggerConfig.EnabledDB && statusCode != 404 {
 			rt, bl := c.Get("result")
@@ -88,14 +87,13 @@ func LoggerToFile() gin.HandlerFunc {
 					result = string(rb)
 				}
 			}
-			SetDBOperLog(c, clientIP, statusCode, reqUri, reqMethod, latencyTime, body, result, statusBus)
+			SetDBOperLog(c, clientIP, statusCode, reqUri, reqMethod, latencyTime, body, result, apiCode)
 		}
 	}
 }
 
 // SetDBOperLog 写入操作日志表 fixme 该方法后续即将弃用
-func SetDBOperLog(c *gin.Context, clientIP string, statusCode int, reqUri string, reqMethod string, latencyTime time.Duration, body string, result string, status int) {
-	log := api.MustGetLogger(c)
+func SetDBOperLog(c *gin.Context, clientIP string, statusCode int, reqUri string, reqMethod string, latencyTime time.Duration, body string, result string, apiCode int) {
 	l := make(map[string]interface{})
 	l["_fullPath"] = c.FullPath()
 	l["operUrl"] = reqUri
@@ -107,11 +105,7 @@ func SetDBOperLog(c *gin.Context, clientIP string, statusCode int, reqUri string
 	l["jsonResult"] = result
 	l["latencyTime"] = latencyTime.String()
 	l["statusCode"] = statusCode
-	if status == http.StatusOK {
-		l["status"] = "2"
-	} else {
-		l["status"] = "1"
-	}
+	l["status"] = apiCode
 	message, err := common.Runtime.GetStreamMessage("", global.OperateLog, l)
 	if err != nil {
 		log.Errorf("GetStreamMessage error, %s", err.Error())
