@@ -105,7 +105,7 @@ func SetDBOperLog(c *gin.Context, clientIP string, statusCode int, reqUri string
 	l["jsonResult"] = result
 	l["latencyTime"] = latencyTime.String()
 	l["statusCode"] = statusCode
-	l["status"] = apiCode
+	l["apiCode"] = apiCode
 	message, err := common.Runtime.GetStreamMessage("", global.OperateLog, l)
 	if err != nil {
 		log.Errorf("GetStreamMessage error, %s", err.Error())
