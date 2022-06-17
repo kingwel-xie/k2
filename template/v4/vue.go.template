@@ -39,12 +39,21 @@
           </el-col>
           {{ if (.HasExport) -}}
           <el-col :span="1.5">
-            <el-button v-permisaction="['{{.PackageName}}:{{.BusinessName}}:list']" type="warning" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
+            <el-dropdown v-permisaction="['{{.PackageName}}:{{.BusinessName}}:list']" size="mini" @command="handleExport">
+              <el-button type="warning" icon="el-icon-download" size="mini">
+                导出...<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                <el-dropdown-item command="1">当前页</el-dropdown-item>
+                <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
           {{- end }}
         </el-row>
 
-        <el-table ref="mainTable" v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="{{.BusinessName}}List" stripe border highlight-current-row @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="{{.BusinessName}}List" stripe border highlight-current-row @selection-change="handleSelectionChange" @sort-change="handleSortChange">
           <el-table-column type="selection" width="55" align="center" />
           {{ range .Columns -}}
           {{- $x := .NotOnList -}}
@@ -66,7 +75,7 @@
                     {{- else if eq .GoType "bool" -}}
           <el-table-column v-fmt.bool="['是', '否']" label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
                     {{- else -}}
-          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" />
+          <el-table-column label="{{.ColumnComment}}" align="center" prop="{{.JsonField}}" :show-overflow-tooltip="true" {{- if (.Sortable) }} sortable="custom" {{- end }} />
                     {{- end -}}
                 {{- end -}}
               {{- end -}}
@@ -272,6 +281,22 @@ export default {
       this.single = selection.length !== 1
       this.multiple = !selection.length
     },
+    /** 排序回调函数 */
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
+      if (order === 'descending') {
+        this.queryParams[prop + 'Order'] = 'desc'
+      } else if (order === 'ascending') {
+        this.queryParams[prop + 'Order'] = 'asc'
+      } else {
+        this.queryParams[prop + 'Order'] = undefined
+      }
+      this.getList()
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset()
@@ -303,6 +328,7 @@ export default {
                 get{{.ClassName}}(this.form.{{.PkJsonField}}).then(response => {
                   this.{{.BusinessName}}List[foundIndex] = response.data
                   this.$refs.mainTable.setCurrentRow(this.{{.BusinessName}}List[foundIndex], true)
+                  this.$refs.mainTable.clearSelection()
                 })
               }
             }).catch(() => {
@@ -338,45 +364,59 @@ export default {
       }).catch(() => {})
     }
     {{- if (.HasExport) -}},
-    /** 导出按钮操作 */
-    handleExport() {
-      this.$confirm('是否导出满足当前查询条件的数据项（最多10000条）?', '请确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(() => {
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = [
-            {{- range .Columns -}}
-            {{- if not (.NotOnList) -}}
-            '{{.ColumnComment}}',
-            {{- end -}}
-            {{- end }}]
-          const filterVal = [
-            {{- range .Columns -}}
-            {{- if not (.NotOnList) -}}
-            '{{.JsonField}}',
-            {{- end -}}
-            {{- end }}]
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          list{{.ClassName}}(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '{{.TableComment}}',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-          }).catch(() => {
-            this.loading = false
-          })
+    export2Excel(tHeader, filterVal, filename, data) {
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      const tHeader = [
+        {{- range .Columns -}}
+        {{- if not (.NotOnList) -}}
+        '{{.ColumnComment}}',
+        {{- end -}}
+        {{- end }}]
+      const filterVal = [
+        {{- range .Columns -}}
+        {{- if not (.NotOnList) -}}
+        '{{.JsonField}}',
+        {{- end -}}
+        {{- end }}]
+      const filename = '{{.TableComment}}'
+      switch (choice) {
+        case '0':
+          this.export2Excel(tHeader, filterVal, filename, this.$refs.mainTable.selection)
+          break
+        case '1':
+          this.export2Excel(tHeader, filterVal, filename, this.tbxBagList)
+          break
+        case '2':
+          this.$confirm('是否导出满足当前查询条件的数据项（最多10000项）?', '请确认', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            list{{.ClassName}}(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(tHeader, filterVal, filename, response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
     }
     {{- end }}
   }
