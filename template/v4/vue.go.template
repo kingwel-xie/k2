@@ -184,7 +184,7 @@ export default {
       // 是否显示弹出层
       open: false,
       isEdit: false,
-      // 类型数据字典
+      // 列表数据
       {{.BusinessName}}List: [],
       // 查询参数
       queryParams: {
@@ -396,7 +396,7 @@ export default {
           this.export2Excel(tHeader, filterVal, filename, this.$refs.mainTable.selection)
           break
         case '1':
-          this.export2Excel(tHeader, filterVal, filename, this.tbxBagList)
+          this.export2Excel(tHeader, filterVal, filename, this.{{.BusinessName}}List)
           break
         case '2':
           this.$confirm('是否导出满足当前查询条件的数据项（最多10000项）?', '请确认', {
