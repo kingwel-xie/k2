@@ -23,3 +23,18 @@ export default function checkPermission(value) {
     return false
   }
 }
+
+const ALL_PERMISSION = '*:*:*'
+
+export function checkPermissionAction(permission) {
+  permission = typeof permission === 'string' ? [permission] : permission
+
+  if (permission && permission instanceof Array && permission.length > 0) {
+    const permissions = store.getters && store.getters.permisaction
+    return permissions.some(perm => {
+      return ALL_PERMISSION === perm || permission.includes(perm)
+    })
+  } else {
+    throw new Error(`请设置操作权限标签值`)
+  }
+}

@@ -7,6 +7,10 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
+        <router-link class="right-menu-item" to="/profile/index">
+          <span class="link-type">{{ name }}</span>
+        </router-link>
+        <span class="right-menu-item">{{ today }}</span>
         <search id="header-search" class="right-menu-item" />
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
       </template>
@@ -39,6 +43,7 @@ import Hamburger from '@/layout/components/Hamburger'
 import Screenfull from '@/layout/components/Screenfull'
 import Search from '@/layout/components/HeaderSearch'
 import checkPermission from '@/utils/permission'
+import { parseTime } from '@/utils'
 
 export default {
   components: {
@@ -48,11 +53,17 @@ export default {
     Screenfull,
     Search
   },
+  data() {
+    return {
+      today: parseTime(new Date(), '{y}/{m}/{d} 星期{a}')
+    }
+  },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar',
-      'device'
+      'device',
+      'name'
     ]),
     setting: {
       get() {
@@ -75,10 +86,10 @@ export default {
   created() {
     // topNav set to 'true' for 'admin'
     if (checkPermission(['admin'])) {
-      this.$store.dispatch('settings/changeSetting', {
-        key: 'topNav',
-        value: true
-      })
+    //   this.$store.dispatch('settings/changeSetting', {
+    //     key: 'topNav',
+    //     value: true
+    //   })
       this.$store.commit('permission/SET_SIDEBAR_ROUTERS', this.$store.state.permission.defaultRoutes)
     }
   },
@@ -144,7 +155,7 @@ export default {
       display: inline-block;
       padding: 0 8px;
       height: 100%;
-      font-size: 18px;
+      font-size: 16px;
       color: #5a5e66;
       vertical-align: text-bottom;
 

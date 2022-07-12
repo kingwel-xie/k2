@@ -86,23 +86,20 @@ service.interceptors.response.use(
     }
   },
   error => {
+    let message
     if (error.message === 'Network Error') {
-      Message({
-        message: '服务器连接异常，请检查服务器！',
-        type: 'error',
-        duration: 5 * 1000
-      })
-      return
+      message = '网络连接异常！'
+    } else if (error.message.startsWith('timeout of')) {
+      message = '服务器连接超时！'
+    } else {
+      message = '其他错误：' + error.message
     }
-    console.log('err: ' + error) // for debug
-
     Message({
-      message: error.message,
+      message: message,
       type: 'error',
       duration: 5 * 1000
     })
-
-    return Promise.reject(error)
+    return Promise.reject({ status: -1, data: { code: -1, msg: message }})
   }
 )
 

@@ -6,7 +6,7 @@
       :width="width"
       :visible.sync="subVisible"
       :fullscreen="fullscreen"
-      @close="handleClosed"
+      v-on="$listeners"
       v-bind="$attrs"
     >
       <template #title>

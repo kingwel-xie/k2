@@ -62,15 +62,6 @@
               @click="handleDelete"
             >删除</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysConfig:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
         </el-row>
 
         <el-table
@@ -80,7 +71,7 @@
           border
           highlight-current-row
           @selection-change="handleSelectionChange"
-          @sort-change="handleSortChang"
+          @sort-change="handleSortChange"
         >
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column
@@ -125,15 +116,12 @@
             :show-overflow-tooltip="true"
           />
           <el-table-column
+            v-fmt.fulltime
             label="创建时间"
             sortable="custom"
             prop="createdAt"
             width="160"
-          >
-            <template slot-scope="scope">
-              <span>{{ parseTime(scope.row.createdAt) }}</span>
-            </template>
-          </el-table-column>
+          />
           <el-table-column
             label="操作"
             class-name="small-padding fixed-width"
@@ -221,8 +209,6 @@ export default {
       total: 0,
       // 参数表格数据
       configList: [],
-      // 排序字段
-      order: 'createdAtOrder',
       // 弹出层标题
       title: '',
       isEdit: false,
@@ -236,8 +222,7 @@ export default {
         pageSize: 10,
         configName: undefined,
         configKey: undefined,
-        configType: undefined,
-        createdAtOrder: 'desc'
+        configType: undefined
       },
       // 表单参数
       form: {},
@@ -291,7 +276,6 @@ export default {
     resetQuery() {
       this.dateRange = []
       this.resetForm('queryForm')
-      this.queryParams['createdAtOrderOrder'] = 'desc'
       this.handleQuery()
     },
     /** 新增按钮操作 */
@@ -301,18 +285,16 @@ export default {
       this.title = '添加参数'
       this.isEdit = false
     },
-    handleSortChang(column, prop, order) {
-      prop = column.prop
-      order = column.order
-      if (this.order !== '' && this.order !== prop + 'Order') {
-        this.queryParams[this.order] = undefined
-      }
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
       if (order === 'descending') {
         this.queryParams[prop + 'Order'] = 'desc'
-        this.order = prop + 'Order'
       } else if (order === 'ascending') {
         this.queryParams[prop + 'Order'] = 'asc'
-        this.order = prop + 'Order'
       } else {
         this.queryParams[prop + 'Order'] = undefined
       }
@@ -352,6 +334,7 @@ export default {
                   getConfig(this.form.id).then(response => {
                     this.configList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.configList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {
@@ -390,39 +373,6 @@ export default {
           this.msgError(response.msg)
         }
       }).catch(function() {})
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有参数数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['参数主键', '参数名称', '参数键名', '参数键值', '备注', '创建时间']
-          const filterVal = ['configId', 'configName', 'configKey', 'configValue', 'remark', 'createdAt']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listConfig(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '参数设置',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
-        })
-      })
     }
   }
 }

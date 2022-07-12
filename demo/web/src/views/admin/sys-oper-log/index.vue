@@ -3,13 +3,21 @@
     <template #wrapper>
       <el-card class="box-card">
         <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
-          <el-form-item label="状态" prop="status">
-            <DictSelect
-              v-model="queryParams.status"
-              dict="sys_normal_disable"
-              placeholder="操作状态"
-              clearable
+          <el-form-item label="状态" prop="apiCode">
+            <el-input
+              v-model="queryParams.apiCode"
               size="small"
+              placeholder="请输入API Code"
+              clearable
+              style="width: 160px"
+            />
+          </el-form-item>
+          <el-form-item label="操作人员" prop="operName">
+            <el-input
+              v-model="queryParams.operName"
+              size="small"
+              placeholder="请输入操作人员"
+              clearable
               style="width: 160px"
             />
           </el-form-item>
@@ -34,17 +42,20 @@
             >删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysOperLog:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
+            <el-dropdown v-permisaction="['admin:sysOperLog:list']" size="mini" @command="handleExport">
+              <el-button type="warning" icon="el-icon-download" size="mini">
+                导出...<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                <el-dropdown-item command="1">当前页</el-dropdown-item>
+                <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
         </el-row>
 
-        <el-table v-loading="loading" :data="list" border highlight-current-row @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="list" border stripe highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
           <el-table-column label="编号" width="70" prop="id" />
           <el-table-column
@@ -53,7 +64,6 @@
           >
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="top">
-
                 <p>Request:
                   <el-tag v-if="scope.row.requestMethod=='GET'">{{ scope.row.requestMethod }}</el-tag>
                   <el-tag v-if="scope.row.requestMethod=='POST'" type="success">{{ scope.row.requestMethod }}</el-tag>
@@ -81,16 +91,22 @@
             :show-overflow-tooltip="true"
           />
           <el-table-column
-            label="状态"
-            prop="status"
-            width="80"
+            label="IP"
+            prop="operIp"
+            width="160"
+            :show-overflow-tooltip="true"
+          />
+          <el-table-column
+            label="API code"
+            prop="apiCode"
+            width="100"
             :show-overflow-tooltip="true"
           >
             <template slot-scope="scope">
               <el-tag
-                :type="scope.row.status === '2' ? 'success' : 'danger'"
+                :type="scope.row.apiCode === 200 ? 'success' : 'danger'"
                 disable-transitions
-              >{{ scope.row.status | dict('sys_normal_disable') }}</el-tag>
+              >{{ scope.row.apiCode }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作日期" prop="operTime" width="160">
@@ -148,16 +164,15 @@
                 <el-form-item label="返回参数：">{{ form.jsonResult }}</el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="操作状态：">
-                  <div v-if="form.status === '2'">正常</div>
-                  <div v-else-if="form.status === '1'">关闭</div>
+                <el-form-item label="API code：">
+                  <span>{{ form.apiCode }}</span>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item label="操作时间：">{{ parseTime(form.operTime) }}</el-form-item>
               </el-col>
               <el-col :span="24">
-                <el-form-item v-if="form.status === 1" label="异常信息：">{{ form.errorMsg }}</el-form-item>
+                <el-form-item v-if="form.apiCode !== 200" label="异常信息：">{{ form.errorMsg }}</el-form-item>
               </el-col>
             </el-row>
           </el-form>
@@ -201,8 +216,7 @@ export default {
         title: undefined,
         operName: undefined,
         businessType: undefined,
-        status: undefined,
-        createdAtOrder: 'desc'
+        apiCode: undefined
       }
     }
   },
@@ -279,38 +293,49 @@ export default {
         }
       }).catch(function() {})
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有操作日志数据项（最多10000条）?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['日志编号', '系统模块', '操作类型', '请求方式', '操作人员', '主机', '操作地点', '操作状态', '操作url', '操作日期']
-          const filterVal = ['ID', 'title', 'businessType', 'method', 'operName', 'operIp', 'operLocation', 'status', 'operUrl', 'operTime']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listSysOperlog(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '操作日志',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
+    export2Excel(data) {
+      const tHeader = ['日志编号', '系统模块', '操作类型', '请求方式', '操作人员', '主机', '操作地点', 'ApiCode', '操作url', '操作日期']
+      const filterVal = ['id', 'title', 'businessType', 'requestMethod', 'operName', 'operIp', 'operLocation', 'apiCode', 'operUrl', 'operTime']
+      const filename = '操作日志'
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      switch (choice) {
+        case '0':
+          this.export2Excel(JSON.parse(JSON.stringify(this.$refs.mainTable.selection)))
+          break
+        case '1':
+          this.export2Excel(JSON.parse(JSON.stringify(this.list)))
+          break
+        case '2':
+          this.$confirm('请确认是否导出所有操作日志数据项（最多10000项）?', '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            listSysOperlog(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
     }
   }
 }

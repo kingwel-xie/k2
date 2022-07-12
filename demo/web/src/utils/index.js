@@ -5,14 +5,13 @@
 /**
  * Parse the time to string
  * @param {(Object|string|number)} time
- * @param {string} cFormat
+ * @param {string} format
  * @returns {string | null}
  */
-export function parseTime(time, cFormat) {
-  if (arguments.length === 0) {
+export function parseTime(time, format = '{y}-{m}-{d} {h}:{i}:{s}') {
+  if (!time) {
     return null
   }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
   let date
   if (typeof time === 'object') {
     date = time
@@ -406,4 +405,12 @@ export function formatFileSize(value) {
 export function formatCurrencyString(value) {
   const v = tryParseJson(value) || {}
   return v.value + ', ' + v.currencyType
+}
+
+/**
+ * @param {Object} value, 传入
+ * @returns {string}
+ */
+export function asExcelString(value, elseAs = undefined) {
+  return value !== undefined ? String(value) : elseAs
 }

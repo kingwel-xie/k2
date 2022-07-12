@@ -130,7 +130,7 @@ export default {
     },
     querySearch(query) {
       if (query !== '') {
-        this.options = this.fuse.search(query)
+        this.options = this.fuse.search(query).map(x => x.item)
       } else {
         this.options = []
       }

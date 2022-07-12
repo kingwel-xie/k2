@@ -14,14 +14,14 @@ function createCopyButton() {
   return btn
 }
 
-function createClipboard(btn, text) {
+function createClipboard(btn) {
   const clipboard = new Clipboard(btn, {
     text: function(trigger) {
-      return text
+      return trigger.nextElementSibling.innerText.trim()
     }
   })
   clipboard.on('success', function(e) {
-    Message.success(text + ' 复制成功')
+    Message.success(e.text + ' 复制成功')
   })
   clipboard.on('error', function(e) {
     Message.error('复制失败')
@@ -39,9 +39,10 @@ export default {
         if (text) {
           const btn = createCopyButton()
           el.parentNode.insertBefore(btn, el)
-          el[key] = createClipboard(btn, text)
+          el[key] = createClipboard(btn)
         }
       },
+      /*
       update(el, binding) {
         const text = el.innerText.trim()
         if (text) {
@@ -52,6 +53,7 @@ export default {
           }
         }
       },
+       */
       unbind(el, binding) {
         const { modifiers: { debug }} = binding
         debug && console.log('v-copy unbind')

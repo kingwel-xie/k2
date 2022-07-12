@@ -71,13 +71,16 @@
             >删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysDictType:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
+            <el-dropdown v-permisaction="['admin:sysDictType:list']" size="mini" @command="handleExport">
+              <el-button type="warning" icon="el-icon-download" size="mini">
+                导出...<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                <el-dropdown-item command="1">当前页</el-dropdown-item>
+                <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
           <el-col :span="1.5">
             <el-button
@@ -86,7 +89,7 @@
               icon="el-icon-download"
               size="mini"
               @click="handleExportData"
-            >导出全部</el-button>
+            >导出全部数据</el-button>
           </el-col>
         </el-row>
 
@@ -299,6 +302,7 @@ export default {
                   getType(this.form.id).then(response => {
                     this.typeList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.typeList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {
@@ -333,41 +337,53 @@ export default {
         this.msgSuccess('删除成功')
       }).catch(function() {})
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否导出全部字典类型项（最多10000条）?', '请确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['字典编号', '字典名称', '字典类型', '状态', '备注']
-          const filterVal = ['id', 'dictName', 'dictType', 'status', 'remark']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listType(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '字典管理',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
+    export2Excel(data) {
+      const tHeader = ['字典编号', '字典名称', '字典类型', '状态', '备注']
+      const filterVal = ['id', 'dictName', 'dictType', 'status', 'remark']
+      const filename = '字典类型'
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
     },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      switch (choice) {
+        case '0':
+          this.export2Excel(JSON.parse(JSON.stringify(this.$refs.mainTable.selection)))
+          break
+        case '1':
+          this.export2Excel(JSON.parse(JSON.stringify(this.typeList)))
+          break
+        case '2':
+          this.$confirm('请确认是否导出所有字典类型数据项（最多10000项）?', '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            listType(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
+    },
     /** 导出字典数据按钮操作 */
     handleExportData() {
-      this.$confirm('是否导出全部字典数据项（最多10000条）?', '请确认', {
+      this.$confirm('是否导出全部字典数据项（最多10000项）?', '请确认', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'

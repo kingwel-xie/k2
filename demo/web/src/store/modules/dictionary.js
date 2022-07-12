@@ -55,6 +55,10 @@ const mutations = {
 
     const systemDicts = dict.systemList || []
 
+    systemDicts.sort((a, b) => {
+      return b.dictSort - a.dictSort
+    })
+
     const groupByDictType = {}
 
     systemDicts.forEach(({ dictType, dictValue, dictLabel, remark }) => {

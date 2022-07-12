@@ -60,13 +60,11 @@ export default {
   methods: {
     beforeUpload(file) {
       const isJPG = file.type.indexOf('image/') !== -1
-      const isLt2M = file.size / 1024 / 1024 < 2
-
       if (!isJPG) {
         this.$message.error('上传文件只能是图片格式!')
         return false
       }
-      if (!isLt2M) {
+      if (file.size > 2 * 1024 * 1024) {
         this.$message.error('上传图片大小不能超过 2MB!')
         return false
       }

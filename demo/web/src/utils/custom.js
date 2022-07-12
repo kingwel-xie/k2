@@ -1,44 +1,3 @@
-// 日期格式化
-export function parseTime(time, pattern) {
-  if (arguments.length === 0 || !time) {
-    return null
-  }
-  const format = pattern || '{y}-{m}-{d} {h}:{i}:{s}'
-  let date
-  if (typeof time === 'object') {
-    date = time
-  } else {
-    if ((typeof time === 'string') && (/^[0-9]+$/.test(time))) {
-      time = parseInt(time)
-    }
-    if ((typeof time === 'number') && (time.toString().length === 10)) {
-      time = time * 1000
-    }
-    date = new Date(time)
-  }
-  const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay()
-  }
-  const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
-    let value = formatObj[key]
-    // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
-    if (result.length > 0 && value < 10) {
-      value = '0' + value
-    }
-    return value || 0
-  })
-  if (time_str.indexOf('01-01-01') > -1) {
-    return '-'
-  }
-  return time_str
-}
 
 // float格式化
 export function toFloat(val, d) {
@@ -59,6 +18,15 @@ export function resetForm(refName) {
   if (this.$refs[refName]) {
     this.$refs[refName].resetFields()
   }
+}
+
+export function dateRangeByDays(days) {
+  const end = new Date()
+  const start = new Date()
+  start.setTime(start.getTime() - 3600 * 1000 * 24 * days)
+  start.setHours(0, 0, 0)
+  end.setHours(23, 59, 59, 999)
+  return [start, end]
 }
 
 // 添加日期范围
@@ -103,8 +71,30 @@ export function genUuid() {
   return uuid.substr(uuid.lastIndexOf('/') + 1)
 }
 
-// split a string with [, \s or \n] to a string array
+// split a string with [, or \n] to a string array
 // used to split delimited serial numbers
-export function stringToArray(str) {
-  return str ? str.split(/[,\s\n]/).filter(x => x !== '') : undefined
+export function stringToArray(str, separator = /[,;\n]/) {
+  return str ? str.split(separator).filter(x => x !== '').map(x => x.trim()) : undefined
+}
+
+export function validateRange(dateRange, maxDays) {
+  if (!dateRange || dateRange.length !== 2) {
+    return '必须指定查询时间间隔'
+  }
+
+  const diff = Date.parse(dateRange[1]) - Date.parse(dateRange[0])
+  const days = Math.floor(diff / (24 * 3600 * 1000))
+  // console.log('days', days)
+  if (days > maxDays) {
+    return '查询时间天数间隔为 ' + days + ', 最大允许为 ' + maxDays
+  }
+}
+
+// validator, number > 0
+export function validateGt0(rule, value, callback) {
+  if (Number(value) > 0) {
+    callback()
+  } else {
+    callback(new Error('请输入大于 0 的数'))
+  }
 }

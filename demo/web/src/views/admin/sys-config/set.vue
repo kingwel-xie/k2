@@ -2,17 +2,43 @@
   <BasicLayout>
     <template #wrapper>
       <el-card class="box-card">
-        <el-tabs tab-position="left" style="height: 100%;">
-          <el-tab-pane label="系统内置">
-            <el-form label-width="80px">
-              <div class="test-form">
-                <parser :key="key2" :form-conf="formConf" @submit="sumbitForm2" @bind="bind" />
-              </div>
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane label="其他">其他</el-tab-pane>
-        </el-tabs>
-
+        <el-form v-ffiov ref="form" :model="form" :rules="rules" label-width="80px" style="width: 66%">
+          <el-row :gutter="10">
+            <el-col :span="18">
+              <el-form-item label="系统名称" prop="sys_app_name">
+                <el-input v-model="form.sys_app_name" placeholder="请输入系统名称" clearable size="small" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="18">
+              <el-form-item label="初始密码" prop="sys_user_initPassword">
+                <el-input v-model="form.sys_user_initPassword" placeholder="请输入初始密码" prefix-icon="el-icon-key" clearable size="small" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="18">
+              <el-form-item label="皮肤样式" prop="sys_index_skinName">
+                <el-select v-model="form.sys_index_skinName" placeholder="皮肤样式" clearable size="small">
+                  <el-option v-for="skin in skinOptions" :key="skin.value" :label="skin.label" :value="skin.value">{{ skin.label }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="18">
+              <el-form-item label="侧栏主题" prop="sys_index_sideTheme">
+                <el-select v-model="form.sys_index_sideTheme" placeholder="侧栏主题" clearable size="small">
+                  <el-option v-for="theme in themeOptions" :key="theme.value" :label="theme.label" :value="theme.value">{{ theme.label }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="18">
+              <el-form-item label="系统logo" prop="sys_app_logo">
+                <SingleImageUpload v-model="form.sys_app_logo" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row class="mt10">
+            <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
+            <el-button @click="cancel">重 置</el-button>
+          </el-row>
+        </el-form>
       </el-card>
     </template>
   </BasicLayout>
@@ -20,225 +46,54 @@
 
 <script>
 import { getSetConfig, updateSetConfig } from '@/api/admin/sys-config'
-import Parser from '@/components/FormGenParser/Parser'
-import { getToken } from '@/utils/auth'
+import SingleImageUpload from '@/components/Upload/SingleImage'
 
 export default {
   name: 'SysConfigSet',
   components: {
-    Parser
+    SingleImageUpload
   },
   data() {
     return {
       // 遮罩层
       loading: true,
-      // 参数表格数据
-      configList: [],
-      key2: +new Date(),
-      formConf: {}
+      saving: false,
+      themeOptions: [{
+        'label': '深色主题',
+        'value': 'theme-dark'
+      }, {
+        'label': '浅色主题',
+        'value': 'theme-light'
+      }],
+      skinOptions: [{
+        'label': '蓝色',
+        'value': 'skin-blue'
+      }, {
+        'label': '绿色',
+        'value': 'skin-green'
+      }, {
+        'label': '紫色',
+        'value': 'skin-purple'
+      }, {
+        'label': '红色',
+        'value': 'skin-red'
+      }, {
+        'label': '黄色',
+        'value': 'skin-yellow'
+      }],
+      oldConfig: {},
+      form: {},
+      rules: {
+        sys_app_name: [
+          { required: true, message: '系统名称不能为空', trigger: 'blur' }
+        ],
+        sys_user_initPassword: [
+          { required: true, message: '初始密码不能为空', trigger: 'blur' }
+        ]
+      }
     }
   },
   created() {
-    this.formConf = {
-      'fields': [{
-        '__config__': {
-          'label': '系统名称',
-          'labelWidth': null,
-          'showLabel': true,
-          'changeTag': true,
-          'tag': 'el-input',
-          'tagIcon': 'input',
-          'required': true,
-          'layout': 'colFormItem',
-          'span': 24,
-          'document': 'https://element.eleme.cn/#/zh-CN/component/input',
-          'regList': [],
-          'formId': 103,
-          'renderKey': 1621935615221
-        },
-        '__slot__': {
-          'prepend': '',
-          'append': ''
-        },
-        'placeholder': '请输入系统名称',
-        'style': {
-          'width': '100%'
-        },
-        'clearable': true,
-        'prefix-icon': '',
-        'suffix-icon': '',
-        'maxlength': null,
-        'show-word-limit': false,
-        'readonly': false,
-        'disabled': false,
-        '__vModel__': 'sys_app_name'
-      }, {
-        '__config__': {
-          'label': '系统logo',
-          'tag': 'el-upload',
-          'tagIcon': 'upload',
-          'layout': 'colFormItem',
-          'defaultValue': null,
-          'showLabel': true,
-          'labelWidth': null,
-          'required': false,
-          'span': 24,
-          'showTip': false,
-          'buttonText': '点击上传',
-          'regList': [],
-          'changeTag': true,
-          'fileSize': 2,
-          'sizeUnit': 'MB',
-          'document': 'https://element.eleme.cn/#/zh-CN/component/upload',
-          'formId': 102,
-          'renderKey': 1621935611177
-        },
-        '__slot__': {
-          'list-type': true
-        },
-        'action': process.env.VUE_APP_BASE_API + '/api/v1/public/uploadFile',
-        'headers': { 'Authorization': 'Bearer ' + getToken() },
-        'data': { type: '1', category: 'logo' },
-        'disabled': false,
-        'accept': 'image/*',
-        'name': 'file',
-        'v-if': 'fileList',
-        'auto-upload': true,
-        'on-success': function(response, file, fileList) {
-          this.fileList[0] = { 'url': response.data.full_path }
-          this.$parent.$parent.$parent.$parent.$parent.$parent.$emit('bind', 'sys_app_logo', response.data.full_path)
-          return true
-        },
-        'props': {
-          'file-list': []
-        },
-        'list-type': 'picture-card',
-
-        'multiple': false,
-        '__vModel__': 'sys_app_logo'
-      }, {
-        '__config__': {
-          'label': '初始密码',
-          'labelWidth': null,
-          'showLabel': true,
-          'changeTag': true,
-          'tag': 'el-input',
-          'tagIcon': 'input',
-          'required': true,
-          'layout': 'colFormItem',
-          'span': 24,
-          'document': 'https://element.eleme.cn/#/zh-CN/component/input',
-          'regList': [],
-          'formId': 101,
-          'renderKey': 1621935520984
-        },
-        '__slot__': {
-          'prepend': '',
-          'append': ''
-        },
-        'placeholder': '请输入初始密码',
-        'style': {
-          'width': '100%'
-        },
-        'clearable': true,
-        'prefix-icon': 'el-icon-key',
-        'suffix-icon': '',
-        'maxlength': null,
-        'show-word-limit': false,
-        'readonly': false,
-        'disabled': false,
-        '__vModel__': 'sys_user_initPassword'
-      }, {
-        '__config__': {
-          'label': '皮肤样式',
-          'showLabel': true,
-          'labelWidth': null,
-          'tag': 'el-select',
-          'tagIcon': 'select',
-          'layout': 'colFormItem',
-          'span': 24,
-          'required': true,
-          'regList': [],
-          'changeTag': true,
-          'document': 'https://element.eleme.cn/#/zh-CN/component/select',
-          'formId': 104,
-          'renderKey': 1621935674152
-        },
-        '__slot__': {
-          'options': [{
-            'label': '蓝色',
-            'value': 'skin-blue'
-          }, {
-            'label': '绿色',
-            'value': 'skin-green'
-          }, {
-            'label': '紫色',
-            'value': 'skin-purple'
-          }, {
-            'label': '红色',
-            'value': 'skin-red'
-          }, {
-            'label': '黄色',
-            'value': 'skin-yellow'
-          }]
-        },
-        'placeholder': '请选择皮肤样式',
-        'style': {
-          'width': '100%'
-        },
-        'clearable': true,
-        'disabled': false,
-        'filterable': false,
-        'multiple': false,
-        '__vModel__': 'sys_index_skinName'
-      }, {
-        '__config__': {
-          'label': '侧栏主题',
-          'showLabel': true,
-          'labelWidth': null,
-          'tag': 'el-select',
-          'tagIcon': 'select',
-          'layout': 'colFormItem',
-          'span': 24,
-          'required': true,
-          'regList': [],
-          'changeTag': true,
-          'document': 'https://element.eleme.cn/#/zh-CN/component/select',
-          'formId': 106,
-          'renderKey': 1621935704111
-        },
-        '__slot__': {
-          'options': [{
-            'label': '深色主题',
-            'value': 'theme-dark'
-          }, {
-            'label': '浅色主题',
-            'value': 'theme-light'
-          }]
-        },
-        'placeholder': '请选择侧栏主题',
-        'style': {
-          'width': '100%'
-        },
-        'clearable': true,
-        'disabled': false,
-        'filterable': false,
-        'multiple': false,
-        '__vModel__': 'sys_index_sideTheme'
-      }
-      ],
-      'formRef': 'elForm',
-      'formModel': 'formData',
-      'size': 'medium',
-      'labelPosition': 'right',
-      'labelWidth': 100,
-      'formRules': 'rules',
-      'gutter': 15,
-      'disabled': false,
-      'span': 24,
-      'formBtns': true
-    }
-
     this.getList()
   },
   methods: {
@@ -246,57 +101,40 @@ export default {
     getList() {
       this.loading = true
       getSetConfig().then(response => {
-        this.configList = response.data
+        this.oldConfig = response.data
+        this.form = Object.assign({}, this.oldConfig)
         this.loading = false
-        this.fillFormData(this.formConf, this.configList)
-        // 更新表单
-        this.key2 = +new Date()
-      }
-      )
-    },
-    setUrl(url) {
-      const data = {
-        sys_app_logo: ''
-      }
-      data.sys_app_logo = url
-      // 回填数据
-      this.fillFormData(this.formConf, data)
-      // 更新表单
-      this.key2 = +new Date()
+      })
     },
     /** 搜索按钮操作 */
     handleQuery() {
       this.queryParams.pageIndex = 1
       this.getList()
     },
-    fillFormData(form, data) {
-      form.fields.forEach(item => {
-        const val = data[item.__vModel__]
-        if (val) {
-          item.__config__.defaultValue = val
+    cancel() {
+      // reset data
+      this.form = Object.assign({}, this.oldConfig)
+    },
+    submitForm() {
+      this.$refs['form'].validate(valid => {
+        if (valid) {
+          this.saving = true
+          const list = []
+          for (const key in this.form) {
+            list.push({ 'configKey': key, 'configValue': this.form[key] })
+          }
+          updateSetConfig(list).then(response => {
+            this.msgSuccess(response.msg)
+            this.open = false
+            this.saving = false
+            this.getList()
+            const data = Object.assign({}, this.form)
+            this.$store.commit('system/SET_INFO', data)
+          }).catch(() => {
+            this.saving = false
+          })
         }
       })
-    },
-    bind(key, data) {
-      this.setUrl(data)
-    },
-    sumbitForm2(data) {
-      var list = []
-      var i = 0
-      for (var key in data) {
-        list[i] = { 'configKey': key, 'configValue': data[key] }
-        i++
-      }
-      updateSetConfig(list).then(response => {
-        if (response.code === 200) {
-          this.msgSuccess(response.msg)
-          this.open = false
-          this.getList()
-        } else {
-          this.msgError(response.msg)
-        }
-      }
-      )
     }
   }
 }

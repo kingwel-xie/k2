@@ -24,7 +24,7 @@
                   <svg-icon icon-class="email" />用户邮箱
                   <div class="pull-right">{{ user.email }}</div>
                 </li>
-                <li class="list-group-item">
+                <li v-if="deptName" class="list-group-item">
                   <svg-icon icon-class="tree" />所属部门
                   <div class="pull-right">{{ deptName }}</div>
                 </li>
@@ -104,7 +104,9 @@ export default {
           this.roleName = '暂无'
         }
         this.dept = response.data.user.dept
-        this.deptName = this.dept.deptName
+        if (this.dept) {
+          this.deptName = this.dept.deptName
+        }
       })
     }
   }

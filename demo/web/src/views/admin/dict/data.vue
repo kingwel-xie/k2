@@ -113,7 +113,7 @@
 
         <!-- 添加或修改参数配置对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="500px">
-          <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form ref="form" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="字典类型">
               <el-input v-model="form.dictType" :disabled="true" />
             </el-form-item>
@@ -123,7 +123,8 @@
             <el-form-item label="数据键值" prop="dictValue">
               <el-input v-model="form.dictValue" placeholder="请输入数据键值" :disabled="isEdit" />
             </el-form-item>
-            <el-form-item label="显示排序" prop="dictSort">
+            <el-form-item prop="dictSort">
+              <span slot="label">显示排序<el-tooltip content="数值越大越靠前" placement="top"><i class="el-icon-info" /></el-tooltip></span>
               <el-input-number v-model="form.dictSort" :precision="0" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
@@ -295,6 +296,7 @@ export default {
                   getData(this.form.dictCode).then(response => {
                     this.dataList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.dataList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {

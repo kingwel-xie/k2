@@ -40,39 +40,30 @@
               @click="handleAdd"
             >新增</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysPost:edit']"
-              type="success"
-              icon="el-icon-edit"
-              size="mini"
-              :disabled="single"
-              @click="handleUpdate"
-            >修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysPost:remove']"
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-            >删除</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysPost:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
+<!--          <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--              v-permisaction="['admin:sysPost:edit']"-->
+<!--              type="success"-->
+<!--              icon="el-icon-edit"-->
+<!--              size="mini"-->
+<!--              :disabled="single"-->
+<!--              @click="handleUpdate"-->
+<!--            >修改</el-button>-->
+<!--          </el-col>-->
+<!--          <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--              v-permisaction="['admin:sysPost:remove']"-->
+<!--              type="danger"-->
+<!--              icon="el-icon-delete"-->
+<!--              size="mini"-->
+<!--              :disabled="multiple"-->
+<!--              @click="handleDelete"-->
+<!--            >删除</el-button>-->
+<!--          </el-col>-->
         </el-row>
 
         <el-table ref="mainTable" v-loading="loading" :data="postList" border highlight-current-row @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="55" align="center" />
+<!--          <el-table-column type="selection" width="55" align="center" />-->
           <el-table-column label="岗位编号" width="80" align="center" prop="postId" />
           <el-table-column label="岗位编码" align="center" prop="postCode" />
           <el-table-column label="岗位名称" align="center" prop="postName" />
@@ -149,7 +140,6 @@
 
 <script>
 import { listPost, getPost, delPost, addPost, updatePost } from '@/api/admin/sys-post'
-import { formatJson } from '@/utils'
 
 export default {
   name: 'SysPostManage',
@@ -275,6 +265,7 @@ export default {
                   getPost(this.form.postId).then(response => {
                     this.postList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.postList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {
@@ -313,38 +304,6 @@ export default {
         } else {
           this.msgError(response.msg)
         }
-      }).catch(function() {})
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有岗位数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['岗位编号', '岗位编码', '岗位名称', '排序', '创建时间']
-          const filterVal = ['postId', 'postCode', 'postName', 'sort', 'createdAt']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listPost(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '岗位管理',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
-        })
       }).catch(function() {})
     }
   }

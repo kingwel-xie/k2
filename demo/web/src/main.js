@@ -22,8 +22,8 @@ import dict from '@/filters/dict'
 
 import { getItems } from '@/api/table'
 import { getConfigKey } from '@/api/admin/sys-config'
+import { parseTime } from '@/utils'
 import {
-  parseTime,
   resetForm,
   addDateRange,
   parseBoolean
@@ -42,6 +42,7 @@ import Pagination from '@/components/Pagination'
 import BasicLayout from '@/layout/BasicLayout'
 import K2Dialog from '@/components/K2Dialog'
 import K2Descriptions from '@/components/K2Descriptions'
+import K2Title from '@/components/K2Title'
 import DatetimeRanger from '@/components/DatetimeRanger'
 import DictSelect from '@/components/DictSelect'
 import DictRadioGroup from '@/components/DictRadioGroup'
@@ -65,6 +66,7 @@ Vue.component('Pagination', Pagination)
 Vue.component('BasicLayout', BasicLayout)
 Vue.component('K2Dialog', K2Dialog)
 Vue.component('K2Descriptions', K2Descriptions)
+Vue.component('K2Title', K2Title)
 Vue.component('DatetimeRanger', DatetimeRanger)
 Vue.component('DictSelect', DictSelect)
 Vue.component('DictRadioGroup', DictRadioGroup)

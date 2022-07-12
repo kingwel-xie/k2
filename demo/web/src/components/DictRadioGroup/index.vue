@@ -1,7 +1,8 @@
 <template>
   <el-radio-group v-bind="$attrs" v-on="$listeners">
     <slot v-for="(opt, i) in options" :index="i" :option="opt">
-      <el-radio :key="i" :label="opt[valueKey]">{{ opt[labelKey] }}</el-radio>
+      <el-radio-button v-if="button" :key="i" :label="opt[valueKey]">{{ opt[labelKey] }}</el-radio-button>
+      <el-radio v-else :key="i" :label="opt[valueKey]">{{ opt[labelKey] }}</el-radio>
     </slot>
   </el-radio-group>
 </template>
@@ -27,6 +28,10 @@ export default {
     filter: {
       type: Function,
       default: null
+    },
+    button: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

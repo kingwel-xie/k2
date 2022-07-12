@@ -1,12 +1,13 @@
 <template>
   <div>
     <input ref="excel-upload-input" class="excel-upload-input" type="file" accept=".xlsx, .xls" @change="handleClick">
-    <div class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
+    <div v-if="showDragDrop" class="drop" @drop="handleDrop" @dragover="handleDragover" @dragenter="handleDragover">
       Drop excel file here or
-      <el-button :loading="loading" style="margin-left:16px;" size="mini" type="primary" @click="handleUpload">
+      <el-button v-bind="$attrs" :loading="loading" @click="handleUpload">
         Browse
       </el-button>
     </div>
+    <el-button v-else :loading="loading" v-bind="$attrs" @click="handleUpload">导入</el-button>
   </div>
 </template>
 
@@ -14,24 +15,23 @@
 import XLSX from 'xlsx'
 
 export default {
+  name: 'UploadExcel',
   props: {
+    showDragDrop: {
+      type: Boolean,
+      default: true
+    },
     beforeUpload: Function, // eslint-disable-line
     onSuccess: Function// eslint-disable-line
   },
   data() {
     return {
-      loading: false,
-      excelData: {
-        header: null,
-        results: null
-      }
+      loading: false
     }
   },
   methods: {
-    generateData({ header, results }) {
-      this.excelData.header = header
-      this.excelData.results = results
-      this.onSuccess && this.onSuccess(this.excelData)
+    generateData(sheets) {
+      this.onSuccess && this.onSuccess(sheets)
     },
     handleDrop(e) {
       e.stopPropagation()
@@ -84,12 +84,17 @@ export default {
         const reader = new FileReader()
         reader.onload = e => {
           const data = e.target.result
-          const workbook = XLSX.read(data, { type: 'array' })
-          const firstSheetName = workbook.SheetNames[0]
-          const worksheet = workbook.Sheets[firstSheetName]
-          const header = this.getHeaderRow(worksheet)
-          const results = XLSX.utils.sheet_to_json(worksheet)
-          this.generateData({ header, results })
+          const workbook = XLSX.read(data, { type: 'array', cellDates: true })
+
+          const sheets = {}
+          workbook.SheetNames.forEach(x => {
+            const worksheet = workbook.Sheets[x]
+            const header = this.getHeaderRow(worksheet)
+            const results = XLSX.utils.sheet_to_json(worksheet)
+            // sheets.push({ header, results })
+            sheets[x] = { header, results }
+          })
+          this.generateData(sheets)
           this.loading = false
           resolve()
         }

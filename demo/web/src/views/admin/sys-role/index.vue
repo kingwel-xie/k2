@@ -61,35 +61,26 @@
               @click="handleAdd"
             >新增</el-button>
           </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysRole:update']"
-              type="success"
-              icon="el-icon-edit"
-              size="mini"
-              :disabled="single"
-              @click="handleUpdate"
-            >修改</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysRole:remove']"
-              type="danger"
-              icon="el-icon-delete"
-              size="mini"
-              :disabled="multiple"
-              @click="handleDelete"
-            >删除</el-button>
-          </el-col>
-          <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysRole:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
-          </el-col>
+<!--          <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--              v-permisaction="['admin:sysRole:update']"-->
+<!--              type="success"-->
+<!--              icon="el-icon-edit"-->
+<!--              size="mini"-->
+<!--              :disabled="single"-->
+<!--              @click="handleUpdate"-->
+<!--            >修改</el-button>-->
+<!--          </el-col>-->
+<!--          <el-col :span="1.5">-->
+<!--            <el-button-->
+<!--              v-permisaction="['admin:sysRole:remove']"-->
+<!--              type="danger"-->
+<!--              icon="el-icon-delete"-->
+<!--              size="mini"-->
+<!--              :disabled="multiple"-->
+<!--              @click="handleDelete"-->
+<!--            >删除</el-button>-->
+<!--          </el-col>-->
         </el-row>
 
         <el-table
@@ -99,14 +90,14 @@
           border
           highlight-current-row
           @selection-change="handleSelectionChange"
-          @sort-change="handleSortChang"
+          @sort-change="handleSortChange"
         >
-          <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="编码" sortable="custom" prop="roleId" width="80" />
+<!--          <el-table-column type="selection" width="55" align="center" />-->
+          <el-table-column label="编码" align="center" sortable="custom" prop="roleId" width="80" />
           <el-table-column label="名称" sortable="custom" prop="roleName" :show-overflow-tooltip="true" />
           <el-table-column label="权限字符" prop="roleKey" :show-overflow-tooltip="true" width="150" />
-          <el-table-column label="排序" sortable="custom" prop="roleSort" width="80" />
-          <el-table-column label="状态" sortable="custom" width="80">
+<!--          <el-table-column label="排序" sortable="custom" prop="roleSort" width="80" />-->
+          <el-table-column label="状态" sortable="custom" prop="status" width="80">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -135,13 +126,13 @@
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
               >修改</el-button>
-              <el-button
-                v-permisaction="['admin:sysRole:update']"
-                size="mini"
-                type="text"
-                icon="el-icon-circle-check"
-                @click="handleDataScope(scope.row)"
-              >数据权限</el-button>
+<!--              <el-button-->
+<!--                v-permisaction="['admin:sysRole:update']"-->
+<!--                size="mini"-->
+<!--                type="text"-->
+<!--                icon="el-icon-circle-check"-->
+<!--                @click="handleDataScope(scope.row)"-->
+<!--              >数据权限</el-button>-->
               <el-button
                 v-if="scope.row.roleKey!=='admin'"
                 v-permisaction="['admin:sysRole:remove']"
@@ -192,7 +183,7 @@
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="submitForm">确 定</el-button>
+            <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
             <el-button @click="cancel">取 消</el-button>
           </div>
         </el-dialog>
@@ -242,7 +233,6 @@
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus } from '@/api/admin/sys-role'
 import { roleMenuTreeselect } from '@/api/admin/sys-menu'
 import { treeselect as deptTreeselect, roleDeptTreeselect } from '@/api/admin/sys-dept'
-import { formatJson } from '@/utils'
 
 export default {
   name: 'Role',
@@ -253,6 +243,7 @@ export default {
     return {
       // 遮罩层
       loading: true,
+      saving: false,
       // 选中数组
       ids: [],
       // 非单个禁用
@@ -471,9 +462,12 @@ export default {
       this.title = '添加角色'
       this.isEdit = false
     },
-    handleSortChang(column, prop, order) {
-      prop = column.prop
-      order = column.order
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
       if (order === 'descending') {
         this.queryParams[prop + 'Order'] = 'desc'
       } else if (order === 'ascending') {
@@ -511,34 +505,34 @@ export default {
     submitForm: function() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          this.saving = true
           if (this.form.roleId !== undefined) {
             this.form.menuIds = this.getMenuAllCheckedKeys()
             updateRole(this.form, this.form.roleId).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess(response.msg)
-                this.open = false
-                // reload the row and refresh
-                const foundIndex = this.roleList.findIndex(x => x.roleId === this.form.roleId)
-                if (foundIndex !== -1) {
-                  getRole(this.form.roleId).then(response => {
-                    this.roleList[foundIndex] = response.data
-                    this.$refs.mainTable.setCurrentRow(this.roleList[foundIndex], true)
-                  })
-                }
-              } else {
-                this.msgError(response.msg)
+              this.msgSuccess(response.msg)
+              this.open = false
+              this.saving = false
+              // reload the row and refresh
+              const foundIndex = this.roleList.findIndex(x => x.roleId === this.form.roleId)
+              if (foundIndex !== -1) {
+                getRole(this.form.roleId).then(response => {
+                  this.roleList[foundIndex] = response.data
+                  this.$refs.mainTable.setCurrentRow(this.roleList[foundIndex], true)
+                  this.$refs.mainTable.clearSelection()
+                })
               }
+            }).catch(() => {
+              this.saving = false
             })
           } else {
             this.form.menuIds = this.getMenuAllCheckedKeys()
             addRole(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess(response.msg)
-                this.open = false
-                this.getList()
-              } else {
-                this.msgError(response.msg)
-              }
+              this.msgSuccess(response.msg)
+              this.open = false
+              this.saving = false
+              this.getList()
+            }).catch(() => {
+              this.saving = false
             })
           }
         }
@@ -580,38 +574,6 @@ export default {
         this.getList()
         this.msgSuccess(response.msg)
       }).catch(function() {})
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.$confirm('是否确认导出所有角色数据项?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.loading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['角色编号', '角色名称', '权限字符', '显示顺序', '状态', '创建时间']
-          const filterVal = ['roleId', 'roleName', 'roleKey', 'roleSort', 'status', 'createdAt']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listRole(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '角色管理',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
-        })
-      })
     }
   }
 }

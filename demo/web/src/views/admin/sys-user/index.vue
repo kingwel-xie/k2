@@ -97,13 +97,16 @@
                 >删除</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button
-                  v-permisaction="['admin:sysUser:list']"
-                  type="warning"
-                  icon="el-icon-download"
-                  size="mini"
-                  @click="handleExport"
-                >导出</el-button>
+                <el-dropdown v-permisaction="['admin:sysUser:list']" size="mini" @command="handleExport">
+                  <el-button type="warning" icon="el-icon-download" size="mini">
+                    导出...<i class="el-icon-arrow-down el-icon--right" />
+                  </el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                    <el-dropdown-item command="1">当前页</el-dropdown-item>
+                    <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
               </el-col>
             </el-row>
 
@@ -114,17 +117,21 @@
               border
               highlight-current-row
               @selection-change="handleSelectionChange"
-              @sort-change="handleSortChang"
+              @sort-change="handleSortChange"
             >
               <el-table-column type="selection" width="45" align="center" />
-              <el-table-column label="编号" width="75" prop="userId" sortable="custom" />
+<!--              <el-table-column label="编号" width="75" prop="userId" sortable="custom" />-->
               <el-table-column label="登录名" width="105" prop="username" sortable="custom" :show-overflow-tooltip="true" />
               <el-table-column label="昵称" prop="nickName" :show-overflow-tooltip="true" />
-              <el-table-column label="角色" :show-overflow-tooltip="true" prop="role.roleName" />
+              <el-table-column label="角色" :show-overflow-tooltip="true" prop="roleId" sortable="custom">
+                <template #default="{row}">
+                  <span>{{ row.role ? row.role.roleName : '???' }}</span>
+                </template>
+              </el-table-column>
               <el-table-column label="部门" prop="dept.deptName" :show-overflow-tooltip="true" />
               <el-table-column label="手机号" prop="phone" width="108" />
               <el-table-column label="邮箱" prop="email" width="108" />
-              <el-table-column label="状态" width="80" sortable="custom">
+              <el-table-column label="状态" width="80" prop="status" sortable="custom">
                 <template slot-scope="scope">
                   <el-switch
                     v-model="scope.row.status"
@@ -311,7 +318,6 @@
 
 <script>
 import {
-  listUser,
   getUser,
   delUser,
   addUser,
@@ -464,18 +470,16 @@ export default {
       }
     },
     /** 排序回调函数 */
-    handleSortChang(column, prop, order) {
-      prop = column.prop
-      order = column.order
-      if (this.order !== '' && this.order !== prop + 'Order') {
-        this.queryParams[this.order] = undefined
-      }
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
       if (order === 'descending') {
         this.queryParams[prop + 'Order'] = 'desc'
-        this.order = prop + 'Order'
       } else if (order === 'ascending') {
         this.queryParams[prop + 'Order'] = 'asc'
-        this.order = prop + 'Order'
       } else {
         this.queryParams[prop + 'Order'] = undefined
       }
@@ -600,6 +604,7 @@ export default {
                   getUser(this.form.userId).then(response => {
                     this.userList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.userList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {
@@ -623,7 +628,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const Ids = (row.userId && [row.userId]) || this.ids
-      this.$confirm('是否确认删除用户编号为"' + Ids + '"的数据项?', '警告', {
+      this.$confirm('是否确认删除指定用户的数据项?', '警告', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -639,36 +644,49 @@ export default {
         }
       }).catch(function() {})
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.$confirm('是否确认导出所有用户数据项（最多10000条）?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['编号', '用户名', '昵称', '角色', '部门', '岗位', '电话', '邮箱', '性别', '备注']
-          const filterVal = ['userId', 'username', 'nickName', 'roleId', 'deptId', 'postId', 'phone', 'email', 'sex', 'remark']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listUserWithoutCustomer(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '用户',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
+    export2Excel(data) {
+      const tHeader = ['编号', '用户名', '昵称', '角色', '部门', '岗位', '电话', '邮箱', '性别', '备注']
+      const filterVal = ['userId', 'username', 'nickName', 'roleId', 'deptId', 'postId', 'phone', 'email', 'sex', 'remark']
+      const filename = '用户'
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      switch (choice) {
+        case '0':
+          this.export2Excel(JSON.parse(JSON.stringify(this.$refs.mainTable.selection)))
+          break
+        case '1':
+          this.export2Excel(JSON.parse(JSON.stringify(this.userList)))
+          break
+        case '2':
+          this.$confirm('请确认是否导出所有用户数据项（最多10000项）?', '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            listUserWithoutCustomer(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
     },
     /** 导入按钮操作 */
     handleImport() {

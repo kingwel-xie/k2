@@ -3,21 +3,30 @@
   <BasicLayout>
     <template #wrapper>
       <el-card class="box-card">
-        <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="68px">
-          <el-form-item label="编码" prop="code">
-            <el-input v-model="queryParams.code" placeholder="请输入编码" clearable size="small" @keyup.enter.native="handleQuery" />
+        <el-form ref="queryForm" :model="queryParams" :inline="true" label-width="88px">
+          <el-form-item label="代码" prop="code">
+            <el-input v-model="queryParams.code" placeholder="请输入代码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="中文名" prop="nameCN">
-            <el-input v-model="queryParams.nameCN" placeholder="请输入中文名" clearable size="small" @keyup.enter.native="handleQuery" />
+          <el-form-item label="三字符代码" prop="code2">
+            <el-input v-model="queryParams.code2" placeholder="请输入三字符代码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="英文名" prop="nameEN">
-            <el-input v-model="queryParams.nameEN" placeholder="请输入英文名" clearable size="small" @keyup.enter.native="handleQuery" />
+          <el-form-item label="数字代码" prop="digitCode">
+            <el-input v-model="queryParams.digitCode" placeholder="请输入数字代码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
           <el-form-item label="电话代码" prop="teleCode">
             <el-input v-model="queryParams.teleCode" placeholder="请输入电话代码" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
-          <el-form-item label="描述" prop="alias">
-            <el-input v-model="queryParams.alias" placeholder="请输入描述" clearable size="small" @keyup.enter.native="handleQuery" />
+          <el-form-item label="分组" prop="group">
+            <el-input v-model="queryParams.group" placeholder="请输入分组" clearable size="small" @keyup.enter.native="handleQuery" />
+          </el-form-item>
+          <el-form-item label="中文简称" prop="nameCN">
+            <el-input v-model="queryParams.nameCN" placeholder="请输入中文简称" clearable size="small" @keyup.enter.native="handleQuery" />
+          </el-form-item>
+          <el-form-item label="英文简称" prop="nameEN">
+            <el-input v-model="queryParams.nameEN" placeholder="请输入英文简称" clearable size="small" @keyup.enter.native="handleQuery" />
+          </el-form-item>
+          <el-form-item label="描述" prop="remark">
+            <el-input v-model="queryParams.remark" placeholder="请输入描述" clearable size="small" @keyup.enter.native="handleQuery" />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -36,17 +45,44 @@
             <el-button v-permisaction="['kobh:tbxCountry:remove']" type="danger" icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button v-permisaction="['kobh:tbxCountry:list']" type="warning" icon="el-icon-download" size="mini" @click="handleExport">导出</el-button>
+            <el-dropdown v-permisaction="['kobh:tbxCountry:list']" size="mini" @command="handleExport">
+              <el-button type="warning" icon="el-icon-download" size="mini">
+                导出...<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                <el-dropdown-item command="1">当前页</el-dropdown-item>
+                <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
         </el-row>
 
-        <el-table ref="mainTable" v-loading="loading" element-loading-text="加载中..." element-loading-spinner="el-icon-loading" :data="tbxCountryList" stripe border highlight-current-row @selection-change="handleSelectionChange">
+        <el-table
+          ref="mainTable"
+          v-loading="loading"
+          element-loading-text="加载中..."
+          element-loading-spinner="el-icon-loading"
+          :data="tbxCountryList"
+          row-key="code"
+          :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+          stripe
+          border
+          highlight-current-row
+          @selection-change="handleSelectionChange"
+          @sort-change="handleSortChange"
+        >
           <el-table-column type="selection" width="55" align="center" />
-          <el-table-column label="编码" align="center" prop="code" :show-overflow-tooltip="true" />
-          <el-table-column label="中文名" align="center" prop="nameCN" :show-overflow-tooltip="true" />
-          <el-table-column label="英文名" align="center" prop="nameEN" :show-overflow-tooltip="true" />
+          <el-table-column label="代码" align="center" prop="code" :show-overflow-tooltip="true" />
+          <el-table-column label="中文简称" align="center" prop="nameCN" :show-overflow-tooltip="true" />
+          <el-table-column label="英文简称" align="center" prop="nameEN" :show-overflow-tooltip="true" />
+          <el-table-column label="三字符代码" align="center" prop="code2" :show-overflow-tooltip="true" />
+          <el-table-column label="分组" align="center" prop="group" :show-overflow-tooltip="true" />
+          <el-table-column v-fmt.dict="'TbxCountry'" label="从属" align="center" prop="belongTo" :show-overflow-tooltip="true" />
+          <el-table-column label="数字代码" align="center" prop="digitCode" :show-overflow-tooltip="true" />
           <el-table-column label="电话代码" align="center" prop="teleCode" :show-overflow-tooltip="true" />
-          <el-table-column label="描述" align="center" prop="alias" :show-overflow-tooltip="true" />
+          <el-table-column label="描述" align="center" prop="remark" :show-overflow-tooltip="true" />
+          <el-table-column label="显示排序" align="center" prop="displaySort" :show-overflow-tooltip="true" />
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="110px">
             <template slot-scope="scope">
               <el-button v-permisaction="['kobh:tbxCountry:edit']" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
@@ -58,23 +94,43 @@
         <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageIndex" :limit.sync="queryParams.pageSize" @pagination="getList" />
 
         <!-- 添加或修改对话框 -->
-        <K2Dialog :title="title" :visible.sync="open" width="500px">
-          <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-dialog :title="title" :visible.sync="open" width="500px">
+          <el-form ref="form" v-ffiov :model="form" :rules="rules" label-width="100px">
             <el-row :gutter="10" class="mb8">
               <el-col :span="24">
-                <el-form-item label="编码" prop="code">
-                  <el-input v-model="form.code" placeholder="编码" :disabled="isEdit" />
+                <el-form-item label="代码" prop="code">
+                  <el-input v-model="form.code" placeholder="代码" :disabled="isEdit" />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
-                <el-form-item label="中文名" prop="nameCN">
-                  <el-input v-model="form.nameCN" placeholder="中文名" />
+                <el-form-item label="三字符代码" prop="code2">
+                  <el-input v-model="form.code2" placeholder="三字符代码" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="中文简称" prop="nameCN">
+                  <el-input v-model="form.nameCN" placeholder="中文简称" />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="nameEN">
-                  <span slot="label">英文名<el-tooltip content="Country name in English" placement="top"><i class="el-icon-info" /></el-tooltip></span>
-                  <el-input v-model="form.nameEN" placeholder="英文名" />
+                  <span slot="label">英文简称<el-tooltip content="Country name in English" placement="top"><i class="el-icon-info" /></el-tooltip></span>
+                  <el-input v-model="form.nameEN" placeholder="英文简称" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="分组" prop="group">
+                  <el-input v-model="form.group" placeholder="分组" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="从属" prop="belongTo">
+                  <DictSelect v-model="form.belongTo" dict="TbxCountry" placeholder="从属" filterable />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="数字代码" prop="digitCode">
+                  <el-input v-model="form.digitCode" placeholder="数字代码" />
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -83,8 +139,13 @@
                 </el-form-item>
               </el-col>
               <el-col :span="24">
-                <el-form-item label="描述" prop="alias">
-                  <el-input v-model="form.alias" type="textarea" :rows="2" placeholder="请输入内容" />
+                <el-form-item label="显示排序" prop="displaySort">
+                  <el-input-number v-model="form.displaySort" :precision="0" placeholder="显示排序" />
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="描述" prop="remark">
+                  <el-input v-model="form.remark" type="textarea" :rows="2" placeholder="请输入内容" />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -93,7 +154,7 @@
             <el-button type="primary" :loading="saving" @click="submitForm">确 定</el-button>
             <el-button @click="cancel">取 消</el-button>
           </div>
-        </K2Dialog>
+        </el-dialog>
       </el-card>
     </template>
   </BasicLayout>
@@ -127,20 +188,19 @@ export default {
       open: false,
       isEdit: false,
       // 类型数据字典
-      typeOptions: [],
       tbxCountryList: [],
-
-      // 关系表类型
-
       // 查询参数
       queryParams: {
         pageIndex: 1,
         pageSize: 10,
         code: undefined,
+        code2: undefined,
+        digitCode: undefined,
+        teleCode: undefined,
+        group: undefined,
         nameCN: undefined,
         nameEN: undefined,
-        teleCode: undefined,
-        alias: undefined
+        remark: undefined
 
       },
       // 表单参数
@@ -148,9 +208,11 @@ export default {
       },
       // 表单校验
       rules: {
-        code: [{ required: true, message: '编码不能为空', trigger: 'blur' }],
-        nameCN: [{ required: true, message: '中文名不能为空', trigger: 'blur' }],
-        nameEN: [{ required: true, message: '英文名不能为空', trigger: 'blur' }]
+        code: [{ required: true, message: '代码不能为空', trigger: 'blur' }],
+        code2: [{ required: true, message: '三字符代码不能为空', trigger: 'blur' }],
+        // group: [{ required: true, message: '分组不能为空', trigger: 'blur' }],
+        nameCN: [{ required: true, message: '中文简称不能为空', trigger: 'blur' }],
+        nameEN: [{ required: true, message: '英文简称不能为空', trigger: 'blur' }]
       }
     }
   },
@@ -178,14 +240,18 @@ export default {
     reset() {
       this.form = {
         code: undefined,
+        code2: undefined,
+        digitCode: undefined,
+        teleCode: undefined,
+        group: undefined,
+        belongTo: undefined,
         nameCN: undefined,
         nameEN: undefined,
-        teleCode: undefined,
-        alias: undefined
+        displaySort: undefined,
+        remark: undefined
       }
       this.resetForm('form')
     },
-    // 关系
     // 文件
     /** 搜索按钮操作 */
     handleQuery() {
@@ -210,6 +276,22 @@ export default {
       this.ids = selection.map(item => item.code)
       this.single = selection.length !== 1
       this.multiple = !selection.length
+    },
+    /** 排序回调函数 */
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
+      if (order === 'descending') {
+        this.queryParams[prop + 'Order'] = 'desc'
+      } else if (order === 'ascending') {
+        this.queryParams[prop + 'Order'] = 'asc'
+      } else {
+        this.queryParams[prop + 'Order'] = undefined
+      }
+      this.getList()
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -236,14 +318,7 @@ export default {
               this.msgSuccess(response.msg)
               this.open = false
               this.saving = false
-              // reload the row and refresh
-              const foundIndex = this.tbxCountryList.findIndex(x => x.code === this.form.code)
-              if (foundIndex !== -1) {
-                getTbxCountry(this.form.code).then(response => {
-                  this.tbxCountryList[foundIndex] = response.data
-                  this.$refs.mainTable.setCurrentRow(this.tbxCountryList[foundIndex], true)
-                })
-              }
+              this.getList()
             }).catch(() => {
               this.saving = false
             })
@@ -276,35 +351,49 @@ export default {
         this.getList()
       }).catch(() => {})
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.$confirm('是否导出满足当前查询条件的数据项（最多10000条）?', '请确认', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(() => {
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['编码', '中文名', '英文名', '电话代码', '描述']
-          const filterVal = ['code', 'nameCN', 'nameEN', 'teleCode', 'alias']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listTbxCountry(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '国家编码',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-          }).catch(() => {
-            this.loading = false
-          })
+    export2Excel(data) {
+      const tHeader = ['代码','三字符代码','数字代码','电话代码','分组','从属','中文简称','英文简称','显示排序','描述',]
+      const filterVal = ['code','code2','digitCode','teleCode','group','belongTo','nameCN','nameEN','displaySort','remark',]
+      const filename = '国家编码'
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      switch (choice) {
+        case '0':
+          this.export2Excel(JSON.parse(JSON.stringify(this.$refs.mainTable.selection)))
+          break
+        case '1':
+          this.export2Excel(JSON.parse(JSON.stringify(this.tbxCountryList)))
+          break
+        case '2':
+          this.$confirm('是否导出满足当前查询条件的数据项（最多10000项）?', '请确认', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            listTbxCountry(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
     }
   }
 }

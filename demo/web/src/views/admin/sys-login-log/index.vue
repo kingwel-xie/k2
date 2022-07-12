@@ -46,18 +46,22 @@
             </el-button>
           </el-col>
           <el-col :span="1.5">
-            <el-button
-              v-permisaction="['admin:sysLoginLog:list']"
-              type="warning"
-              icon="el-icon-download"
-              size="mini"
-              @click="handleExport"
-            >导出</el-button>
+            <el-dropdown v-permisaction="['admin:sysLoginLog:list']" size="mini" @command="handleExport">
+              <el-button type="warning" icon="el-icon-download" size="mini">
+                导出...<i class="el-icon-arrow-down el-icon--right" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-if="!multiple" command="0">当前选中</el-dropdown-item>
+                <el-dropdown-item command="1">当前页</el-dropdown-item>
+                <el-dropdown-item command="2">按查询条件</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-col>
         </el-row>
 
-        <el-table ref="mainTable" v-loading="loading" :data="sysloginlogList" highlight-current-row @selection-change="handleSelectionChange">
+        <el-table ref="mainTable" v-loading="loading" :data="sysloginlogList" border stripe highlight-current-row @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55" align="center" />
+          <el-table-column label="编号" width="70" prop="id" />
           <el-table-column
             label="用户名"
             align="center"
@@ -174,8 +178,7 @@ export default {
         username: undefined,
         status: undefined,
         ipaddr: undefined,
-        loginLocation: undefined,
-        createdAtOrder: 'desc'
+        loginLocation: undefined
       },
       // 表单参数
       form: {
@@ -287,38 +290,49 @@ export default {
         }
       }).catch(function() {})
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      // const queryParams = this.queryParams
-      this.$confirm('是否确认导出所有登录日志数据项（最多10000条）?', '警告', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.downloadLoading = true
-        import('@/vendor/Export2Excel').then(excel => {
-          const tHeader = ['日志编号', '用户名', 'ip', '状态', 'os', '平台', '浏览器', '信息', '备注', '登录日期']
-          const filterVal = ['ID', 'username', 'ipaddr', 'status', 'os', 'platform', 'browser', 'msg', 'remark', 'loginTime']
-          const params = Object.assign({}, this.queryParams)
-          params.pageIndex = 1
-          params.pageSize = 10000
-          this.loading = true
-          listSysLoginlog(this.addDateRange(params, this.dateRange)).then(response => {
-            this.loading = false
-            const data = formatJson(filterVal, response.data.list)
-            excel.export_json_to_excel({
-              header: tHeader,
-              data,
-              filename: '登录日志',
-              autoWidth: true, // Optional
-              bookType: 'xlsx' // Optional
-            })
-            this.loading = false
-          }).catch(_ => {
-            this.loading = false
-          })
+    export2Excel(data) {
+      const tHeader = ['日志编号', '用户名', 'ip', '状态', 'os', '平台', '浏览器', '信息', '备注', '登录日期']
+      const filterVal = ['id', 'username', 'ipaddr', 'status', 'os', 'platform', 'browser', 'msg', 'remark', 'loginTime']
+      const filename = '登录日志'
+      const filtered = formatJson(filterVal, data)
+      import('@/vendor/Export2Excel').then(excel => {
+        excel.export_json_to_excel({
+          header: tHeader,
+          data: filtered,
+          filename: filename,
+          autoWidth: true, // Optional
+          bookType: 'xlsx' // Optional
         })
       })
+    },
+    /** 导出按钮操作 */
+    handleExport(choice) {
+      switch (choice) {
+        case '0':
+          this.export2Excel(JSON.parse(JSON.stringify(this.$refs.mainTable.selection)))
+          break
+        case '1':
+          this.export2Excel(JSON.parse(JSON.stringify(this.sysloginlogList)))
+          break
+        case '2':
+          this.$confirm('请确认是否导出所有登录日志数据项（最多10000项）?', '警告', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            const params = Object.assign({}, this.queryParams)
+            params.pageIndex = 1
+            params.pageSize = 10000
+            this.loading = true
+            listSysLoginlog(this.addDateRange(params, this.dateRange)).then(response => {
+              this.loading = false
+              this.export2Excel(response.data.list)
+            }).catch(_ => {
+              this.loading = false
+            })
+          })
+          break
+      }
     }
   }
 }

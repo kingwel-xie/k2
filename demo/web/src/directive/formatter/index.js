@@ -1,6 +1,7 @@
 import moment from 'moment'
 import store from '@/store'
 import { LABEL_KEY } from '@/store/modules/dictionary'
+import { formatTime, tryParseJson } from '@/utils'
 
 export default {
   install(Vue) {
@@ -35,7 +36,7 @@ export default {
         if (vnode.componentOptions.tag !== 'el-table-column') {
           throw new Error('v-dict only works for <el-table-column>')
         }
-        const { modifiers: { debug, bool, float, date, time, datetime, dict }, value } = binding
+        const { modifiers: { debug, bool, float, date, time, datetime, fulltime, dict }, value } = binding
         let formatter = null
         if (bool) {
           // check value is array and length === 2
@@ -49,11 +50,21 @@ export default {
           formatter = (row, column, val) => {
             return val ? val.toFixed(fractionDigits) : ''
           }
-        } else if (date || time || datetime) {
+        } else if (date || time || fulltime) {
           // moment.ISO_8601
-          const format = value || (date ? 'YYYY-MM-DD' : time ? 'HH:mm:ss' : 'YYYY-MM-DD HH:mm')
+          const format = value || (date ? 'YYYY-MM-DD' : time ? 'HH:mm:ss' : 'YYYY-MM-DD HH:mm:ss')
           formatter = (row, column, val) => {
-            return val ? moment(new Date(val)).format(format) : '-'
+            if (!val || val.indexOf('01-01-01') > -1) {
+              return '-'
+            }
+            return moment(new Date(val)).format(format)
+          }
+        } else if (datetime) {
+          formatter = (row, column, val) => {
+            if (!val || val.indexOf('01-01-01') > -1) {
+              return '-'
+            }
+            return formatTime(new Date(val), '{y}-{m}-{d} {h}:{i}')
           }
         } else if (dict) {
           const dicts = store.getters.dictRegistry(value)

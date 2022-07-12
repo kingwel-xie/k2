@@ -2,13 +2,13 @@
   <div class="datetime-ranger">
     <el-date-picker
       v-model="value0"
-      type="datetimerange"
+      v-bind="$attrs"
+      type="daterange"
       :picker-options="datetimePickerOptions()"
       range-separator="至"
       start-placeholder="开始日期"
       end-placeholder="结束日期"
       align="right"
-      value-format="yyyy-MM-dd HH:mm:ss"
     />
   </div>
 </template>
@@ -34,6 +34,12 @@ export default {
     },
     value0(val) {
       // console.log('zzz', val)
+      if (val[0]) {
+        val[0].setHours(0, 0, 0)
+      }
+      if (val[1]) {
+        val[1].setHours(23, 59, 59, 999)
+      }
       this.$emit('input', val)
     }
   },
@@ -69,7 +75,7 @@ export default {
           onClick(picker) {
             const end = new Date()
             const start = new Date()
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 180)
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 183)
             picker.$emit('pick', [start, end])
           }
         }, {
@@ -78,7 +84,6 @@ export default {
             const end = new Date()
             const start = new Date()
             start.setDate(1)
-            start.setHours(0, 0, 0)
             picker.$emit('pick', [start, end])
           }
         }, {
@@ -88,7 +93,6 @@ export default {
             const start = new Date()
             const month = start.getMonth()
             start.setMonth(month / 3 * 3, 1)
-            start.setHours(0, 0, 0)
             picker.$emit('pick', [start, end])
           }
         }, {
@@ -97,7 +101,6 @@ export default {
             const end = new Date()
             const start = new Date()
             start.setMonth(0, 1)
-            start.setHours(0, 0, 0)
             picker.$emit('pick', [start, end])
           }
         }]

@@ -6,7 +6,7 @@
         <span v-for="item in roles" :key="item" class="pan-info-roles">{{ item }}</span>
       </pan-thumb>
       <div class="info-container">
-        <span class="display_name">{{ name }}</span>
+        <span class="display_name">{{ name }}，欢迎登录系统! 今天是 {{ today }}</span>
       </div>
     </div>
     <Tinymce value="text to edit"></Tinymce>
@@ -16,6 +16,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import PanThumb from '@/components/PanThumb'
+import moment from 'moment'
 import Tinymce from '@/components/Tinymce'
 
 export default {
@@ -23,6 +24,7 @@ export default {
   components: { Tinymce, PanThumb },
   data() {
     return {
+      today: moment().format('LLLL'),
       todo: undefined
     }
   },

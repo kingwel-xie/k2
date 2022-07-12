@@ -1,24 +1,17 @@
 import variables from '@/styles/element-variables.scss'
 import defaultSettings from '@/settings'
+import storage from '@/utils/storage'
 
-const { showSettings, showTrayPanel, topNav, tagsView, fixedHeader, sidebarLogo, themeStyle } = defaultSettings
+const LOCAL_STORAGE_KEY = '__app_setting__'
 
-const state = {
-  theme: variables.theme,
-  showSettings: showSettings,
-  showTrayPanel: showTrayPanel,
-  topNav: topNav,
-  tagsView: tagsView,
-  fixedHeader: fixedHeader,
-  sidebarLogo: sidebarLogo,
-  themeStyle: themeStyle
-}
+const state = Object.assign({ theme: variables.theme }, defaultSettings, storage.get(LOCAL_STORAGE_KEY))
 
 const mutations = {
   CHANGE_SETTING: (state, { key, value }) => {
     // eslint-disable-next-line no-prototype-builtins
     if (state.hasOwnProperty(key)) {
       state[key] = value
+      storage.set(LOCAL_STORAGE_KEY, state)
     }
   }
 }

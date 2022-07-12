@@ -89,8 +89,8 @@ export function changeUserStatus(e) {
 // 修改用户个人信息
 export function updateUserProfile(data) {
   return request({
-    url: '/api/v1/sys-user/profile',
-    method: 'put',
+    url: '/api/v1/user/profile',
+    method: 'post',
     data: data
   })
 }

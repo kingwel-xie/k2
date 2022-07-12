@@ -137,6 +137,9 @@ module.exports = {
   },
   css: {
     loaderOptions: {
+      sass: {
+        sassOptions: { outputStyle: 'expanded' }
+      },
       less: {
         modifyVars: {
           // less vars，customize ant design theme

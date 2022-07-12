@@ -5,7 +5,7 @@
       :placement="toolTipPlacement"
       :open-delay="toolTipDelay"
       :content="toolTipContent"
-      :disabled="!canEdit"
+      :disabled="true"
     >
       <div
         tabindex="0"
@@ -16,9 +16,23 @@
         <slot name="content" />
       </div>
     </el-tooltip>
+    <el-form-item v-if="!!rules" label-width="0" :rules="rules" :prop="prop">
+      <component
+        :is="editableComponent"
+        v-if="editMode || showInput"
+        ref="input"
+        v-model="model"
+        v-bind="$attrs"
+        @focus="onFieldClick"
+        @keyup.enter.native="onInputExit"
+        v-on="listeners"
+      >
+        <slot name="edit-component-slot" />
+      </component>
+    </el-form-item>
     <component
       :is="editableComponent"
-      v-if="editMode || showInput"
+      v-else-if="editMode || showInput"
       ref="input"
       v-model="model"
       v-bind="$attrs"
@@ -70,6 +84,14 @@ export default {
     canEdit: {
       type: Boolean,
       default: false
+    },
+    rules: {
+      type: Array,
+      default: undefined
+    },
+    prop: {
+      type: String,
+      default: ''
     }
   },
   data() {

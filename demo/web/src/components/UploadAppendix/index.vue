@@ -4,7 +4,7 @@
       <el-table :data="fileList" stripe>
         <el-table-column label="文件名" align="center" prop="name" :show-overflow-tooltip="true" />
         <el-table-column v-if="showType" label="类型" align="center" prop="type" :show-overflow-tooltip="true">
-          <editable-cell v-model="row.type" slot-scope="{row}" :can-edit="true" editable-component="DictSelect" dict="tbx_attachment_type" placeholder="类型" close-event="change">
+          <editable-cell v-model="row.type" slot-scope="{row}" :can-edit="!readonly" editable-component="DictSelect" dict="tbx_attachment_type" placeholder="类型" close-event="change">
             <span slot="content">{{ row.type | dict('tbx_attachment_type') }}</span>
           </editable-cell>
         </el-table-column>
@@ -12,22 +12,23 @@
         <!--            <el-table-column label="URL" align="center" prop="url" :show-overflow-tooltip="true" />-->
         <el-table-column label="预览" align="center" min-width="50px">
           <template slot-scope="{row}">
-            <el-button v-if="row.contentType && row.contentType.indexOf('image') !== -1" size="mini" type="text" icon="el-icon-search" @click="handlePreview(row)">预览</el-button>
+            <el-button v-if="canPreview(row.contentType)" size="mini" type="text" icon="el-icon-search" @click="handlePreview(row)" />
           </template>
         </el-table-column>
         <el-table-column label="备注" align="center" prop="type" :show-overflow-tooltip="true" min-width="120px">
-          <editable-cell v-model="row.remark" slot-scope="{row}" :can-edit="true" editable-component="el-input" type="textarea" placeholder="请输入备注">
+          <editable-cell v-model="row.remark" slot-scope="{row}" :can-edit="!readonly" editable-component="el-input" type="textarea" placeholder="请输入备注">
             <span slot="content">{{ row.remark }}</span>
           </editable-cell>
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="{row}">
-            <el-button size="mini" type="text" icon="el-icon-close" @click="handleRemove(row)">删除</el-button>
+            <el-button v-if="!readonly" size="mini" type="text" icon="el-icon-close" @click="handleRemove(row)">删除</el-button>
             <el-button size="mini" type="text" icon="el-icon-download" @click="handleDownload(row)">下载</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-upload
+        v-if="!readonly"
         class="mt20"
         multiple
         :action="url"
@@ -40,11 +41,13 @@
       >
         <el-button slot="trigger" size="small" type="primary" :disabled="fileList.length===limit">点击上传</el-button>
         <div slot="tip" class="el-upload__tip">{{ '最多 ' + this.limit + '个文件，每个不超过 ' + formatSize(0, 0, this.sizeLimit) }}</div>
-        <K2Dialog :visible.sync="dialogVisible" :title="imagePreviewTitle" append-to-body>
-          <!--              <img width="100%" :src="imageUrl" alt="">-->
-          <el-image :src="imageUrl" />
-        </K2Dialog>
       </el-upload>
+      <K2Dialog :visible.sync="dialogVisible" :title="previewTitle" append-to-body>
+        <el-image v-if="contentType.indexOf('image') !== -1" :src="previewUrl" />
+        <div v-else-if="contentTypeExcels.indexOf(contentType) !== -1" v-html="renderedHtml" />
+        <div v-else-if="contentTypeWords.indexOf(contentType) !== -1" ref="docx" />
+        <iframe v-else :src="previewUrl" style="width: 100%; height:700px" />
+      </K2Dialog>
     </el-row>
   </div>
 </template>
@@ -54,6 +57,10 @@ import { getToken } from '@/utils/auth'
 import { formatFileSize, tryParseJson } from '@/utils'
 import { downLoadFile } from '@/utils/zipdownload'
 import EditableCell from '@/components/EditableCell'
+import axios from 'axios'
+import XLSX from 'xlsx'
+
+const docx = require('docx-preview')
 
 export default {
   name: 'UploadAppendix',
@@ -86,6 +93,10 @@ export default {
     limit: {
       type: Number,
       default: 10
+    },
+    readonly: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -97,8 +108,12 @@ export default {
       fileList: [],
       richText: '',
       dialogVisible: false,
-      imageUrl: undefined,
-      imagePreviewTitle: ''
+      previewUrl: undefined,
+      contentType: '',
+      previewTitle: '',
+      renderedHtml: null,
+      contentTypeExcels: ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'],
+      contentTypeWords: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'] //, 'application/msword']
     }
   },
   watch: {
@@ -111,7 +126,6 @@ export default {
     fileList: {
       deep: true,
       handler(val) {
-        // console.log('re', val)
         this.$emit('input', JSON.stringify(val))
       }
     }
@@ -122,13 +136,19 @@ export default {
     formatSize(r, c, value) {
       return formatFileSize(value)
     },
+    canPreview(c) {
+      // console.log(c)
+      if (!c) {
+        return false
+      }
+      return c.indexOf('image') !== -1 || c.indexOf('text') !== -1 || c === 'application/pdf' || this.contentTypeExcels.indexOf(c) !== -1 || this.contentTypeWords.indexOf(c) !== -1
+    },
     beforeUpload(file) {
       if (this.fileList.length >= this.limit) {
         this.$message.error('最多' + this.limit + '个附件')
         return false
       }
-      const isLt2M = file.size / this.sizeLimit
-      if (!isLt2M) {
+      if (file.size > this.sizeLimit) {
         this.$message.error('上传文件大小不能超过 ' + formatFileSize(this.sizeLimit))
         return false
       }
@@ -139,9 +159,26 @@ export default {
       this.fileList.splice(this.fileList.indexOf(file), 1)
     },
     handlePreview(file) {
-      this.imageUrl = file.url
-      this.imagePreviewTitle = '预览：' + file.name + '，' + formatFileSize(file.size)
+      this.contentType = file.contentType
+      this.previewUrl = file.url
+      this.previewTitle = '预览：' + file.name + '，' + formatFileSize(file.size)
       this.dialogVisible = true
+      this.renderedHtml = null
+      if (this.contentTypeExcels.indexOf(this.contentType) !== -1) {
+        axios.get(file.url, {
+          responseType: 'arraybuffer' // 设置响应体类型为arraybuffer
+        }).then(({ data }) => {
+          const workbook = XLSX.read(new Uint8Array(data), { type: 'array' }) // 解析数据
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]] // workbook.SheetNames 下存的是该文件每个工作表名字,这里取出第一个工作表
+          this.renderedHtml = XLSX.utils.sheet_to_html(worksheet) // 渲染
+        })
+      } else if (this.contentTypeWords.indexOf(this.contentType) !== -1) {
+        axios.get(file.url, {
+          responseType: 'blob' // 设置响应体类型为arraybuffer
+        }).then(({ data }) => {
+          docx.renderAsync(data, this.$refs.docx) // 渲染
+        })
+      }
     },
     handleDownload(file) {
       downLoadFile(file.url + '?as=' + file.name)

@@ -50,7 +50,7 @@
           border
           highlight-current-row
           @selection-change="handleSelectionChange"
-          @sort-change="handleSortChang"
+          @sort-change="handleSortChange"
         >
           <el-table-column
             label="标题"
@@ -66,7 +66,6 @@
               <span v-if="scope.row.type=='CHECK' && scope.row.title!=''"><el-tag type="success">{{ '['+scope.row.type +'] '+ scope.row.title }}</el-tag></span>
               <span v-if="scope.row.type!='CHECK' && scope.row.title!=''"><el-tag type="">{{ '['+scope.row.type +'] '+scope.row.title }}</el-tag></span>
               <span v-if="scope.row.title==''"><el-tag type="danger">暂无</el-tag></span>
-
             </template>
           </el-table-column>
 
@@ -339,18 +338,16 @@ export default {
       this.isEdit = false
     },
     /** 排序回调函数 */
-    handleSortChang(column, prop, order) {
-      prop = column.prop
-      order = column.order
-      if (this.order !== '' && this.order !== prop + 'Order') {
-        this.queryParams[this.order] = undefined
-      }
+    handleSortChange({ column, prop, order }) {
+      Object.keys(this.queryParams).forEach(x => {
+        if (x.length > 5 && x.endsWith('Order')) {
+          delete this.queryParams[x]
+        }
+      })
       if (order === 'descending') {
         this.queryParams[prop + 'Order'] = 'desc'
-        this.order = prop + 'Order'
       } else if (order === 'ascending') {
         this.queryParams[prop + 'Order'] = 'asc'
-        this.order = prop + 'Order'
       } else {
         this.queryParams[prop + 'Order'] = undefined
       }
@@ -389,6 +386,7 @@ export default {
                   getSysApi(this.form.id).then(response => {
                     this.sysapiList[foundIndex] = response.data
                     this.$refs.mainTable.setCurrentRow(this.sysapiList[foundIndex], true)
+                    this.$refs.mainTable.clearSelection()
                   })
                 }
               } else {
