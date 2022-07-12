@@ -24,6 +24,7 @@ type SysUserGetPageReq struct {
 type SysUserOrder struct {
 	UserIdOrder    string `search:"type:order;column:user_id;table:sys_user" form:"userIdOrder"`
 	UsernameOrder  string `search:"type:order;column:username;table:sys_user" form:"usernameOrder"`
+	RoleIdOrder    string `search:"type:order;column:role_id;table:sys_user" form:"roleIdOrder"`
 	StatusOrder    string `search:"type:order;column:status;table:sys_user" form:"statusOrder"`
 	CreatedAtOrder string `search:"type:order;column:created_at;table:sys_user" form:"createdAtOrder"`
 }
@@ -174,4 +175,11 @@ func (s *SysUserById) GetId() interface{} {
 type PassWord struct {
 	NewPassword string `json:"newPassword" vd:"len($)>0"`
 	OldPassword string `json:"oldPassword" vd:"len($)>0"`
+}
+
+type SysUserUpdateProfileReq struct {
+	NickName string `json:"nickName" comment:"昵称" vd:"len($)>0"`
+	Phone    string `json:"phone" comment:"手机号" vd:"len($)>0"`
+	Email    string `json:"email" comment:"邮箱" vd:"len($)>0,email"`
+	Sex      string `json:"sex" comment:"性别"`
 }

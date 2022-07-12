@@ -7,7 +7,6 @@ import (
 
 type SysRoleGetPageReq struct {
 	dto.Pagination `search:"-"`
-
 	RoleId   int    `form:"roleId" search:"type:exact;column:role_id;table:sys_role" comment:"角色编码"`     // 角色编码
 	RoleName string `form:"roleName" search:"type:exact;column:role_name;table:sys_role" comment:"角色名称"` // 角色名称
 	Status   string `form:"status" search:"type:exact;column:status;table:sys_role" comment:"状态"`        // 状态
@@ -16,12 +15,13 @@ type SysRoleGetPageReq struct {
 	Flag     string `form:"flag" search:"type:exact;column:flag;table:sys_role" comment:"标记"`            // 标记
 	Remark   string `form:"remark" search:"type:exact;column:remark;table:sys_role" comment:"备注"`        // 备注
 	Admin    bool   `form:"admin" search:"type:exact;column:admin;table:sys_role" comment:"是否管理员"`
+	SysRoleOrder
 }
 
 type SysRoleOrder struct {
 	RoleIdOrder    string `search:"type:order;column:role_id;table:sys_role" form:"roleIdOrder"`
 	RoleNameOrder  string `search:"type:order;column:role_name;table:sys_role" form:"roleNameOrder"`
-	RoleSortOrder  string `search:"type:order;column:role_sort;table:sys_role" form:"usernameOrder"`
+	RoleSortOrder  string `search:"type:order;column:role_sort;table:sys_role" form:"roleSortOrder"`
 	StatusOrder    string `search:"type:order;column:status;table:sys_role" form:"statusOrder"`
 	CreatedAtOrder string `search:"type:order;column:created_at;table:sys_role" form:"createdAtOrder"`
 }

@@ -22,6 +22,7 @@ type SysOperaLog struct {
 // @Param requestMethod  query string false "requestMethod"
 // @Param operUrl query string false "operUrl"
 // @Param operIp query string false "operIp"
+// @Param opername query string false "operName"
 // @Param status query string false "status"
 // @Param beginTime query string false "beginTime"
 // @Param endTime query string false "endTime"

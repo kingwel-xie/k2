@@ -15,7 +15,8 @@ type SysOperaLogGetPageReq struct {
 	RequestMethod  string `form:"requestMethod" search:"type:contains;column:request_method;table:sys_opera_log" comment:"请求方式"`
 	OperUrl        string `form:"operUrl" search:"type:contains;column:oper_url;table:sys_opera_log" comment:"访问地址"`
 	OperIp         string `form:"operIp" search:"type:exact;column:oper_ip;table:sys_opera_log" comment:"客户端ip"`
-	Status         int    `form:"status" search:"type:exact;column:status;table:sys_opera_log" comment:"状态"`
+	OperName       string `form:"operName" search:"type:exact;column:oper_name;table:sys_opera_log" comment:"操作人员"`
+	ApiCode        int    `form:"apiCode" search:"type:exact;column:api_code;table:sys_opera_log" comment:"API代码"`
 	BeginTime      string `form:"beginTime" search:"type:gte;column:oper_time;table:sys_opera_log" comment:"操作时间"`
 	EndTime        string `form:"endTime" search:"type:lte;column:oper_time;table:sys_opera_log" comment:"操作时间"`
 	SysOperaLogOrder
@@ -43,7 +44,8 @@ type SysOperaLogControl struct {
 	OperIp        string    `json:"operIp" comment:"客户端ip"`
 	OperLocation  string    `json:"operLocation" comment:"访问位置"`
 	OperParam     string    `json:"operParam" comment:"请求参数"`
-	Status        string    `json:"status" comment:"操作状态"`
+	StatusCode    int    	`json:"statusCode" comment:"HTTP代码"`
+	ApiCode       int    	`json:"apiCode" comment:"API代码"`
 	OperTime      time.Time `json:"operTime" comment:"操作时间"`
 	JsonResult    string    `json:"jsonResult" comment:"返回数据"`
 	Remark        string    `json:"remark" comment:"备注"`
@@ -66,7 +68,8 @@ func (s *SysOperaLogControl) Generate() (*models.SysOperaLog, error) {
 		OperIp:        s.OperIp,
 		OperLocation:  s.OperLocation,
 		OperParam:     s.OperParam,
-		Status:        s.Status,
+		StatusCode:    s.StatusCode,
+		ApiCode:       s.ApiCode,
 		OperTime:      s.OperTime,
 		JsonResult:    s.JsonResult,
 		Remark:        s.Remark,

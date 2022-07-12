@@ -22,6 +22,7 @@ func (e *SysPost) GetPage(c *dto.SysPostPageReq, list *[]models.SysPost, count *
 			cDto.MakeCondition(c.GetNeedSearch()),
 			cDto.Paginate(c.GetPageSize(), c.GetPageIndex()),
 		).
+		Order("sort").
 		Find(list).Limit(-1).Offset(-1).
 		Count(count).Error
 

@@ -189,7 +189,7 @@ func (e SysRole) Delete(c *gin.Context) {
 		e.Error(err)
 		return
 	}
-	e.OK(req.GetId(), fmt.Sprintf("删除角色角色 %v 状态成功！", req.GetId()))
+	e.OK(req.GetId(), fmt.Sprintf("删除角色 %v 状态成功！", req.GetId()))
 }
 
 // Update2Status 修改用户角色状态

@@ -21,10 +21,23 @@ func (e *TbxCountry) GetPage(c *dto.TbxCountryGetPageReq, list *[]models.TbxCoun
 			cDto.MakeCondition(c.GetNeedSearch()),
 			cDto.Paginate(c.GetPageSize(), c.GetPageIndex()),
 		).
+		Where("belong_to is null or belong_to = ''").
+		Order("display_sort").
 		Find(list).Limit(-1).Offset(-1).
 		Count(count).Error
 
-	return err
+	for i, r := range *list {
+		children := make([]models.TbxCountry, 0)
+		err = e.Orm.Model(&data).
+			Where("belong_to = ?", r.Code).
+			Find(&children).
+			Error
+		if err != nil {
+			return err
+		}
+		(*list)[i].Children = children
+	}
+	return nil
 }
 
 // Get 获取TbxCountry对象

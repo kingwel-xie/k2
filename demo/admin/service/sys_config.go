@@ -18,6 +18,7 @@ func (e *SysConfig) GetPage(c *dto.SysConfigGetPageReq, list *[]models.SysConfig
 	err := e.Orm.
 		Scopes(
 			cDto.MakeCondition(c.GetNeedSearch()),
+			cDto.OrderDest("created_at", true),
 			cDto.Paginate(c.GetPageSize(), c.GetPageIndex()),
 		).
 		Find(list).Limit(-1).Offset(-1).

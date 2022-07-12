@@ -10,29 +10,24 @@
 		{
 			"goField": "Code",
 			"goType": "string",
-			"columnComment": "编码",
+			"columnComment": "代码",
 			"gormTag": "size:63",
 			"isPk": true,
 			"queryable": true
 		},
 		{
-			"goField": "NameCN",
+			"goField": "Code2",
 			"goType": "string",
 			"gormTag": "size:63;unique_index",
-			"columnComment": "中文名",
-			"validator": "@:len($)>0; msg:'中文名不能为空'",
-			"queryable": true,
-			"queryType": "LIKE"
+			"columnComment": "三字符代码",
+			"queryable": true
 		},
 		{
-			"goField": "NameEN",
+			"goField": "DigitCode",
 			"goType": "string",
-			"gormTag": "size:63;unique_index",
-			"columnComment": "英文名",
-			"comment": "Country name in English",
-			"validator": "@:len($)>0; msg:'English Name is empty'",
-			"queryable": true,
-			"queryType": "LIKE"
+			"gormTag": "size:63",
+			"columnComment": "数字代码",
+			"queryable": true
 		},
 		{
 			"goField": "TeleCode",
@@ -42,9 +37,46 @@
 			"queryable": true
 		},
 		{
-			"goField": "Alias",
+			"goField": "Group",
 			"goType": "string",
-
+			"columnComment": "分组",
+			"gormTag": "size:63",
+			"queryable": true
+		},
+		{
+			"goField": "BelongTo",
+			"goType": "string",
+			"columnComment": "从属",
+			"gormTag": "size:63"
+		},
+		{
+			"goField": "NameCN",
+			"goType": "string",
+			"gormTag": "size:63;unique_index",
+			"columnComment": "中文简称",
+			"validator": "@:len($)>0; msg:'中文简称不能为空'",
+			"queryable": true,
+			"queryType": "LIKE"
+		},
+		{
+			"goField": "NameEN",
+			"goType": "string",
+			"gormTag": "size:63;unique_index",
+			"columnComment": "英文简称",
+			"comment": "Country name in English",
+			"validator": "@:len($)>0; msg:'English Name is empty'",
+			"queryable": true,
+			"queryType": "LIKE"
+		},
+		{
+			"goField": "DisplaySort",
+			"goType": "int",
+			"gormTag": "size:16",
+			"columnComment": "显示排序"
+		},
+		{
+			"goField": "Remark",
+			"goType": "string",
 			"columnComment": "描述",
 			"queryable": true,
 			"queryType": "LIKE",

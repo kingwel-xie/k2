@@ -314,7 +314,7 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 }
 
 // GetProfile
-// @Summary 获取个人中心用户
+// @Summary 获取个人中心
 // @Description 获取JSON
 // @Tags 个人中心
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"

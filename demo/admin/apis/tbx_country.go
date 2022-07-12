@@ -19,11 +19,13 @@ type TbxCountry struct {
 // @Summary 获取国家编码列表
 // @Description 获取国家编码列表
 // @Tags 国家编码
-// @Param code query string false "编码"
-// @Param nameCN query string false "中文名"
-// @Param nameEN query string false "英文名"
+// @Param code query string false "代码"
+// @Param code2 query string false "三字符代码"
+// @Param group query string false "分组"
+// @Param nameCN query string false "中文简称"
+// @Param nameEN query string false "英文简称"
 // @Param teleCode query string false "电话代码"
-// @Param alias query string false "描述"
+// @Param remark query string false "描述"
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
 // @Success 200 {object} response.Response{data=response.Page{list=[]models.TbxCountry}} "{"code": 200, "data": [...]}"
@@ -57,7 +59,7 @@ func (e TbxCountry) GetPage(c *gin.Context) {
 // @Summary 获取国家编码
 // @Description 获取国家编码
 // @Tags 国家编码
-// @Param code path string false "编码"
+// @Param code path string false "代码"
 // @Success 200 {object} response.Response{data=models.TbxCountry} "{"code": 200, "data": [...]}"
 // @Router /api/v1/country/{code} [get]
 // @Security Bearer
@@ -118,7 +120,7 @@ func (e TbxCountry) Insert(c *gin.Context) {
 // @Tags 国家编码
 // @Accept application/json
 // @Product application/json
-// @Param code path string true "编码"
+// @Param code path string true "代码"
 // @Param data body dto.TbxCountryUpdateReq true "body"
 // @Success 200 {object} response.Response	"{"code": 200, "message": "更新成功", "data": code}"
 // @Router /api/v1/country/{code} [put]

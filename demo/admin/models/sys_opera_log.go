@@ -24,7 +24,8 @@ type SysOperaLog struct {
 	OperIp        string    `json:"operIp" gorm:"size:128;comment:客户端ip"`
 	OperLocation  string    `json:"operLocation" gorm:"size:128;comment:访问位置"`
 	OperParam     string    `json:"operParam" gorm:"size:255;comment:请求参数"`
-	Status        string    `json:"status" gorm:"size:4;comment:操作状态"`
+	StatusCode    int    	`json:"statusCode" gorm:"comment:HTTP代码"`
+	ApiCode       int    	`json:"apiCode" gorm:"comment:API代码"`
 	OperTime      time.Time `json:"operTime" gorm:"index;comment:操作时间"`
 	JsonResult    string    `json:"jsonResult" gorm:"size:255;comment:返回数据"`
 	Remark        string    `json:"remark" gorm:"size:255;comment:备注"`
@@ -63,9 +64,12 @@ func SaveOperaLog(message storage.Messager) (err error) {
 		// Log writing to the database ignores error
 		return nil
 	}
-	// 超出100个字符返回值截断
-	if len(l.JsonResult) > 100 {
-		l.JsonResult = l.JsonResult[:100]
+	// 超出255个字节返回值截断
+	if len(l.JsonResult) > 255 {
+		l.JsonResult = l.JsonResult[:255]
+	}
+	if len(l.OperParam) > 255 {
+		l.OperParam = l.OperParam[:255]
 	}
 	err = db.Create(&l).Error
 	if err != nil {

@@ -37,6 +37,11 @@ func (e *SysUser) Get(d *dto.SysUserById, model *models.SysUser) error {
 	return err
 }
 
+func (e *SysUser) GetCurrentUser() (model models.SysUser, err error) {
+	err = e.Orm.First(&model, e.Identity.UserId).Error
+	return
+}
+
 // Insert 创建SysUser对象
 func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
 	var err error
@@ -198,6 +203,34 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 		return k2Error.ErrInternal
 	}
 	db := e.Orm.Select("Password", "Salt").Save(c)
+	if db.Error != nil {
+		return db.Error
+	}
+	if db.RowsAffected == 0 {
+		return k2Error.ErrPermissionDenied
+	}
+	return nil
+}
+
+
+// UpdateProfile 修改Profile
+func (e *SysUser) UpdateProfile(id int, req *dto.SysUserUpdateProfileReq) error {
+	c := &models.SysUser{}
+
+	err := e.Orm.Model(c).Scopes(
+		service.Permission(c.TableName(), e.Identity),
+	).First(c, id).Error
+	if err != nil {
+		return err
+	}
+
+	c.NickName = req.NickName
+	c.Email = req.Email
+	c.Phone = req.Phone
+	c.Sex = req.Sex
+
+	// update the profile, only the specified fields
+	db := e.Orm.Select("NickName", "Email", "Phone", "Sex", "UpdateBy").Save(c)
 	if db.Error != nil {
 		return db.Error
 	}

@@ -1,9 +1,9 @@
 package service
 
 import (
+	"github.com/kingwel-xie/k2/common/casbin"
 	cDto "github.com/kingwel-xie/k2/common/dto"
 	k2Error "github.com/kingwel-xie/k2/common/error"
-	"github.com/kingwel-xie/k2/common/casbin"
 	"github.com/kingwel-xie/k2/common/service"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -46,9 +46,20 @@ func (e *SysRole) Get(d *dto.SysRoleGetReq, model *models.SysRole) error {
 
 // Insert 创建SysRole对象
 func (e *SysRole) Insert(c *dto.SysRoleInsertReq) error {
+	var err error
+	var list []models.SysRole
+	err = e.Orm.
+		Find(&list, "role_key = ? or role_name = ?", c.RoleKey, c.RoleName).Error
+	if err != nil {
+		return k2Error.ErrDatabase.Wrap(err)
+	}
+	if len(list) > 0 {
+		return k2Error.ErrCodeExisted
+	}
+
 	var data models.SysRole
 	var dataMenu []models.SysMenu
-	err := e.Orm.Preload("SysApi").Where("menu_id in ?", c.MenuIds).Find(&dataMenu).Error
+	err = e.Orm.Preload("SysApi").Where("menu_id in ?", c.MenuIds).Find(&dataMenu).Error
 	if err != nil {
 		return err
 	}
@@ -80,17 +91,6 @@ func (e *SysRole) Insert(c *dto.SysRoleInsertReq) error {
 			_, err = cb.AddNamedPolicy("p", data.RoleKey, api.Path, api.Action)
 		}
 	}
-	_ = cb.SavePolicy()
-	//if len(c.MenuIds) > 0 {
-	//	s := SysRoleMenu{}
-	//	s.Orm = e.Orm
-	//	s.Log = e.Log
-	//	err = s.ReloadRule(tx, c.RoleId, c.MenuIds)
-	//	if err != nil {
-	//		e.Log.Errorf("reload casbin rule error, %", err.Error())
-	//		return err
-	//	}
-	//}
 	return nil
 }
 
@@ -150,7 +150,6 @@ func (e *SysRole) Update(c *dto.SysRoleUpdateReq) error {
 			_, err = cb.AddNamedPolicy("p", model.RoleKey, api.Path, api.Action)
 		}
 	}
-	_ = cb.SavePolicy()
 	return nil
 }
 
@@ -166,6 +165,7 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 			tx.Commit()
 		}
 	}()
+
 	var model = models.SysRole{}
 	tx.Preload("SysMenu").Preload("SysDept").First(&model, c.GetId())
 	db := tx.Select(clause.Associations).Delete(&model)
@@ -176,6 +176,13 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 	}
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
+	}
+
+	// setup casbin with the TX
+	cb := casbin.Setup(tx)
+	_, err = cb.RemoveFilteredPolicy(0, model.RoleKey)
+	if err != nil {
+		return err
 	}
 	return nil
 }
