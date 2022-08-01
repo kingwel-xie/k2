@@ -5,6 +5,7 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 	"github.com/shirou/gopsutil/host"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"time"
@@ -97,6 +98,10 @@ func ServerInfo(c *gin.Context) {
 			}
 		}
 	}
+	appVersion := os.Getenv("K2_APP_VERSION")
+	if len(appVersion) == 0 {
+		appVersion = "dev"
+	}
 	data := map[string]interface{}{
 		"requestId": utils.GenerateMsgIDFromContext(c),
 		"code":      200,
@@ -105,6 +110,7 @@ func ServerInfo(c *gin.Context) {
 		"cpu":       cpuDic,
 		"disk":      diskDic,
 		"diskList":  disklist,
+		"appVersion": appVersion,
 	}
 	c.Set("result", data)
 	c.AbortWithStatusJSON(http.StatusOK, data)
