@@ -96,7 +96,7 @@ import MiniArea from '@/components/MiniArea'
 import MiniBar from '@/components/MiniBar'
 import MiniProgress from '@/components/MiniProgress'
 import RankList from '@/components/RankList/index'
-import Bar from '@/components/Bar.vue'
+import Bar from '@/components/Bar'
 
 const barData = []
 const barData2 = []
