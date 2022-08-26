@@ -325,7 +325,7 @@ import {
   resetUserPwd,
   changeUserStatus,
   importTemplate,
-  listUserWithoutCustomer
+  listUser
 } from '@/api/admin/sys-user'
 import { getToken } from '@/utils/auth'
 
@@ -435,7 +435,7 @@ export default {
     /** 查询用户列表 */
     getList() {
       this.loading = true
-      listUserWithoutCustomer(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
+      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
         this.userList = response.data.list
         this.total = response.data.count
         this.loading = false
