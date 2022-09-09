@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	sentinelPlugin "github.com/alibaba/sentinel-golang/adapter/gin"
 	"github.com/alibaba/sentinel-golang/core/system"
 	"github.com/alibaba/sentinel-golang/logging"
+	sentinelPlugin "github.com/alibaba/sentinel-golang/pkg/adapters/gin"
 	"github.com/gin-gonic/gin"
 )
 

@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/alibaba/sentinel-golang v1.0.4
+	github.com/alibaba/sentinel-golang/pkg/adapters/gin v0.0.0-20220815123005-3926bcac42e0
 	github.com/alibabacloud-go/darabonba-openapi v0.1.14
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
 	github.com/alibabacloud-go/tea v1.1.17
@@ -40,7 +41,6 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
-	github.com/tklauser/go-sysconf v0.3.6 // indirect
 	github.com/unrolled/secure v1.0.8
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.15.0
