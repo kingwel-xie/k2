@@ -1,6 +1,7 @@
 package oss
 
 import (
+	"github.com/gin-gonic/gin"
 	"io"
 
 	"github.com/kingwel-xie/k2/core/logger"
@@ -15,4 +16,15 @@ type Oss interface {
 	DownloadFile(filename string) (io.ReadCloser, error)
 	GetFileMeta(filename string) (map[string][]string, error)
 	DeleteFile(filename string) error
+	PresignToken(c *gin.Context)
 }
+
+type PresignTokenRequest struct {
+	Directory string `json:"directory"`
+}
+
+type PresignTokenResponse struct {
+	Vendor string `json:"vendor"`
+	SignedToken string `json:"signedToken"`
+}
+

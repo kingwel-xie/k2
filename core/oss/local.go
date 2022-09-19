@@ -2,6 +2,7 @@ package oss
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 	"path"
@@ -11,6 +12,10 @@ import (
 
 type Local struct{
 	Path string
+}
+
+func (l *Local) PresignToken(c *gin.Context) {
+	c.AbortWithStatus(400)
 }
 
 func NewLocal(path string) Oss {

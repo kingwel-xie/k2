@@ -17,6 +17,6 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	cmd.Init("test")
+	cmd.Init("test", StartCmd)
 	cmd.Execute()
 }

@@ -1,8 +1,16 @@
 package oss
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/base64"
+	"encoding/json"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/gin-gonic/gin"
+	"hash"
 	"io"
+	"net/http"
+	"time"
 )
 
 type AliyunOSS struct{
@@ -79,3 +87,94 @@ func (e *AliyunOSS) DeleteFile(filename string) error {
 	return nil
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+// Post Policy
+func get_gmt_iso8601(expireEnd int64) string {
+	var tokenExpire = time.Unix(expireEnd, 0).UTC().Format("2006-01-02T15:04:05Z")
+	return tokenExpire
+}
+
+type ConfigStruct struct{
+	Expiration string `json:"expiration"`
+	Conditions [][]string `json:"conditions"`
+}
+
+type PolicyToken struct{
+	AccessKeyId string `json:"accessid"`
+	Host string `json:"host"`
+	Expire int64 `json:"expire"`
+	Signature string `json:"signature"`
+	Policy string `json:"policy"`
+	Directory string `json:"dir"`
+	Callback string `json:"callback"`
+}
+
+func (e *AliyunOSS) GeneratePregignedToken(uploadDir, filename string, expireSeconds int64) (*PolicyToken, error) {
+	now := time.Now().Unix()
+	expireEnd := now + expireSeconds
+	var tokenExpire = get_gmt_iso8601(expireEnd)
+
+	//create post policy json
+	var config ConfigStruct
+	config.Expiration = tokenExpire
+	var condition []string
+	condition = append(condition, "starts-with")
+	condition = append(condition, "$key")
+	condition = append(condition, uploadDir)
+	config.Conditions = append(config.Conditions, condition)
+
+	// calculate signature
+	result, _ := json.Marshal(config)
+	bytes := base64.StdEncoding.EncodeToString(result)
+
+	h := hmac.New(func() hash.Hash { return sha1.New() }, []byte(e.AccessKeySecret))
+	io.WriteString(h, bytes)
+	signedStr := base64.StdEncoding.EncodeToString(h.Sum(nil))
+
+	var policyToken PolicyToken
+	policyToken.AccessKeyId = e.AccessKeyId
+	policyToken.Host = e.Endpoint
+	policyToken.Expire = expireEnd
+	policyToken.Signature = signedStr
+	policyToken.Directory = uploadDir
+	policyToken.Policy = bytes
+	policyToken.Callback = ""
+
+	return &policyToken, nil
+}
+
+
+// PresignToken 预签名令牌
+// @Summary 预签名令牌
+// @Description 预签名令牌
+// @Tags 公共接口
+// @Param data body PresignTokenRequest true "data"
+// @Success 200
+// @Failure 503
+// @Success 200 {object} PresignTokenResponse "{"code": 200, "data": [...]}"
+// @Router /presign-token [post]
+// @Security Bearer
+func (e *AliyunOSS) PresignToken(c *gin.Context) {
+	var req PresignTokenRequest
+
+	// return 400 if binding fails
+	err := c.BindJSON(&req)
+	if err != nil {
+		return
+	}
+
+	policy, _ := e.GeneratePregignedToken(req.Directory, "", 30)
+
+	token, _ := json.Marshal(policy)
+
+	c.Header("Access-Control-Allow-Methods", "POST")
+	c.Header("Access-Control-Allow-Origin", "*")
+
+	response := PresignTokenResponse {
+		Vendor: "aliyun",
+		SignedToken: string(token),
+	}
+
+	c.AbortWithStatusJSON(http.StatusOK, &response)
+}

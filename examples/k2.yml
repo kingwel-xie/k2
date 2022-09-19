@@ -36,3 +36,13 @@ settings:
     memory:
   locker:
     redis:
+  oss:
+    which: aliyun
+    local:
+      path: ./static/oss
+    aliyun:
+      endpoint: oss-cn-hongkong.aliyuncs.com
+      access-key-id: LTAI5tPeVhT5ABqWRzAJg6EQ
+      access-key-secret: S32H9EOm1V2HuLLEFWSo9eqxnGkY0d
+      bucket-name: kobh-test
+      bucket-url: yourBucketUrl
