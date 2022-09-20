@@ -1,17 +1,57 @@
 package middleware
 
-// DownloadFile 下载文件
-// @Summary 下载文件
-// @Description 下载文件
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/kingwel-xie/k2/common"
+	"net/http"
+)
+
+type PresignTokenRequest struct {
+	Directory string `json:"directory"`
+	Filename string `json:"filename"`
+}
+
+type PresignTokenResponse struct {
+	Vendor string `json:"vendor"`
+	Token interface{} `json:"token"`
+}
+
+// PresignToken 预签名令牌
+// @Summary 预签名令牌
+// @Description 预签名令牌
 // @Tags 公共接口
-// @Param pathname path string true "pathname"
-// @Param filename path string true "filename"
-// @Param as query string true "as"
-// @Success 200
-// @Failure 503
-// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
-// @Router /public/downloadFile/{pathname}/{filename} [get]
+// @Param data body PresignTokenRequest true "data"
+// @Failure 500
+// @Success 200 {object} PresignTokenResponse "{"code": 200, "data": [...]}"
+// @Router /presign-token [post]
 // @Security Bearer
-//func (e File) DownloadFile(c *gin.Context) {
-//
-//}
+func PresignToken(c *gin.Context) {
+	var req PresignTokenRequest
+
+	// return 400 if binding fails
+	err := c.BindJSON(&req)
+	if err != nil {
+		return
+	}
+
+	oss := common.Runtime.GetOss()
+	if oss == nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+	}
+
+	token, err := oss.GeneratePresignedToken(req.Directory, req.Filename, 30)
+	if err != nil {
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return
+	}
+
+	c.Header("Access-Control-Allow-Methods", "POST")
+	c.Header("Access-Control-Allow-Origin", "*")
+
+	response := PresignTokenResponse {
+		Vendor: oss.Name(),
+		Token: token,
+	}
+
+	c.AbortWithStatusJSON(http.StatusOK, &response)
+}

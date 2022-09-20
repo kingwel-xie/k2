@@ -194,8 +194,5 @@ func initRouter() {
 	g.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
-	oss0 := common.Runtime.GetOss()
-	if oss0 != nil {
-		g.POST("/presign-token", oss0.PresignToken)
-	}
+	g.POST("/presign-token", middleware.PresignToken)
 }

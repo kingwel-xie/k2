@@ -6,10 +6,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/gin-gonic/gin"
 	"hash"
 	"io"
-	"net/http"
 	"time"
 )
 
@@ -21,6 +19,10 @@ type AliyunOSS struct{
 	AccessKeySecret string
 	BucketName      string
 	BucketUrl       string
+}
+
+func (e *AliyunOSS) Name() string {
+	return "aliyun"
 }
 
 func NewAliyun(endpoint, accessKeyId, accessKeySecret, bucketName string, bucketUrl string) Oss {
@@ -110,7 +112,7 @@ type PolicyToken struct{
 	Callback string `json:"callback"`
 }
 
-func (e *AliyunOSS) GeneratePregignedToken(uploadDir, filename string, expireSeconds int64) (*PolicyToken, error) {
+func (e *AliyunOSS) GeneratePresignedToken(uploadDir, filename string, expireSeconds int64) (interface{}, error) {
 	now := time.Now().Unix()
 	expireEnd := now + expireSeconds
 	var tokenExpire = get_gmt_iso8601(expireEnd)
@@ -144,37 +146,3 @@ func (e *AliyunOSS) GeneratePregignedToken(uploadDir, filename string, expireSec
 	return &policyToken, nil
 }
 
-
-// PresignToken 预签名令牌
-// @Summary 预签名令牌
-// @Description 预签名令牌
-// @Tags 公共接口
-// @Param data body PresignTokenRequest true "data"
-// @Success 200
-// @Failure 503
-// @Success 200 {object} PresignTokenResponse "{"code": 200, "data": [...]}"
-// @Router /presign-token [post]
-// @Security Bearer
-func (e *AliyunOSS) PresignToken(c *gin.Context) {
-	var req PresignTokenRequest
-
-	// return 400 if binding fails
-	err := c.BindJSON(&req)
-	if err != nil {
-		return
-	}
-
-	policy, _ := e.GeneratePregignedToken(req.Directory, "", 30)
-
-	token, _ := json.Marshal(policy)
-
-	c.Header("Access-Control-Allow-Methods", "POST")
-	c.Header("Access-Control-Allow-Origin", "*")
-
-	response := PresignTokenResponse {
-		Vendor: "aliyun",
-		SignedToken: string(token),
-	}
-
-	c.AbortWithStatusJSON(http.StatusOK, &response)
-}

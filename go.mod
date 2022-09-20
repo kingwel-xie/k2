@@ -10,6 +10,11 @@ require (
 	github.com/alibabacloud-go/tea v1.1.17
 	github.com/aliyun/aliyun-oss-go-sdk v0.0.0-20190307165228-86c17b95fcd5
 	github.com/appleboy/gin-jwt/v2 v2.6.4
+	github.com/aws/aws-sdk-go-v2 v1.16.15
+	github.com/aws/aws-sdk-go-v2/config v1.17.6
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.19
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.32
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.10
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/bsm/redislock v0.5.0
 	github.com/bytedance/go-tagexpr/v2 v2.7.12
@@ -30,7 +35,7 @@ require (
 	github.com/mssola/user_agent v0.5.2
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/opentracing/opentracing-go v1.1.0
-	github.com/prometheus/client_golang v1.11.0 // indirect
+	github.com/prometheus/client_golang v1.11.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/robinjoseph08/redisqueue/v2 v2.1.0
 	github.com/shamsher31/goimgext v1.0.0

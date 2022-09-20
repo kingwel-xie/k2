@@ -2,7 +2,6 @@ package oss
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 	"path"
@@ -14,8 +13,12 @@ type Local struct{
 	Path string
 }
 
-func (l *Local) PresignToken(c *gin.Context) {
-	c.AbortWithStatus(400)
+func (l *Local) Name() string {
+	return "local"
+}
+
+func (l *Local) GeneratePresignedToken(directory string, filename string, i int64) (interface{}, error) {
+	panic("implement me")
 }
 
 func NewLocal(path string) Oss {

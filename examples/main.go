@@ -4,7 +4,7 @@ import (
 	"github.com/kingwel-xie/k2/cmd"
 )
 
-//go:generate swag init --parseDependency --parseDepth=6
+//go:generate swag init --parseDependency --parseDepth=3
 
 // @title Kobh Web Framework
 // @version 1.0.0

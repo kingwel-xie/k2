@@ -5,11 +5,12 @@ import (
 )
 
 type Oss struct {
-	Which string 			`yaml:"which"`
-	Local Local  			`yaml:"local"`
-	Qiniu      Qiniu      `yaml:"qiniu"`
-	Aliyun  AliyunOSS  `yaml:"aliyun"`
-	Tencent TencentCOS `yaml:"tencent"`
+	Which 		string 			`yaml:"which"`
+	Local 		Local  			`yaml:"local"`
+	Qiniu      	Qiniu      		`yaml:"qiniu"`
+	Aliyun  	AliyunOSS  		`yaml:"aliyun"`
+	Aws  		AwsS3  			`yaml:"aws"`
+	Tencent 	TencentCOS 		`yaml:"tencent"`
 }
 
 var OssConfig = new(Oss)
@@ -46,6 +47,13 @@ type TencentCOS struct {
 	PathPrefix string `mapstructure:"path-prefix" json:"pathPrefix" yaml:"path-prefix"`
 }
 
+type AwsS3 struct {
+	Region        string `mapstructure:"region" json:"region" yaml:"region"`
+	AccessKeyId     string `mapstructure:"access-key-id" json:"accessKeyId" yaml:"access-key-id"`
+	AccessKeySecret string `mapstructure:"access-key-secret" json:"accessKeySecret" yaml:"access-key-secret"`
+	BucketName      string `mapstructure:"bucket-name" json:"bucketName" yaml:"bucket-name"`
+}
+
 func (e Oss) Setup() oss.Oss {
 	switch e.Which {
 	case "local":
@@ -56,6 +64,8 @@ func (e Oss) Setup() oss.Oss {
 	//	return oss.NewTencent(e.Tencent.Region, e.Tencent.Bucket, e.Tencent.BaseURL, e.Tencent.PathPrefix...)
 	case "aliyun":
 		return oss.NewAliyun(e.Aliyun.Endpoint, e.Aliyun.AccessKeyId, e.Aliyun.AccessKeySecret, e.Aliyun.BucketName, e.Aliyun.BucketUrl)
+	case "aws":
+		return oss.NewS3(e.Aws.Region, e.Aws.AccessKeyId, e.Aws.AccessKeySecret, e.Aws.BucketName, "")
 	default:
 		return oss.NewLocal(e.Local.Path)
 	}
