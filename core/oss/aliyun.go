@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"hash"
 	"io"
@@ -14,9 +15,6 @@ import (
 type AliyunOSS struct{
 	client          *oss.Client
 	bucket			*oss.Bucket
-	Endpoint        string
-	AccessKeyId     string
-	AccessKeySecret string
 	BucketName      string
 	BucketUrl       string
 }
@@ -114,6 +112,9 @@ type PolicyToken struct{
 
 func (e *AliyunOSS) GeneratePresignedToken(uploadDir, filename string, expireSeconds int64) (interface{}, error) {
 	now := time.Now().Unix()
+	if expireSeconds == 0 {
+		expireSeconds = 60
+	}
 	expireEnd := now + expireSeconds
 	var tokenExpire = get_gmt_iso8601(expireEnd)
 
@@ -130,13 +131,13 @@ func (e *AliyunOSS) GeneratePresignedToken(uploadDir, filename string, expireSec
 	result, _ := json.Marshal(config)
 	bytes := base64.StdEncoding.EncodeToString(result)
 
-	h := hmac.New(func() hash.Hash { return sha1.New() }, []byte(e.AccessKeySecret))
+	h := hmac.New(func() hash.Hash { return sha1.New() }, []byte(e.client.Config.AccessKeySecret))
 	io.WriteString(h, bytes)
 	signedStr := base64.StdEncoding.EncodeToString(h.Sum(nil))
 
 	var policyToken PolicyToken
-	policyToken.AccessKeyId = e.AccessKeyId
-	policyToken.Host = e.Endpoint
+	policyToken.AccessKeyId = e.client.Config.AccessKeyID
+	policyToken.Host = fmt.Sprintf("https://%s.%s", e.BucketName, e.client.Config.Endpoint)
 	policyToken.Expire = expireEnd
 	policyToken.Signature = signedStr
 	policyToken.Directory = uploadDir

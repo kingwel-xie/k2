@@ -9,6 +9,7 @@ import (
 type PresignTokenRequest struct {
 	Directory string `json:"directory"`
 	Filename string `json:"filename"`
+	Duration int `json:"duration"`
 }
 
 type PresignTokenResponse struct {
@@ -39,7 +40,7 @@ func PresignToken(c *gin.Context) {
 		c.AbortWithStatus(http.StatusInternalServerError)
 	}
 
-	token, err := oss.GeneratePresignedToken(req.Directory, req.Filename, 30)
+	token, err := oss.GeneratePresignedToken(req.Directory, req.Filename, int64(req.Duration))
 	if err != nil {
 		c.AbortWithStatus(http.StatusInternalServerError)
 		return

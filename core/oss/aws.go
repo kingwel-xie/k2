@@ -10,24 +10,16 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"io"
 	"os"
-
-	//"github.com/aws/aws-sdk-go-v2/service/s3/types"
-)
-
-const (
-	accessKey = "AKIASGYHGFRIKB4S6BH7"
-	secretAccessKey = "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"
-	bucket = "new-kuggamax"
-	region = "us-east-2"
+	"path"
 )
 
 type S3 struct{
 	client          *s3.Client
 	uploader 		*manager.Uploader
 	downloader 		*manager.Downloader
-	Region        	string
-	AccessKeyId     string
-	AccessKeySecret string
+	//Region        	string
+	//AccessKeyId     string
+	//AccessKeySecret string
 	BucketName      string
 	BucketUrl       string
 }
@@ -89,18 +81,18 @@ func NewS3(region, accessKeyId, accessKeySecret, bucketName string, bucketUrl st
 		client: ss,
 		uploader: manager.NewUploader(ss),
 		downloader: manager.NewDownloader(ss),
-		Region: region,
+		//Region: region,
 		BucketName: bucketName,
 		BucketUrl: bucketUrl,
 	}
 }
 
-func (e * S3) GeneratePresignedToken(bucket string, filename string, exp int64) (interface{}, error) {
+func (e * S3) GeneratePresignedToken(directory string, filename string, exp int64) (interface{}, error) {
 	presignClient := s3.NewPresignClient(e.client)
 
 	presignResult, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(filename),
+		Bucket: aws.String(e.BucketName),
+		Key:    aws.String(path.Join(directory, filename)),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("couldn't get presigned URL for GetObject")

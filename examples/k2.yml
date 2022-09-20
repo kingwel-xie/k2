@@ -7,7 +7,7 @@ settings:
     # 服务名称
     name: kxWeb
     # 端口号
-    port: 9877 # 服务端口号
+    port: 9010 # 服务端口号
     readtimeout: 1
     writertimeout: 2
   logger:
