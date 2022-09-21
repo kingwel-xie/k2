@@ -194,5 +194,5 @@ func initRouter() {
 	g.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
-	g.POST("/presign-token", middleware.PresignToken)
+	g.POST("/presign-token", middleware.PresignToken{}.PresignToken)
 }
