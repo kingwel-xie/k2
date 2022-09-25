@@ -161,6 +161,7 @@ import { add{{.ClassName}}, del{{.ClassName}}, get{{.ClassName}}, list{{.ClassNa
 {{ if (.HasExport) -}}
 import { formatJson } from '@/utils'
 {{- end }}
+import Vue from 'vue'
 
 export default {
   name: '{{.ClassName}}',
@@ -326,9 +327,8 @@ export default {
               const foundIndex = this.{{.BusinessName}}List.findIndex(x => x.{{.PkJsonField}} === this.form.{{.PkJsonField}})
               if (foundIndex !== -1) {
                 get{{.ClassName}}(this.form.{{.PkJsonField}}).then(response => {
-                  this.{{.BusinessName}}List[foundIndex] = response.data
+                  Vue.set(this.{{.BusinessName}}List, foundIndex, response.data)
                   this.$refs.mainTable.setCurrentRow(this.{{.BusinessName}}List[foundIndex], true)
-                  this.$refs.mainTable.clearSelection()
                 })
               }
             }).catch(() => {
