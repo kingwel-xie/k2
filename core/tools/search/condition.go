@@ -26,8 +26,10 @@ type GormJoin struct {
 	GormPublic
 }
 
+// SetJoinOn to connect all joins, so that join can be chained together
 func (e *GormJoin) SetJoinOn(t, on string) Condition {
-	return nil
+	e.JoinOn += " " + on
+	return e
 }
 
 func (e *GormPublic) SetWhere(k string, v []interface{}) {
