@@ -3,14 +3,13 @@ package middleware
 import (
 	"github.com/casbin/casbin/v2/util"
 	"github.com/gin-gonic/gin"
-	"github.com/kingwel-xie/k2/core/utils"
-	"net/http"
-
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/api"
 	"github.com/kingwel-xie/k2/common/config"
+	cerr "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/response"
 	"github.com/kingwel-xie/k2/common/service"
+	"github.com/kingwel-xie/k2/core/utils"
 )
 
 // AuthCheckRole 权限检查中间件
@@ -57,13 +56,15 @@ func AuthCheckRole() gin.HandlerFunc {
 			c.Next()
 		} else {
 			log.Warnf("isTrue: %v, role: %s method: %s path: %s message: %s", res, v.RoleKey, c.Request.Method, c.Request.URL.Path, "当前request无权限，请管理员确认！")
-			c.JSON(http.StatusOK, gin.H{
+			response.Error(c,cerr.ErrNoPermission)
+			/*c.JSON(http.StatusOK, gin.H{
 				"code": 403,
 				"msg":  "对不起，您没有该接口访问权限，请联系管理员",
-			})
+			})*/
 			c.Abort()
 			return
 		}
 
 	}
 }
+

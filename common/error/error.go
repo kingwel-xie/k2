@@ -18,6 +18,7 @@ var (
 	ErrDatabase = New(562, "数据库内部错误", "db error")
 	ErrNoSuchObject = New(563, "对象不存在", "no such object")
 	ErrPermissionDenied = New(564, "对象不存在或无权查看", "no such object or no permission")
+	ErrNoPermission = New(403, "对不起，您没有该接口访问权限，请联系管理员", "You don't have the permission to access the interface. Please contact the administrator.")
 )
 
 type bizError struct {
