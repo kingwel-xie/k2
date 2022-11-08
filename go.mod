@@ -21,16 +21,16 @@ require (
 	github.com/casbin/casbin/v2 v2.28.3
 	github.com/casbin/gorm-adapter/v3 v3.3.2
 	github.com/chanxuehong/wechat v0.0.0-20201110083048-0180211b69fd
-	github.com/gin-gonic/gin v1.7.2
-	github.com/go-playground/locales v0.13.0
-	github.com/go-playground/universal-translator v0.17.0
-	github.com/go-playground/validator/v10 v10.4.1
+	github.com/gin-gonic/gin v1.8.1
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.10.0
 	github.com/go-redis/redis/v7 v7.4.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.4.1
-	github.com/json-iterator/go v1.1.11
-	github.com/mattn/go-isatty v0.0.13
+	github.com/json-iterator/go v1.1.12
+	github.com/mattn/go-isatty v0.0.14
 	github.com/mojocn/base64Captcha v1.3.4
 	github.com/mssola/user_agent v0.5.2
 	github.com/nsqio/go-nsq v1.0.8
@@ -46,10 +46,11 @@ require (
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
+	github.com/stretchr/testify v1.7.1
 	github.com/unrolled/secure v1.0.8
 	go.uber.org/multierr v1.5.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	gorm.io/driver/mysql v1.0.4-0.20201206014609-ae5fd10184f6
 	gorm.io/driver/postgres v1.0.8
