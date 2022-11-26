@@ -164,7 +164,7 @@ func (e File) DownloadFile(c *gin.Context) {
 
 func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
 	category, _ := c.GetPostForm("category")
-	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
+	urlPrefix := concatDownloadPrefix(c)
 
 	files, ok := c.GetPostForm("file")
 	if !ok {
@@ -194,7 +194,7 @@ func (e File) baseImg(c *gin.Context) (*FileResponse, error) {
 
 func (e File) multipleFile(c *gin.Context) ([]FileResponse, error) {
 	category, _ := c.GetPostForm("category")
-	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
+	urlPrefix := concatDownloadPrefix(c)
 
 	files, ok := c.Request.MultipartForm.File["file"]
 	if !ok {
@@ -294,7 +294,7 @@ func (e File) ImportTempFile(c *gin.Context) (*FileResponse, error) {
 
 func (e File) singleFile(c *gin.Context) (*FileResponse, error) {
 	category, _ := c.GetPostForm("category")
-	urlPrefix := fmt.Sprintf("http://%s%s", c.Request.Host, DownloadUrlPrefix)
+	urlPrefix := concatDownloadPrefix(c)
 
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -316,10 +316,18 @@ func (e File) singleFile(c *gin.Context) (*FileResponse, error) {
 		Path:     filename,
 		FullPath: urlPrefix + filename,
 		Name:     file.Filename,
-		Size:	  file.Size,
-
+		Size:     file.Size,
 	}
 	return fileResponse, nil
+}
+
+func concatDownloadPrefix(c *gin.Context) string {
+	scheme := c.GetHeader("X-Forwarded-Proto")
+	if len(scheme) == 0 {
+		scheme = "http"
+	}
+	urlPrefix := fmt.Sprintf("%s://%s%s", scheme, c.Request.Host, DownloadUrlPrefix)
+	return urlPrefix
 }
 
 func (e File) filename(category, oldname string) string {
