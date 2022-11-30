@@ -23,7 +23,7 @@ func setupSimpleDatabase(c *config.Database) {
 		log.Fatalf("invalid DB driver '%s'", c.Driver)
 	}
 
-	log.Infof("db => %s", utils.Green(c.Source))
+	//log.Infof("db => %s", utils.Green(c.Source))
 	registers := make([]toolsDB.ResolverConfigure, len(c.Registers))
 	for i := range c.Registers {
 		registers[i] = toolsDB.NewResolverConfigure(
@@ -38,7 +38,7 @@ func setupSimpleDatabase(c *config.Database) {
 			SingularTable: true,
 		},
 		CreateBatchSize: 500, // set to 500 to solve 'too many SQL variables'
-		Logger: &gormLogger{SlowThreshold: 200 * time.Millisecond},
+		Logger:          &gormLogger{SlowThreshold: 200 * time.Millisecond},
 	}, open)
 
 	if err != nil {
