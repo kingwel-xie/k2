@@ -1,0 +1,22 @@
+import { defHttp } from '/@/utils/http/axios';
+import { BasicFetchResult, BasicPageParams } from '/@/api/model/baseModel';
+
+enum Api {
+  {{.ClassName}}Op = '/v1/{{.ModuleName}}',
+}
+
+export const get{{.ClassName}}List = (params?: Required<BasicPageParams>) =>
+  defHttp.get<BasicFetchResult<any>>({ url: Api.{{.ClassName}}Op, params });
+
+export const get{{.ClassName}}ByKey = ({{.PkJsonField}}: string | number) =>
+  defHttp.get<any>({ url: Api.{{.ClassName}}Op + '/' + {{.PkJsonField}} });
+
+export const add{{.ClassName}}Entry = (params: any) =>
+  defHttp.post<any>({ url: Api.{{.ClassName}}Op, params });
+
+export const update{{.ClassName}}Entry = (params: any) =>
+  defHttp.put<any>({ url: Api.{{.ClassName}}Op + '/' + params.{{.PkJsonField}}, params });
+
+export const delete{{.ClassName}}Entry = (params: any) =>
+  defHttp.delete<any>({ url: Api.{{.ClassName}}Op, params: { ids: [params.{{.PkJsonField}}] } });
+

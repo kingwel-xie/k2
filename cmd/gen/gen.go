@@ -132,12 +132,12 @@ func (e Gen) GenCode(tab *SysTables) {
 		fmt.Println(err)
 		return
 	}
-	t4, err := parseByName(basePath + "js.go.template")
+	t4, err := parseByName(basePath + "ts.api.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	t5, err := parseByName(basePath + "vue.go.template")
+	t5, err := parseByName(basePath + "ts.data.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -148,6 +148,21 @@ func (e Gen) GenCode(tab *SysTables) {
 		return
 	}
 	t7, err := parseByName(basePath + "service.go.template")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	t8, err := parseByName(basePath + "vue3.index.go.template")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	t9, err := parseByName(basePath + "vue3.modal.go.template")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	t10, err := parseByName(basePath + "vue3.drawer.go.template")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -188,13 +203,22 @@ func (e Gen) GenCode(tab *SysTables) {
 	err = t6.Execute(&b6, tab)
 	var b7 bytes.Buffer
 	err = t7.Execute(&b7, tab)
+	var b8 bytes.Buffer
+	err = t8.Execute(&b8, tab)
+	var b9 bytes.Buffer
+	err = t9.Execute(&b9, tab)
+	var b10 bytes.Buffer
+	err = t10.Execute(&b10, tab)
 	utils.FileCreate(b1, path.Join(modelPath, tab.TBName+".go"), bOverwrite)
 	utils.FileCreate(b2, path.Join(apiPath, tab.TBName+".go"), bOverwrite)
 	utils.FileCreate(b3, path.Join(routerPath, tab.TBName+".go"), bOverwrite)
-	utils.FileCreate(b4, path.Join(jsPath, tab.ModuleFrontName+".js"), bOverwrite)
-	utils.FileCreate(b5, path.Join(vuePath, "index.vue"), bOverwrite)
+	utils.FileCreate(b4, path.Join(jsPath, tab.ModuleFrontName+".ts"), bOverwrite)
+	utils.FileCreate(b5, path.Join(vuePath, "data.tsx"), bOverwrite)
 	utils.FileCreate(b6, path.Join(dtoPath, tab.TBName+".go"), bOverwrite)
 	utils.FileCreate(b7, path.Join(servicePath, tab.TBName+".go"), bOverwrite)
+	utils.FileCreate(b8, path.Join(vuePath, "index.vue"), bOverwrite)
+	utils.FileCreate(b9, path.Join(vuePath, "EditModal.vue"), bOverwrite)
+	utils.FileCreate(b10, path.Join(vuePath, "DetailDrawer.vue"), bOverwrite)
 
 	fmt.Println("Code generated successfully！")
 }

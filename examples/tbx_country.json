@@ -3,7 +3,8 @@
 	"moduleName": "country",
 	"className": "TbxCountry",
 	"tableComment": "国家编码",
-
+	"hasDetail": true,
+	"hasExport": true,
 	"isAuth": true,
 	"columns": [
 		{
@@ -40,6 +41,32 @@
 			"goType": "string",
 			"columnComment": "English Name 2",
 			"gormTag": "size:64"
+		},
+		{
+			"goField": "int",
+			"goType": "int"
+		},
+		{
+			"goField": "float",
+			"goType": "float64"
+		},
+		{
+			"goField": "testSelect",
+			"goType": "string",
+			"columnComment": "English Name 2",
+			"gormTag": "size:64",
+			"dictType": "tbx_order_state",
+			"htmlType": "select"
+		},
+		{
+			"goField": "testSelect2",
+			"goType": "string",
+			"columnComment": "English Name 2",
+			"gormTag": "size:64",
+			"dictType": "tbx_order_state",
+			"htmlType": "select",
+			"sortable": true,
+			"notOnUpdate": true
 		},
 		{
 			"goField": "Code2",

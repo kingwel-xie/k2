@@ -1,0 +1,97 @@
+import { BasicColumn, FormSchema } from '/@/components/Table';
+
+export const columns: BasicColumn[] = [
+  {{- range .Columns -}}
+  {{- $x := .NotOnList -}}
+  {{- if not ($x) }}
+  {
+    title: '{{.ColumnComment}}',
+    dataIndex: '{{.JsonField}}',
+    {{- if ne .DictType "" }}
+    format: 'dict|{{.DictType}}',
+    {{- else if eq .HtmlType "datetime" -}}
+    format: 'datetime|full',
+    {{- else if eq .HtmlType "rate" -}}
+    customRender: ({ value }) => value,
+    {{- else if eq .GoType "float64" -}}
+    format: 'float|',
+    {{- else if eq .GoType "bool" -}}
+    format: 'bool|',
+    {{- end }}
+    {{- if (.Sortable) }}
+    sorter: true,
+    {{- end }}
+  },{{ end -}}
+  {{- end }}
+];
+
+export const searchFormSchema: FormSchema[] = [
+  {{- range .Columns -}}
+  {{- $isInteger := false -}}
+  {{- $isFloat := false -}}
+  {{- if eq .GoType "int" -}}{{- $isInteger = true -}}{{- end -}}
+  {{- if eq .GoType "float64" -}}{{- $isFloat = true -}}{{- end -}}
+  {{- $x := .Queryable -}}
+  {{- if ($x) }}
+  {
+    field: '{{.JsonField}}',
+    label: '{{.ColumnComment}}',
+    {{ if ne .DictType "" -}}
+    component: 'DictSelect',
+    componentProps: { dictName: '{{.DictType}}' },
+    {{- else -}}
+      {{- if or ($isFloat) ($isInteger) -}}
+    component: 'InputNumber',
+      {{- else -}}
+    component: 'Input',
+      {{- end -}}
+    {{- end }}
+    colProps: { span: 8 },
+  },{{ end -}}
+  {{- end }}
+];
+
+export const formSchema: FormSchema[] = [
+  {{- range .Columns -}}
+  {{- $isInteger := false -}}
+  {{- $isFloat := false -}}
+  {{- if eq .GoType "int" -}}{{- $isInteger = true -}}{{- end -}}
+  {{- if eq .GoType "float64" -}}{{- $isFloat = true -}}{{- end -}}
+  {{- $x := .NotOnInsert -}}
+  {{- if not ($x) -}}
+  {{- if (.AutoInc) -}}
+  {{- else if eq .GoField "CreatedAt" -}}
+  {{- else if eq .GoField "UpdatedAt" -}}
+  {{- else if eq .GoField "DeletedAt" -}}
+  {{- else if eq .GoField "UpdateBy" -}}
+  {{- else if eq .GoField "CreateBy" -}}
+  {{- else }}
+  {
+    field: '{{.JsonField}}',
+    label: '{{.ColumnComment}}',
+    {{ if eq "input" .HtmlType -}}
+      {{- if or ($isFloat) ($isInteger) -}}
+    component: 'InputNumber',
+      {{- else -}}
+    component: 'Input',
+      {{- end -}}
+    {{- else if eq "select" .HtmlType -}}
+    component: 'DictSelect',
+    componentProps: { dictName: '{{.DictType}}' },
+    {{- else if eq "radio" .HtmlType -}}
+    component: 'DictRadioGroup',
+    componentProps: { dictName: '{{.DictType}}' },
+    {{- else if eq "datetime" .HtmlType -}}
+    component: 'DatePicker',
+    {{- else if eq "textarea" .HtmlType -}}
+    component: 'InputTextArea',
+    {{- else if eq "switch" .HtmlType -}}
+    component: 'Switch',
+    {{- else if eq "rate" .HtmlType -}}
+    component: 'Rate',
+    {{- end }}
+    {{- if or (.NotOnUpdate) (.IsPk) }}  {{- end }}
+  },{{ end -}}
+  {{- end -}}
+  {{- end }}
+];

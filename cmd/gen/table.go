@@ -12,11 +12,11 @@ type SysTables struct {
 
 	DataScope 	bool         `json:"dataScope"` // 数据权限 是否支持数据权限
 	IsAuth    	bool         `json:"isAuth"`    // 路由 是否带认证
-	DictCache   bool         `json:"dictCache"`    // 是否生成字典缓存  f.g., getTbxCountryListFromStore
 	Columns   []SysColumns `json:"columns"`   // 列
 
 	SoftDelete bool `json:"softDelete"` // model, use ModelTime instead of ModelTimeHardDelete
 	HasExport  bool `json:"hasExport"`  // vue, Export 按钮
+	HasDetail  bool `json:"hasDetail"`  // vue, Detail 按钮
 
 	// 以下字段提取自Columns
 	PkColumn    string `json:"-"` // 主键数据库模型列名

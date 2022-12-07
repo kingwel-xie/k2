@@ -1,0 +1,128 @@
+<template>
+  <div>
+    <BasicTable @register="registerTable">
+      <template #toolbar>
+        <a-button
+          v-auth="'{{.PackageName}}:{{.BusinessName}}:add'"
+          type="primary"
+          preIcon="ant-design:file-add-outlined"
+          @click="handleCreate"
+        >
+          {{ `{{ t('common.addText') }}` }}
+        </a-button>
+      </template>
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === '{{.PkJsonField}}'{{- if not (.HasDetail) }} && false{{- end -}}">
+          <TableAction
+            :actions="[
+              {
+                icon: 'ant-design:info-circle-outlined',
+                label: record.{{.PkJsonField}},
+                tooltip: t('common.detailText'),
+                onClick: handleView.bind(null, record),
+              },
+            ]"
+          />
+        </template>
+        <template v-if="column.key === 'action'">
+          <TableAction
+            :actions="[
+              {
+                icon: 'ant-design:info-circle-outlined',
+                tooltip: t('common.detailText'),
+                onClick: handleView.bind(null, record),
+                ifShow: {{ if (.HasDetail) -}}true{{- else -}}false{{- end -}},
+              },
+              {
+                icon: 'ant-design:form-outlined',
+                tooltip: t('common.editText'),
+                onClick: handleEdit.bind(null, record),
+                disabled: false,
+                auth: '{{.PackageName}}:{{.BusinessName}}:edit',
+              },
+              {
+                icon: 'ant-design:delete-outlined',
+                tooltip: t('common.delText'),
+                color: 'error',
+                disabled: false,
+                auth: '{{.PackageName}}:{{.BusinessName}}:remove',
+                popConfirm: {
+                  title: t('sys.app.deletePrompt'),
+                  placement: 'left',
+                  confirm: handleDelete.bind(null, record),
+                },
+              },
+            ]"
+          />
+        </template>
+      </template>
+    </BasicTable>
+    <EditModal @register="registerModal" @success="handleSuccess" />
+    <DetailDrawer @register="registerDrawer" />
+  </div>
+</template>
+<script lang="ts" setup>
+  import { useI18n } from '/@/hooks/web/useI18n';
+  import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { useModal } from '/@/components/Modal';
+  import EditModal from './EditModal.vue';
+  import { columns, searchFormSchema } from './data';
+  import { delete{{.ClassName}}Entry, get{{.ClassName}}List } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
+  import DetailDrawer from './DetailDrawer.vue';
+  import { useDrawer } from '/@/components/Drawer';
+
+  const { t } = useI18n();
+  const [registerDrawer, { openDrawer }] = useDrawer();
+  const [registerModal, { openModal }] = useModal();
+  const [registerTable, { reload }] = useTable({
+    title: '{{.TableComment}}列表',
+    api: get{{.ClassName}}List,
+    columns,
+    formConfig: {
+      labelWidth: 120,
+      baseColProps: { span: 6 },
+      schemas: searchFormSchema,
+    },
+    striped: true,
+    bordered: true,
+    canResize: true,
+    useSearchForm: true,
+    showTableSetting: true,
+    showIndexColumn: false,
+    rowKey: '{{.PkJsonField}}',
+    actionColumn: {
+      width: 120,
+      title: t('common.actionText'),
+      dataIndex: 'action',
+    },
+  });
+
+  function handleCreate() {
+    openModal(true, {
+      isUpdate: false,
+    });
+  }
+
+  function handleEdit(record: Recordable) {
+    openModal(true, {
+      record,
+      isUpdate: true,
+    });
+  }
+
+  async function handleDelete(record: Recordable) {
+    console.log(record);
+    await delete{{.ClassName}}Entry(record);
+    await reload();
+  }
+
+  function handleSuccess() {
+    reload();
+  }
+
+  function handleView(record: Recordable) {
+    openDrawer(true, {
+      record,
+    });
+  }
+</script>
