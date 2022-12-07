@@ -9,13 +9,13 @@ export const columns: BasicColumn[] = [
     dataIndex: '{{.JsonField}}',
     {{- if ne .DictType "" }}
     format: 'dict|{{.DictType}}',
-    {{- else if eq .HtmlType "datetime" -}}
+    {{- else if eq .HtmlType "datetime" }}
     format: 'datetime|full',
-    {{- else if eq .HtmlType "rate" -}}
-    customRender: ({ value }) => value,
-    {{- else if eq .GoType "float64" -}}
+    {{- else if eq .HtmlType "el-rate" }}
+    customRender: ({ value }) => <Rate value={value} disabled />,
+    {{- else if eq .GoType "float64" }}
     format: 'float|',
-    {{- else if eq .GoType "bool" -}}
+    {{- else if eq .GoType "bool" }}
     format: 'bool|',
     {{- end }}
     {{- if (.Sortable) }}
@@ -87,7 +87,7 @@ export const formSchema: FormSchema[] = [
     component: 'InputTextArea',
     {{- else if eq "switch" .HtmlType -}}
     component: 'Switch',
-    {{- else if eq "rate" .HtmlType -}}
+    {{- else if eq "el-rate" .HtmlType -}}
     component: 'Rate',
     {{- end }}
     {{- if or (.NotOnUpdate) (.IsPk) }}  {{- end }}
