@@ -10,6 +10,35 @@
         >
           {{ `{{ t('common.addText') }}` }}
         </a-button>
+        <Dropdown
+          v-if="{{- if (.HasExport) }}true{{- end -}}"
+          :dropMenuList="[
+            {
+              icon: 'ant-design:select-outlined',
+              text: '选中项',
+              event: 'selected',
+            },
+            {
+              icon: 'ant-design:profile-outlined',
+              text: '当前列表',
+              event: 'current',
+            },
+            {
+              icon: 'ant-design:carry-out-outlined',
+              text: '满足条件全部',
+              event: 'all',
+              popConfirm: {
+                title: '是否导出满足当前查询条件的数据项（最多10000项）?',
+                confirm: handleExport.bind(null, 'all'),
+              },
+            },
+          ]"
+          :trigger="['click']"
+          @menu-event="handleMenuEvent"
+          popconfirm
+        >
+          <a-button preIcon="ant-design:export-outlined">{{ `{{ t('common.exportText') }}` }}...</a-button>
+        </Dropdown>
       </template>
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === '{{.PkJsonField}}'{{- if not (.HasDetail) }} && false{{- end -}}">
@@ -65,16 +94,19 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
-  import EditModal from './EditModal.vue';
-  import { columns, searchFormSchema } from './data';
-  import { delete{{.ClassName}}Entry, get{{.ClassName}}List } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
-  import DetailDrawer from './DetailDrawer.vue';
   import { useDrawer } from '/@/components/Drawer';
+  import { Dropdown, DropMenu } from '/@/components/Dropdown';
+  import { cloneDeep } from 'lodash-es';
+  import { export2Excel } from '/@/utils/export';
+  import { columns, excelHeader, searchFormSchema } from './data';
+  import EditModal from './EditModal.vue';
+  import DetailDrawer from './DetailDrawer.vue';
+  import { delete{{.ClassName}}Entry, get{{.ClassName}}List } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
 
   const { t } = useI18n();
   const [registerDrawer, { openDrawer }] = useDrawer();
   const [registerModal, { openModal }] = useModal();
-  const [registerTable, { reload }] = useTable({
+  const [registerTable, { reload, getDataSource, getSelectRows, fetchOnly }] = useTable({
     title: '{{.TableComment}}列表',
     api: get{{.ClassName}}List,
     columns,
@@ -124,5 +156,27 @@
     openDrawer(true, {
       record,
     });
+  }
+
+  function handleMenuEvent(menu: DropMenu) {
+    if (menu.event === 'selected' || menu.event === 'current') {
+      handleExport(menu.event);
+    }
+  }
+
+  async function handleExport(event) {
+    let data = [];
+    switch (event) {
+      case 'selected':
+        data = cloneDeep(getSelectRows());
+        break;
+      case 'current':
+        data = cloneDeep(getDataSource());
+        break;
+      case 'all':
+        data = (await fetchOnly()) || [];
+        break;
+    }
+    export2Excel(excelHeader, columns, data, '{{.TableComment}}.xlsx');
   }
 </script>

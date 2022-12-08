@@ -95,3 +95,11 @@ export const formSchema: FormSchema[] = [
   {{- end -}}
   {{- end }}
 ];
+
+export const excelHeader = {
+  {{- range .Columns -}}
+  {{- if not (.NotOnList) }}
+  {{.JsonField}}: '{{.ColumnComment}}',
+  {{- end -}}
+  {{- end }}
+};
