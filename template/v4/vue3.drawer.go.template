@@ -1,15 +1,15 @@
 <template>
-  <BasicDrawer @register="registerDrawer" isDetail width="61%">
+  <BasicDrawer v-bind="$attrs" @register="registerDrawer" isDetail width="61%">
     <template #title>
       <span class="mr-2">{{"{{"}} '❅ {{.TableComment}}详情：' + entryData.{{.PkJsonField}} {{"}}"}}</span>
     </template>
-    <Description v-bind="$attrs" :bordered="false" :schema="descSchema" :data="entryData" />
+    <Description :bordered="false" :schema="descSchema" :data="entryData" />
+    <Divider />
     <Row>
       <Col>
         <Tag>Your code here:</Tag>
       </Col>
     </Row>
-    <Divider />
   </BasicDrawer>
 </template>
 
