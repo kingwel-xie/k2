@@ -1,4 +1,5 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
+import { DescItem } from '/@/components/Description';
 
 export const columns: BasicColumn[] = [
   {{- range .Columns -}}
@@ -93,6 +94,26 @@ export const formSchema: FormSchema[] = [
     {{- if or (.NotOnUpdate) (.IsPk) }}  {{- end }}
   },{{ end -}}
   {{- end -}}
+  {{- end }}
+];
+
+export const descSchema: DescItem[] = [
+  {{- range .Columns }}
+  {
+    label: '{{.ColumnComment}}',
+    field: '{{.JsonField}}',
+    {{- if ne .DictType "" }}
+    format: 'dict|{{.DictType}}',
+    {{- else if eq .HtmlType "datetime" }}
+    format: 'datetime|full',
+    {{- else if eq .HtmlType "el-rate" }}
+    render: ({ value }) => <Rate value={value} disabled />,
+    {{- else if eq .GoType "float64" }}
+    format: 'float|',
+    {{- else if eq .GoType "bool" }}
+    format: 'bool|',
+    {{- end }}
+  },
   {{- end }}
 ];
 
