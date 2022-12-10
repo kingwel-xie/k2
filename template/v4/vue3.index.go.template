@@ -90,7 +90,7 @@
     <DetailDrawer @register="registerDrawer" />
   </div>
 </template>
-<script lang="ts" setup>
+<script lang="ts" setup name="{{.ClassName}}">
   import { useI18n } from '/@/hooks/web/useI18n';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
