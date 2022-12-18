@@ -17,15 +17,14 @@
   import { ref } from 'vue';
   import { Row, Col, Tag, Divider } from 'ant-design-vue';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
-  import { Description, DescItem } from '/@/components/Description';
-  import { get{{.ClassName}}ByKey } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
+  import { Description } from '/@/components/Description';
   import { descSchema } from './data';
 
   const entryData = ref<Recordable>({});
 
   const [registerDrawer, { setDrawerProps }] = useDrawerInner(async (data) => {
     setDrawerProps({ loading: true });
-    entryData.value = await get{{.ClassName}}ByKey(data.record.{{.PkJsonField}});
+    entryData.value = data.record;
     setDrawerProps({ loading: false });
   });
 </script>

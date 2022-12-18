@@ -72,7 +72,7 @@
       }
 
       closeModal();
-      emit('success');
+      emit('success', unref(isUpdate), values);
     } finally {
       setModalProps({ confirmLoading: false });
     }

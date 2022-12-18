@@ -11,7 +11,7 @@
           {{ `{{ t('common.addText') }}` }}
         </a-button>
         <Dropdown
-          v-if="{{- if (.HasExport) }}true{{- end -}}"
+          v-if="{{- if (.HasExport) }}true{{- else -}}false{{- end -}}"
           :dropMenuList="[
             {
               icon: 'ant-design:select-outlined',
@@ -101,12 +101,19 @@
   import { columns, excelHeader, searchFormSchema } from './data';
   import EditModal from './EditModal.vue';
   import DetailDrawer from './DetailDrawer.vue';
-  import { delete{{.ClassName}}Entry, get{{.ClassName}}List } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
+  import {
+    delete{{.ClassName}}Entry,
+    get{{.ClassName}}List,
+    get{{.ClassName}}ByKey
+  } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
 
   const { t } = useI18n();
   const [registerDrawer, { openDrawer }] = useDrawer();
   const [registerModal, { openModal }] = useModal();
-  const [registerTable, { reload, getDataSource, getSelectRows, fetchOnly }] = useTable({
+  const [
+    registerTable,
+    { reload, getDataSource, getSelectRows, fetchOnly, updateTableDataRecord },
+  ] = useTable({
     title: '{{.TableComment}}列表',
     api: get{{.ClassName}}List,
     columns,
@@ -143,13 +150,17 @@
   }
 
   async function handleDelete(record: Recordable) {
-    console.log(record);
     await delete{{.ClassName}}Entry(record);
     await reload();
   }
 
-  function handleSuccess() {
-    reload();
+  async function handleSuccess(isUpdate: boolean, record: Recordable) {
+    if (isUpdate) {
+      const data = await get{{.ClassName}}ByKey(record.{{.PkJsonField}});
+      updateTableDataRecord(record.{{.PkJsonField}}, data);
+    } else {
+      await reload();
+    }
   }
 
   function handleView(record: Recordable) {
