@@ -78,10 +78,14 @@ export const formSchema: FormSchema[] = [
       {{- end -}}
     {{- else if eq "select" .HtmlType -}}
     component: 'DictSelect',
-    componentProps: { dictName: '{{.DictType}}' },
+    componentProps: {
+      dictName: '{{.DictType}}',
+    },
     {{- else if eq "radio" .HtmlType -}}
     component: 'DictRadioGroup',
-    componentProps: { dictName: '{{.DictType}}' },
+    componentProps: {
+      dictName: '{{.DictType}}',
+    },
     {{- else if eq "datetime" .HtmlType -}}
     component: 'DatePicker',
     {{- else if eq "textarea" .HtmlType -}}
