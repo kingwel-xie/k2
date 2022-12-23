@@ -17,6 +17,7 @@
               icon: 'ant-design:select-outlined',
               text: '选中项',
               event: 'selected',
+              disabled: !hasSelected,
             },
             {
               icon: 'ant-design:profile-outlined',
@@ -93,6 +94,7 @@
 <script lang="ts" setup name="{{.ClassName}}">
   import { useI18n } from '/@/hooks/web/useI18n';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
+  import { computed } from 'vue';
   import { useModal } from '/@/components/Modal';
   import { useDrawer } from '/@/components/Drawer';
   import { Dropdown, DropMenu } from '/@/components/Dropdown';
@@ -104,7 +106,7 @@
   import {
     delete{{.ClassName}}Entry,
     get{{.ClassName}}List,
-    get{{.ClassName}}ByKey
+    get{{.ClassName}}ByKey,
   } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
 
   const { t } = useI18n();
@@ -134,6 +136,14 @@
       title: t('common.actionText'),
       dataIndex: 'action',
     },
+  });
+
+  const hasSelected = computed<boolean>(() => {
+    try {
+      return getSelectRows().length > 0;
+    } catch {
+      return false;
+    }
   });
 
   function handleCreate() {
