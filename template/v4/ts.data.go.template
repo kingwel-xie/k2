@@ -70,6 +70,9 @@ export const formSchema: FormSchema[] = [
   {
     field: '{{.JsonField}}',
     label: '{{.ColumnComment}}',
+    {{- if ne .Comment "" }}
+    helpMessage: '{{.Comment}}',
+    {{- end }}
     {{ if eq "input" .HtmlType -}}
       {{- if or ($isFloat) ($isInteger) -}}
     component: 'InputNumber',
@@ -95,7 +98,9 @@ export const formSchema: FormSchema[] = [
     {{- else if eq "el-rate" .HtmlType -}}
     component: 'Rate',
     {{- end }}
-    {{- if or (.NotOnUpdate) (.IsPk) }}  {{- end }}
+    {{- if .Queryable }}
+    required: true,
+    {{- end }}
   },{{ end -}}
   {{- end -}}
   {{- end }}

@@ -29,7 +29,7 @@
 
   const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
     labelWidth: 90,
-    baseColProps: { span: 24 },
+    baseColProps: { span: 8 },
     schemas: formSchema,
     showActionButtonGroup: false,
   });
