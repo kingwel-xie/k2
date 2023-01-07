@@ -36,14 +36,15 @@
 
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
     await resetFields();
-    setModalProps({ confirmLoading: false });
     isUpdate.value = !!data?.isUpdate;
 
     if (unref(isUpdate)) {
+      setModalProps({ loading: true });
       data.record = await get{{.ClassName}}ByKey(data.record.{{.PkJsonField}});
       await setFieldsValue({
         ...data.record,
       });
+      setModalProps({ loading: false });
       title.value = t('common.modalEditText') + data.record.{{.PkJsonField}};
     } else {
       title.value = t('common.modalAddText');

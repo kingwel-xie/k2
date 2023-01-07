@@ -120,7 +120,7 @@
     api: get{{.ClassName}}List,
     columns,
     formConfig: {
-      labelWidth: 120,
+      labelWidth: 100,
       baseColProps: { span: 6 },
       schemas: searchFormSchema,
     },
