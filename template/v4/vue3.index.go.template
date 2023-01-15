@@ -132,7 +132,7 @@
     showIndexColumn: false,
     rowKey: '{{.PkJsonField}}',
     actionColumn: {
-      width: 120,
+      width: 90,
       title: t('common.actionText'),
       dataIndex: 'action',
     },
