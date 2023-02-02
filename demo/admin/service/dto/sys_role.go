@@ -38,7 +38,6 @@ type SysRoleInsertReq struct {
 	RoleSort  int              `form:"roleSort" comment:"角色排序"` // 角色排序
 	Flag      string           `form:"flag" comment:"标记"`       // 标记
 	Remark    string           `form:"remark" comment:"备注"`     // 备注
-	Admin     bool             `form:"admin" comment:"是否管理员"`
 	DataScope string           `form:"dataScope"`
 	SysMenu   []models.SysMenu `form:"sysMenu"`
 	MenuIds   []int            `form:"menuIds"`
@@ -56,7 +55,6 @@ func (s *SysRoleInsertReq) Generate(model *models.SysRole) {
 	model.RoleSort = s.RoleSort
 	model.Flag = s.Flag
 	model.Remark = s.Remark
-	model.Admin = s.Admin
 	model.DataScope = s.DataScope
 	model.SysMenu = &s.SysMenu
 	model.SysDept = s.SysDept
@@ -74,7 +72,6 @@ type SysRoleUpdateReq struct {
 	RoleSort  int              `form:"roleSort" comment:"角色排序"` // 角色排序
 	Flag      string           `form:"flag" comment:"标记"`       // 标记
 	Remark    string           `form:"remark" comment:"备注"`     // 备注
-	Admin     bool             `form:"admin" comment:"是否管理员"`
 	DataScope string           `form:"dataScope" comment:"数据权限"`
 	SysMenu   []models.SysMenu `form:"sysMenu"`
 	MenuIds   []int            `form:"menuIds"`
@@ -92,7 +89,6 @@ func (s *SysRoleUpdateReq) Generate(model *models.SysRole) {
 	model.RoleSort = s.RoleSort
 	model.Flag = s.Flag
 	model.Remark = s.Remark
-	model.Admin = s.Admin
 	model.DataScope = s.DataScope
 	model.SysMenu = &s.SysMenu
 	model.SysDept = s.SysDept
@@ -103,8 +99,8 @@ func (s *SysRoleUpdateReq) GetId() interface{} {
 }
 
 type UpdateStatusReq struct {
-	RoleId int    `form:"roleId" comment:"角色编码"` // 角色编码
-	Status string `form:"status" comment:"状态"`   // 状态
+	RoleId int    `json:"roleId" comment:"角色编码"` // 角色编码
+	Status string `json:"status" comment:"状态"`   // 状态
 }
 
 func (s *UpdateStatusReq) Generate(model *models.SysRole) {

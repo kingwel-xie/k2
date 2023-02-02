@@ -15,6 +15,8 @@ type SysUser struct {
 	service.Service
 }
 
+const RoleIdAdmin = 1
+
 // GetPage 获取SysUser列表
 func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, count *int64) error {
 	err := e.Orm.Preload("Dept").Preload("Role").
@@ -44,6 +46,10 @@ func (e *SysUser) GetCurrentUser() (model models.SysUser, err error) {
 
 // Insert 创建SysUser对象
 func (e *SysUser) Insert(c *dto.SysUserInsertReq) error {
+	if c.RoleId == RoleIdAdmin {
+		return errors.New("'admin' can not be specified")
+	}
+
 	var err error
 	var data models.SysUser
 	var i int64
@@ -73,6 +79,16 @@ func (e *SysUser) Update(c *dto.SysUserUpdateReq) error {
 	).First(&model, c.GetId()).Error
 	if err != nil {
 		return err
+	}
+
+	if model.RoleId == RoleIdAdmin {
+		// 'admin' can not be downgraded
+		c.RoleId = RoleIdAdmin
+	} else {
+		// upgrade to 'admin' is not allowed
+		if c.RoleId == RoleIdAdmin {
+			return errors.New("'admin' can not be specified")
+		}
 	}
 
 	c.Generate(&model)
@@ -255,4 +271,18 @@ func (e *SysUser) GetProfile(c *dto.SysUserById, user *models.SysUser, roles *[]
 	}
 
 	return nil
+}
+
+func (e *SysUser) CheckExistence(s *dto.SysUserCheckExistenceReq) error {
+	var list []models.SysUser
+	err := e.Orm.
+		Find(&list, "username = ?", s.GetId()).Limit(1).Error
+	if err == nil {
+		if len(list) > 0 {
+			return nil
+		} else {
+			err = k2Error.ErrCodeNotFound
+		}
+	}
+	return err
 }

@@ -145,7 +145,7 @@ func (e *SysDept) SetDeptTree(c *dto.SysDeptGetPageReq) (m []dto.DeptLabel, err 
 // Call 递归构造组织数据
 func deptTreeCall(deptList *[]models.SysDept, dept dto.DeptLabel) dto.DeptLabel {
 	list := *deptList
-	min := make([]dto.DeptLabel, 0)
+	var min []dto.DeptLabel
 	for j := 0; j < len(list); j++ {
 		if dept.Id != list[j].ParentId {
 			continue
@@ -174,7 +174,7 @@ func (e *SysDept) SetDeptPage(c *dto.SysDeptGetPageReq) (m []models.SysDept, err
 
 func (e *SysDept) deptPageCall(deptlist *[]models.SysDept, menu models.SysDept) models.SysDept {
 	list := *deptlist
-	min := make([]models.SysDept, 0)
+	var min []models.SysDept
 	for j := 0; j < len(list); j++ {
 		if menu.DeptId != list[j].ParentId {
 			continue
@@ -190,7 +190,7 @@ func (e *SysDept) deptPageCall(deptlist *[]models.SysDept, menu models.SysDept) 
 		mi.Email = list[j].Email
 		mi.Status = list[j].Status
 		mi.CreatedAt = list[j].CreatedAt
-		mi.Children = []models.SysDept{}
+		mi.Children = nil
 		ms := e.deptPageCall(deptlist, mi)
 		min = append(min, ms)
 	}
@@ -241,7 +241,7 @@ func (e *SysDept) SetDeptLabel() (m []dto.DeptLabel, err error) {
 func deptLabelCall(deptList *[]models.SysDept, dept dto.DeptLabel) dto.DeptLabel {
 	list := *deptList
 	var mi dto.DeptLabel
-	min := make([]dto.DeptLabel, 0)
+	var min []dto.DeptLabel
 	for j := 0; j < len(list); j++ {
 		if dept.Id != list[j].ParentId {
 			continue

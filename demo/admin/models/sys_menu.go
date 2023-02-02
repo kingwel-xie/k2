@@ -7,6 +7,7 @@ type SysMenu struct {
 	MenuName   string    `json:"menuName" gorm:"size:128;"`
 	Title      string    `json:"title" gorm:"size:128;"`
 	Icon       string    `json:"icon" gorm:"size:128;"`
+	IconAntd   string    `json:"iconAntd" gorm:"size:128;"`
 	Path       string    `json:"path" gorm:"size:128;"`
 	Paths      string    `json:"paths" gorm:"size:128;"`
 	MenuType   string    `json:"menuType" gorm:"size:1;"`
@@ -20,10 +21,8 @@ type SysMenu struct {
 	IsFrame    string    `json:"isFrame" gorm:"size:1;DEFAULT:0;"`
 	SysApi     []SysApi  `json:"sysApi" gorm:"many2many:sys_menu_api_rule"`
 	Apis       []int     `json:"apis" gorm:"-"`
-	Params     string    `json:"params" gorm:"-"`
 	RoleId     int       `gorm:"-"`
 	Children   []SysMenu `json:"children,omitempty" gorm:"-"`
-	IsSelect   bool      `json:"is_select" gorm:"-"`
 	models.ControlBy
 	models.ModelTime
 }

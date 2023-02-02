@@ -171,6 +171,15 @@ func (s *SysUserById) GetId() interface{} {
 	return s.Id
 }
 
+type SysUserCheckExistenceReq struct {
+	Username  string   `uri:"username"`
+}
+
+func (s *SysUserCheckExistenceReq) GetId() interface{} {
+	return s.Username
+}
+
+
 // PassWord 密码
 type PassWord struct {
 	NewPassword string `json:"newPassword" vd:"len($)>0"`

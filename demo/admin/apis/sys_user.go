@@ -175,6 +175,34 @@ func (e SysUser) Delete(c *gin.Context) {
 	e.OK(req.GetId(), "删除成功")
 }
 
+// CheckExistence
+// @Summary 检查用户存在
+// @Description 检查用户存在
+// @Tags 用户
+// @Param username path string true "username"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/check-existence/{username} [get]
+// @Security Bearer
+func (e SysUser) CheckExistence(c *gin.Context) {
+	s := service.SysUser{}
+	req := dto.SysUserCheckExistenceReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.JSON, nil).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	err = s.CheckExistence(&req)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+	e.OK(req.GetId(), "成功")
+}
+
 // UpdateStatus 修改用户状态
 // @Summary 修改用户状态
 // @Description 获取JSON
@@ -263,6 +291,36 @@ func (e SysUser) UpdatePwd(c *gin.Context) {
 		return
 	}
 	e.OK(nil, "密码修改成功")
+}
+
+// UpdateProfile
+// @Summary 修改个人中心
+// @Description 获取JSON
+// @Tags 个人中心
+// @Accept  application/json
+// @Product application/json
+// @Param data body dto.PassWord true "body"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/user/profile [post]
+// @Security Bearer
+func (e SysUser) UpdateProfile(c *gin.Context) {
+	s := service.SysUser{}
+	req := dto.SysUserUpdateProfileReq{}
+	err := e.MakeContext(c).
+		Bind(&req).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	err = s.UpdateProfile(s.Identity.UserId, &req)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+	e.OK(nil, "修改成功")
 }
 
 // InsetAvatar
@@ -382,9 +440,7 @@ func (e SysUser) GetInfo(c *gin.Context) {
 		list, _ := r.GetById(identity.RoleId)
 		mp["permissions"] = list
 	}
-	sysUser := models.SysUser{}
-	req.Id = identity.UserId
-	err = s.Get(&req, &sysUser)
+	sysUser, err := s.GetCurrentUser()
 	if err != nil {
 		e.Error(loginFailedErr.Wrap(err))
 		return

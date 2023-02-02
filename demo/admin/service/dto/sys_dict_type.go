@@ -12,10 +12,11 @@ type SysDictTypeGetPageReq struct {
 	DictName       string `form:"dictName" search:"type:icontains;column:dict_name;table:sys_dict_type"`
 	DictType       string `form:"dictType" search:"type:icontains;column:dict_type;table:sys_dict_type"`
 	Status         int    `form:"status" search:"type:exact;column:status;table:sys_dict_type"`
+	SysDictTypeOrder
 }
 
 type SysDictTypeOrder struct {
-	DictIdOrder string `search:"type:order;column:dict_id;table:sys_dict_type" form:"dictIdOrder"`
+	DictIdOrder string `search:"type:order;column:dict_id;table:sys_dict_type" form:"idOrder"`
 }
 
 func (m *SysDictTypeGetPageReq) GetNeedSearch() interface{} {

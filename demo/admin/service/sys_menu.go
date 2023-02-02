@@ -297,17 +297,25 @@ func RebuildMenuPathsIfNeeded(tx *gorm.DB, menuIds ...int) (err error) {
 }
 
 // Remove 删除SysMenu
+// TODO: to delete all sub menus and their SysApi associations
 func (e *SysMenu) Remove(d *dto.SysMenuDeleteReq) error {
-	var data models.SysMenu
+	return e.Orm.Transaction(func(tx *gorm.DB) error {
+		var list []models.SysMenu
+		err := tx.Model(&models.SysMenu{}).Preload("SysApi").
+			Find(&list, "menu_id in ?", d.GetId()).Error
+		if err != nil {
+			return k2Error.ErrDatabase.Wrap(err)
+		}
 
-	db := e.Orm.Model(&data).Delete(&data, d.Ids)
-	if db.Error != nil {
-		return db.Error
-	}
-	if db.RowsAffected == 0 {
-		return k2Error.ErrPermissionDenied
-	}
-	return nil
+		db := tx.Select(clause.Associations).Delete(&list)
+		if db.Error != nil {
+			return db.Error
+		}
+		if db.RowsAffected == 0 {
+			return k2Error.ErrPermissionDenied
+		}
+		return nil
+	})
 }
 
 // GetList 获取菜单数据

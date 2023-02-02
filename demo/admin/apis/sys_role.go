@@ -200,7 +200,7 @@ func (e SysRole) Delete(c *gin.Context) {
 // @Product application/json
 // @Param data body dto.UpdateStatusReq true "body"
 // @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
-// @Router /api/v1/role-status/{id} [put]
+// @Router /api/v1/role-status [put]
 // @Security Bearer
 func (e SysRole) Update2Status(c *gin.Context) {
 	s := service.SysRole{}

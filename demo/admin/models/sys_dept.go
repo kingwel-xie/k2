@@ -16,7 +16,7 @@ type SysDept struct {
 	models.ModelTime
 	DataScope string    `json:"dataScope" gorm:"-"`
 	Params    string    `json:"params" gorm:"-"`
-	Children  []SysDept `json:"children" gorm:"-"`
+	Children  []SysDept `json:"children,omitempty" gorm:"-"`
 }
 
 func (SysDept) TableName() string {

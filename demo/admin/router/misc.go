@@ -3,6 +3,7 @@ package router
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"admin/apis"
 )
 
@@ -24,4 +25,11 @@ func registerNoAuthRouter(v1 *gin.RouterGroup) {
 	miscApi := apis.TbxMisc{}
 
 	v1.GET("/limited-download/:uuid", miscApi.LimitedDownload)
+
+	// check username existence
+	v1.GET("/check-existence/:username", apis.SysUser{}.CheckExistence)
+
+	v1.GET("/metrics", func(c *gin.Context) {
+		promhttp.Handler()
+	})
 }

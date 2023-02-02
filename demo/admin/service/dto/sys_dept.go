@@ -103,5 +103,5 @@ func (s *SysDeptDeleteReq) GetId() interface{} {
 type DeptLabel struct {
 	Id       int         `gorm:"-" json:"id"`
 	Label    string      `gorm:"-" json:"label"`
-	Children []DeptLabel `gorm:"-" json:"children"`
+	Children []DeptLabel `gorm:"-" json:"children,omitempty"`
 }
