@@ -1,0 +1,18 @@
+export type ComponentType =
+  | 'Input'
+  | 'InputNumber'
+  | 'Select'
+  | 'Cascader'
+  | 'ApiSelect'
+  | 'AutoComplete'
+  | 'ApiTreeSelect'
+  | 'DictSelect'
+  | 'DictRadioGroup'
+  | 'DictCascader'
+  | 'Checkbox'
+  | 'Switch'
+  | 'DatePicker'
+  | 'TimePicker'
+  | 'RadioGroup'
+  | 'RadioButtonGroup'
+  | 'ApiRadioGroup';
