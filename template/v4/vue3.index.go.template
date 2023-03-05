@@ -116,6 +116,7 @@
     registerTable,
     { reload, getDataSource, getSelectRows, fetchOnly, updateTableDataRecord },
   ] = useTable({
+    name: '{{.ClassName}}.MainTable',
     title: '{{.TableComment}}列表',
     api: get{{.ClassName}}List,
     columns,
