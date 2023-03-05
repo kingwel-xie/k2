@@ -4,16 +4,28 @@ import {
   LoginResultModel,
   GetUserInfoModel,
   SetUserPasswordParams,
+  CaptchaResModel,
 } from './model/userModel';
 
 import { ErrorMessageMode } from '/#/axios';
+import { GetUnreadInfo } from '/@/api/sys/model/messageModel';
 
 enum Api {
+  GetCaptcha = '/v1/captcha',
   Login = '/v1/login',
   Logout = '/v1/logout',
   GetUserInfo = '/v1/getinfo',
+  SysInboxOpUnread = '/v1/inbox/unread',
+  SysInboxOpRead = '/v1/inbox/read',
   UpdatePassword = '/v1/user/pwd/set',
   TestRetry = '/testRetry',
+}
+
+export function getCaptcha() {
+  return defHttp.get<CaptchaResModel>(
+    { url: Api.GetCaptcha },
+    { errorMessageMode: 'none', isTransformResponse: false },
+  );
 }
 
 /**
@@ -60,3 +72,11 @@ export function testRetry() {
     },
   );
 }
+
+/**
+ * @description: getMessageUnreadApi
+ */
+export const getMessageUnreadApi = () => defHttp.get<GetUnreadInfo>({ url: Api.SysInboxOpUnread });
+
+export const readMessageApi = (ids: number[], read = true) =>
+  defHttp.post<any>({ url: Api.SysInboxOpRead, params: { ids, read: read } });

@@ -215,7 +215,7 @@
         const checkList = table
           .getColumns({ ignoreAction: true, ignoreIndex: true })
           .map((item) => {
-            if (item.defaultHidden) {
+            if (item.adminHidden) {
               return '';
             }
             return item.dataIndex || item.title;

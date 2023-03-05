@@ -8,8 +8,9 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { isArray, isBoolean, isFunction, isMap, isString } from '/@/utils/is';
 import { cloneDeep, isEqual } from 'lodash-es';
 import { ACTION_COLUMN_FLAG, DEFAULT_ALIGN, INDEX_COLUMN_FLAG, PAGE_SIZE } from '../const';
-import { formatValue } from '/@/utils/formatUtil';
+import { formatValue, tryParseJson } from '/@/utils/formatUtil';
 import { Tag } from 'ant-design-vue';
+import { TABLE_COLUMN_CFG_KEY_ } from '/@/enums/cacheEnum';
 
 function handleItem(item: BasicColumn, ellipsis: boolean) {
   const { key, dataIndex, children } = item;
@@ -111,6 +112,29 @@ export function useColumns(
   const getColumnsRef = computed(() => {
     const columns = cloneDeep(unref(columnsRef));
 
+    // loading column configuration from local storage
+    let hiddenList: string[] = [];
+    if (unref(propsRef).name) {
+      const cfgStr = localStorage.getItem(TABLE_COLUMN_CFG_KEY_ + unref(propsRef).name);
+      if (cfgStr) {
+        hiddenList = tryParseJson(cfgStr)?.hidden;
+      }
+    }
+    columns.forEach((col) => {
+      // this is quite ugly, but works...
+      // column doesn't have 'adminHidden' when it is loaded first time
+      // we set it according to the config or set to defaultHidden
+      if (!col.hasOwnProperty('adminHidden')) {
+        if (!hiddenList) {
+          col.adminHidden = col.defaultHidden;
+        } else if (hiddenList.includes(col.dataIndex?.toString() || (col.key as string))) {
+          col.adminHidden = true;
+        } else {
+          col.adminHidden = false;
+        }
+      }
+    });
+
     handleIndexColumn(propsRef, getPaginationRef, columns);
     handleActionColumn(propsRef, columns);
     if (!columns) {
@@ -157,7 +181,7 @@ export function useColumns(
 
         if (!slots || !slots?.title) {
           // column.slots = { title: `header-${dataIndex}`, ...(slots || {}) };
-          column.customTitle = column.title;
+          column.customTitle = column.title as string;
           Reflect.deleteProperty(column, 'title');
         }
         const isDefaultAction = [INDEX_COLUMN_FLAG, ACTION_COLUMN_FLAG].includes(flag!);
@@ -219,7 +243,7 @@ export function useColumns(
       cacheColumns.forEach((item) => {
         newColumns.push({
           ...item,
-          defaultHidden: !columnKeys.includes(item.dataIndex?.toString() || (item.key as string)),
+          adminHidden: !columnKeys.includes(item.dataIndex?.toString() || (item.key as string)),
         });
       });
       // Sort according to another array
@@ -232,6 +256,16 @@ export function useColumns(
         });
       }
       columnsRef.value = newColumns;
+    }
+    // save col configurations
+    if (unref(propsRef).name) {
+      const hidden = columnsRef.value
+        .filter((col) => col.adminHidden)
+        .map((col) => col.dataIndex?.toString() || (col.key as string));
+      if (hidden) {
+        const cfgStr = JSON.stringify({ hidden });
+        localStorage.setItem(TABLE_COLUMN_CFG_KEY_ + unref(propsRef).name, cfgStr);
+      }
     }
   }
 
@@ -281,7 +315,7 @@ function sortFixedColumn(columns: BasicColumn[]) {
     defColumns.push(column);
   }
   return [...fixedLeftColumns, ...defColumns, ...fixedRightColumns].filter(
-    (item) => !item.defaultHidden,
+    (item) => !item.adminHidden,
   );
 }
 

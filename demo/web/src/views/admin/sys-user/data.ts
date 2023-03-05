@@ -1,4 +1,4 @@
-import { getAllRoleList, setAccountStatus } from '/@/api/admin/system';
+import { listRoleNoCheck, getDeptTree, setAccountStatus } from '/@/api/admin/system';
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import { h } from 'vue';
@@ -125,18 +125,20 @@ export const accountFormSchema: FormSchema[] = [
     field: 'roleId',
     component: 'ApiSelect',
     componentProps: {
-      api: getAllRoleList,
+      api: listRoleNoCheck,
       resultField: 'list',
       labelField: 'roleName',
       valueField: 'roleId',
+      getPopupContainer: () => document.body,
     },
     required: true,
   },
   {
     label: '所属部门',
     field: 'deptId',
-    component: 'TreeSelect',
+    component: 'ApiTreeSelect',
     componentProps: {
+      api: getDeptTree,
       fieldNames: {
         label: 'label',
         key: 'id',
@@ -161,6 +163,7 @@ export const accountFormSchema: FormSchema[] = [
   {
     label: '状态',
     field: 'status',
+    defaultValue: '2',
     component: 'DictRadioGroup',
     componentProps: {
       dictName: 'sys_normal_disable',

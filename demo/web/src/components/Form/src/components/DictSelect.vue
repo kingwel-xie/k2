@@ -1,17 +1,25 @@
 <template>
-  <Select v-bind="$attrs" @change="handleChange" :options="getOptions" v-model:value="state">
+  <Select
+    v-bind="$attrs"
+    :options="getOptions"
+    v-model:value="state"
+    :showSearch="showSearch"
+    optionFilterProp="label"
+    :getPopupContainer="getPopupContainer"
+  >
     <template #[item]="data" v-for="item in Object.keys($slots)">
       <slot :name="item" v-bind="data || {}"></slot>
     </template>
   </Select>
 </template>
 <script lang="ts">
-  import { computed, defineComponent, ref, watch } from 'vue';
+  import { computed, defineComponent, PropType } from 'vue';
   import { Select } from 'ant-design-vue';
-  import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { toOptions, useDictStoreWithOut } from '/@/store/modules/dictionary';
+
+  const getPopupContainer = () => document.body;
 
   // type OptionsItem = { label: string; value: string; disabled?: boolean };
 
@@ -23,6 +31,10 @@
     inheritAttrs: false,
     props: {
       dictName: String,
+      showSearch: {
+        type: Boolean as PropType<boolean>,
+        default: true,
+      },
       value: [Array, String],
       filter: {
         type: Function as PropType<(_) => boolean>,
@@ -31,13 +43,19 @@
     },
     emits: ['change', 'update:value'],
     setup(props, { emit }) {
-      // const options = ref<OptionsItem[]>([]);
-      const emitData = ref<any[]>([]);
       const attrs = useAttrs();
       const { t } = useI18n();
 
       // Embedded in the form, just use the hook binding to perform form verification
-      const [state] = useRuleFormItem(props, 'value', 'change', emitData);
+      const state = computed({
+        get() {
+          return props.value;
+        },
+        set(value) {
+          emit('change', value);
+          emit('update:value', value);
+        },
+      });
 
       const getOptions = computed(() => {
         const { dictName, filter } = props;
@@ -49,18 +67,7 @@
         return toOptions(dict);
       });
 
-      watch(
-        () => state.value,
-        (v) => {
-          emit('update:value', v);
-        },
-      );
-
-      function handleChange(_, ...args) {
-        emitData.value = args;
-      }
-
-      return { state, attrs, getOptions, t, handleChange };
+      return { state, attrs, getOptions, t, getPopupContainer };
     },
   });
 </script>

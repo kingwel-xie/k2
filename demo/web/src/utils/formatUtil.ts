@@ -13,7 +13,7 @@ export function formatToDictLabel(value: string, dictName: string): string {
 }
 
 export function formatFromDictLabel(label: string | undefined, dictName: string): string {
-  if (label) return '';
+  if (!label) return '';
   const dictStore = useDictStoreWithOut();
   const list = dictStore.listRegistry[dictName] || [];
   const entry = list.find((l) => l.label === label);
@@ -21,10 +21,10 @@ export function formatFromDictLabel(label: string | undefined, dictName: string)
 }
 
 /**
- * @param {number} num, 传入
  * @returns {Object}
+ * @param str
  */
-export function tryParseJson(str: string) {
+export function tryParseJson<T = any>(str: string): T | undefined {
   try {
     return JSON.parse(str);
   } catch {}

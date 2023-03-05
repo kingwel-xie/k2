@@ -41,6 +41,14 @@ const dashboardKobh: AppRouteModule = {
         title: t('routes.basic.profile'),
       },
     },
+    {
+      path: 'message',
+      name: 'Message',
+      component: () => import('/@/views/sys/message/index.vue'),
+      meta: {
+        title: t('routes.basic.message'),
+      },
+    },
   ],
 };
 

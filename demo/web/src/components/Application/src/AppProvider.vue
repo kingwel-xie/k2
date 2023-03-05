@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { defineComponent, toRefs, ref, unref } from 'vue';
+  import { defineComponent, toRefs, ref, unref, watch } from 'vue';
   import { createAppProviderContext } from './useAppContext';
   import { createBreakpointListen } from '/@/hooks/event/useBreakpoint';
   import { prefixCls } from '/@/settings/designSetting';
   import { useAppStore } from '/@/store/modules/app';
   import { MenuModeEnum, MenuTypeEnum } from '/@/enums/menuEnum';
+  import { useClipboard } from '/@/hooks/web/useCopyToClipboard';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { useI18n } from '/@/hooks/web/useI18n';
 
   const props = {
     /**
@@ -34,8 +37,19 @@
 
       const { prefixCls } = toRefs(props);
 
+      const { t } = useI18n();
+      const { createMessage } = useMessage();
+      const clipboard = useClipboard({
+        onCopied: (text: string) => {
+          createMessage.success(t('common.copied', [text]));
+        },
+        onFail: (_e) => {
+          createMessage.error('无法完成复制，你的浏览器不支持！');
+        },
+      });
+
       // Inject variables into the global
-      createAppProviderContext({ prefixCls, isMobile });
+      createAppProviderContext({ prefixCls, isMobile, clipboard });
 
       /**
        * Used to maintain the state before the window changes

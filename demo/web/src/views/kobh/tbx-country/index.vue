@@ -116,6 +116,7 @@
     registerTable,
     { reload, getDataSource, getSelectRows, fetchOnly, updateTableDataRecord },
   ] = useTable({
+    name: 'TbxCountry.MainTable',
     title: '国家编码列表',
     api: getTbxCountryList,
     columns,

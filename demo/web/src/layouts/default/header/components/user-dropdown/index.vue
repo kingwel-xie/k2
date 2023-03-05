@@ -91,7 +91,8 @@
       const [register, { openModal }] = useModal();
 
       function handleProfile() {
-        go('/profile/index');
+        // go('/profile/index');
+        go('/dashboard/profile');
       }
 
       function handleLock() {

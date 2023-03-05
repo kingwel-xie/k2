@@ -42,6 +42,7 @@
 
   const [registerDrawer, { openDrawer }] = useDrawer();
   const [registerTable, { reload }] = useTable({
+    name: 'SysOperLogManage.MainTable',
     title: '列表',
     api: getSysOperLogList,
     columns,

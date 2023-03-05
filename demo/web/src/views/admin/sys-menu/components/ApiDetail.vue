@@ -1,7 +1,13 @@
 <template>
   <Popover trigger="click" title="API明细" :overlayStyle="{ width: '550px', height: '200px' }">
     <template #content>
-      <Table size="small" bordered :dataSource="data.sysApi" :columns="columns" />
+      <Table
+        :dataSource="data.sysApi"
+        :columns="columns"
+        size="small"
+        bordered
+        :pagination="false"
+      />
     </template>
     <div class="cursor-pointer underline">
       <div>✲ {{ data.permission }}</div>

@@ -51,7 +51,7 @@ export const columns: BasicColumn[] = [
     title: '操作时间',
     dataIndex: 'operTime',
     width: 150,
-    format: 'datetime|flex',
+    format: 'datetime|full',
   },
   {
     title: '备注',

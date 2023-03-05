@@ -18,7 +18,7 @@
         v-if="action.labelCopy"
         @click="handleCopy(action.label)"
       >
-        <CopyOutlined :style="{ color: 'orange' }" />
+        <CopyOutlined :style="{ color: 'blue' }" />
       </a-button>
       <Divider
         type="vertical"
@@ -53,8 +53,7 @@
   import { isBoolean, isFunction, isString } from '/@/utils/is';
   import { propTypes } from '/@/utils/propTypes';
   import { ACTION_COLUMN_FLAG } from '../const';
-  import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
-  import { useMessage } from '/@/hooks/web/useMessage';
+  import { useAppProviderContext } from '/@/components/Application';
 
   export default defineComponent({
     name: 'TableAction',
@@ -154,18 +153,16 @@
         isInButton && e.stopPropagation();
       }
 
-      const { createMessage } = useMessage();
-      const { clipboardRef, copiedRef } = useCopyToClipboard();
+      const {
+        clipboard: { copy },
+      } = useAppProviderContext();
 
-      function handleCopy(label: string) {
+      async function handleCopy(label: string) {
         if (!label) {
           // createMessage.warning('请输入要拷贝的内容！');
           return;
         }
-        clipboardRef.value = label;
-        if (unref(copiedRef)) {
-          createMessage.warning(label);
-        }
+        await copy(label);
       }
 
       return {

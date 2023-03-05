@@ -33,6 +33,7 @@
   const { t } = useI18n();
 
   const [registerTable, { reload }] = useTable({
+    name: 'SysLoginLogManage.MainTable',
     title: '列表',
     api: getSysLoginLogList,
     columns,

@@ -14,12 +14,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form';
   import { accountFormSchema } from './data';
-  import {
-    addAccountEntry,
-    updateAccountEntry,
-    getDeptTree,
-    isAccountExist,
-  } from '/@/api/admin/system';
+  import { addAccountEntry, updateAccountEntry, isAccountExist } from '/@/api/admin/system';
   import { useI18n } from '/@/hooks/web/useI18n';
 
   const { t } = useI18n();
@@ -51,48 +46,35 @@
       title.value = t('common.modalAddText');
     }
 
-    const validator = async (_, value) => {
-      return new Promise<void>((resolve, reject) => {
-        if (unref(isUpdate)) return resolve();
-        isAccountExist(value)
-          .then(({ code, msg }) => {
-            switch (code) {
-              case 551:
-                break;
-              case 200:
-                return Promise.reject({ message: '占用' });
-              default:
-                return Promise.reject({ message: msg });
-            }
-            return resolve();
-          })
-          .catch((err) => {
-            reject(err.message || '验证失败');
-          });
-      });
+    const validatorUsername = async (_, value) => {
+      if (unref(isUpdate)) return Promise.resolve();
+      if (!value) return Promise.reject('请输入用户名');
+      try {
+        const { code, msg } = await isAccountExist(value);
+        switch (code) {
+          case 551:
+            break;
+          case 200:
+            return Promise.reject('已被占用');
+          default:
+            return Promise.reject(msg);
+        }
+        return Promise.resolve();
+      } catch (err: any) {
+        return Promise.reject(err.message || '验证失败');
+      }
     };
 
-    const treeData = await getDeptTree();
     await updateSchema([
       {
         field: 'username',
         dynamicDisabled: unref(isUpdate),
-        rules: [
-          {
-            required: !unref(isUpdate),
-            message: '请输入用户名',
-            validator,
-          },
-        ],
+        rules: [{ required: true, validator: validatorUsername, trigger: 'blur' }],
       },
       {
         field: 'password',
         show: !unref(isUpdate),
         required: !unref(isUpdate),
-      },
-      {
-        field: 'deptId',
-        componentProps: { treeData },
       },
     ]);
   });
@@ -104,7 +86,6 @@
       if (!unref(isUpdate)) {
         await addAccountEntry(values);
       } else {
-        console.log('sysuser', values);
         await updateAccountEntry(values);
       }
 

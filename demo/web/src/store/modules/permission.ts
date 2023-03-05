@@ -27,7 +27,7 @@ import { getMenuRoleList } from '/@/api/sys/menu';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { PageEnum } from '/@/enums/pageEnum';
 import { RoleEnum } from '/@/enums/roleEnum';
-import dashboardKobh from '/@/router/routes/modules/kobh';
+import homepageKobh from '/@/router/routes/modules/kobh';
 // TODO: remove below in future
 // import dashboard from '/@/router/routes/modules/dashboard';
 import comp from '/@/router/routes/modules/demo/comp';
@@ -36,6 +36,7 @@ import page from '/@/router/routes/modules/demo/page';
 import setup from '/@/router/routes/modules/demo/setup';
 import flow from '/@/router/routes/modules/demo/flow';
 import charts from '/@/router/routes/modules/demo/charts';
+import { isDevMode } from '/@/utils/env';
 
 interface PermissionState {
   // Permission code list
@@ -237,7 +238,8 @@ export const usePermissionStore = defineStore({
           // Dynamically introduce components
           // 动态引入组件
           routeList = transformObjToRoute(routeList);
-          routeList.unshift(dashboardKobh, charts, comp, flow, feat, page, setup);
+          routeList.unshift(homepageKobh);
+          if (isDevMode()) routeList.unshift(charts, comp, flow, feat, page, setup);
 
           //  Background routing to menu structure
           //  后台路由到菜单结构

@@ -1,4 +1,4 @@
-import type { UserInfo } from '/#/store';
+import type { UnreadMessage, UserInfo } from '/#/store';
 import type { ErrorMessageMode } from '/#/axios';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
@@ -7,7 +7,7 @@ import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { LoginParams } from '/@/api/sys/model/userModel';
-import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
+import { doLogout, getUserInfo, loginApi, getMessageUnreadApi } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '/@/router';
@@ -16,11 +16,14 @@ import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { isArray } from '/@/utils/is';
 import { h } from 'vue';
+import { Pausable, useIntervalFn } from '@vueuse/core';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
   roleList: RoleEnum[];
+  unread: Nullable<UnreadMessage>;
+  unreadTimer: Nullable<Pausable>;
   sessionTimeout?: boolean;
   lastUpdateTime: number;
 }
@@ -34,6 +37,10 @@ export const useUserStore = defineStore({
     token: undefined,
     // roleList
     roleList: [],
+    // unreadMessage
+    unread: null,
+    // unreadMessage timer
+    unreadTimer: null,
     // Whether the login expired
     sessionTimeout: false,
     // Last fetch time
@@ -48,6 +55,9 @@ export const useUserStore = defineStore({
     },
     getRoleList(): RoleEnum[] {
       return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
+    },
+    getUnreadMessage(): UnreadMessage {
+      return <UnreadMessage>this.unread || {};
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -70,6 +80,9 @@ export const useUserStore = defineStore({
       this.lastUpdateTime = new Date().getTime();
       setAuthCache(USER_INFO_KEY, info);
     },
+    setUnreadMessage(unread: UnreadMessage | null) {
+      this.unread = unread;
+    },
     setSessionTimeout(flag: boolean) {
       this.sessionTimeout = flag;
     },
@@ -77,6 +90,10 @@ export const useUserStore = defineStore({
       this.userInfo = null;
       this.token = '';
       this.roleList = [];
+      this.unread = null;
+      if (this.unreadTimer) {
+        this.unreadTimer.pause();
+      }
       this.sessionTimeout = false;
     },
     /**
@@ -128,12 +145,26 @@ export const useUserStore = defineStore({
     },
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
+      // start the timer at the first time
+      if (!this.unreadTimer) {
+        const reload = async () => {
+          const unread = await getMessageUnreadApi();
+          this.setUnreadMessage(unread);
+        };
+        const ONE_SECONDS = 1000;
+        const { pause, resume } = useIntervalFn(reload, 300 * ONE_SECONDS, {
+          immediateCallback: true,
+        });
+        this.unreadTimer = { isActive: true, pause, resume };
+      } else {
+        // timer already there, resume it
+        this.unreadTimer.resume();
+      }
       const userInfo0 = await getUserInfo();
-
       // re-format, make UserInfo
       const userInfo: UserInfo = {
         userId: userInfo0.userId,
-        username: userInfo0.username,
+        username: userInfo0.userName,
         realName: userInfo0.name,
         avatar: userInfo0.avatar,
         desc: userInfo0.introduction,
@@ -172,6 +203,11 @@ export const useUserStore = defineStore({
       this.setToken(undefined);
       this.setSessionTimeout(false);
       this.setUserInfo(null);
+      this.setUnreadMessage(null);
+      if (this.unreadTimer) {
+        this.unreadTimer.pause();
+      }
+
       goLogin && router.push(PageEnum.BASE_LOGIN);
     },
 

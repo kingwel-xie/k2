@@ -368,7 +368,7 @@ func (e SysUser) InsetAvatar(c *gin.Context) {
 		e.Error(err)
 		return
 	}
-	e.OK(req.Avatar, "修改成功")
+	e.OK(req.UserId, "修改成功")
 }
 
 // GetProfile
@@ -452,4 +452,36 @@ func (e SysUser) GetInfo(c *gin.Context) {
 	mp["deptId"] = sysUser.DeptId
 	mp["name"] = sysUser.NickName
 	e.OK(mp, "")
+}
+
+// ListNoCheck
+// @Summary 列表用户
+// @Description 列表用户
+// @Tags 用户
+// @Param username query string false "username"
+// @Success 200 {string} {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/user/list [get]
+// @Security Bearer
+func (e SysUser) ListNoCheck(c *gin.Context) {
+	s := service.SysUser{}
+	req := dto.SysUserGetPageReq{}
+	err := e.MakeContext(c).
+		Bind(&req).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	list := make([]models.SysUser, 0)
+	var count int64
+
+	err = s.ListNoCheck(&req, &list, &count)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
 }

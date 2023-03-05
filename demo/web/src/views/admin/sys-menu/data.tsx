@@ -31,7 +31,8 @@ export const columns: BasicColumn[] = [
     width: 220,
     align: 'left',
     customRender: ({ record }) => {
-      if (!record.permission || !record.sysApi) return record.permission;
+      if (!record.permission || !record.sysApi || record.sysApi.length === 0)
+        return record.permission;
       // @ts-ignore
       return <ApiDetail data={record} />;
     },

@@ -77,6 +77,7 @@
   // const [registerDrawer, { openDrawer }] = useDrawer();
   const [registerModal, { openModal }] = useModal();
   const [registerTable, { reload, updateTableDataRecord }] = useTable({
+    name: 'SysDictTypeManage.MainTable',
     title: '字典类型列表',
     api: getSysDictTypeList,
     columns,

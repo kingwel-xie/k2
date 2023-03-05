@@ -54,3 +54,10 @@ export interface BeforeMiniState {
   menuMode?: MenuModeEnum;
   menuType?: MenuTypeEnum;
 }
+
+export interface UnreadMessage {
+  numNotices: number;
+  noticeList: any[];
+  numMessages: number;
+  messageList: any[];
+}

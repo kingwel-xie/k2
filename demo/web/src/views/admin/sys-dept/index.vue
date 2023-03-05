@@ -55,6 +55,7 @@
       const { t } = useI18n();
       const [registerModal, { openModal }] = useModal();
       const [registerTable, { reload, updateTableDataRecord }] = useTable({
+        name: 'SysDeptManage.MainTable',
         title: '部门列表',
         api: getDeptList,
         columns,

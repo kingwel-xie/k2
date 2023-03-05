@@ -26,4 +26,11 @@ export default {
 
   modalAddText: '新增',
   modalEditText: '编辑：',
+  resetPwdText: '复位密码',
+
+  newMessage: '新消息',
+  sentMessage: '已发送消息',
+  loadMore: '加载更多...',
+  replyMessage: '回复消息',
+  copied: `复制了 '{0}'`,
 };

@@ -18,6 +18,7 @@ import { defHttp } from '/@/utils/http/axios';
 enum Api {
   AccountOp = '/v1/sys-user',
   setAccountStatus = '/v1/sys-user/status',
+  AccountPwdReset = '/v1/sys-user/pwd/reset',
   IsAccountExist = '/v1/check-existence',
   DeptOp = '/v1/dept',
   DeptTree = '/v1/deptTree',
@@ -25,7 +26,8 @@ enum Api {
   MenuOp = '/v1/menu',
   MenuTree = '/v1/roleMenuTreeSelect/0',
   RoleOp = '/v1/role',
-  GetAllRoleList = RoleOp,
+  ListRoleNoCheckOp = '/v1/role-list',
+  ListAccountNoCheckOp = '/v1/user/list',
 }
 
 // sys-dept ////
@@ -66,11 +68,8 @@ export const deleteMenuEntry = (params: any) =>
 export const getRoleListByPage = (params?: RolePageParams) =>
   defHttp.get<RolePageListGetResultModel>({ url: Api.RoleOp, params });
 
-export const getAllRoleList = (params?: RoleParams) =>
-  defHttp.get<RoleListGetResultModel>({
-    url: Api.GetAllRoleList,
-    params: Object.assign({ pageIndex: 1, pageSize: -1 }, params),
-  });
+export const listRoleNoCheck = (params?: RoleParams) =>
+  defHttp.get<RoleListGetResultModel>({ url: Api.ListRoleNoCheckOp, params });
 
 export const getRoleByKey = (id: number) =>
   defHttp.get<RoleListItem>({ url: Api.RoleOp + '/' + id });
@@ -89,6 +88,9 @@ export const setRoleStatus = (id: number, status: string) =>
 // user ////
 export const getAccountList = (params: AccountParams) =>
   defHttp.get<AccountListGetResultModel>({ url: Api.AccountOp, params });
+
+export const listAccountNoCheck = (params?: AccountParams) =>
+  defHttp.get<AccountListGetResultModel>({ url: Api.ListAccountNoCheckOp, params });
 
 export const isAccountExist = (username: string) =>
   defHttp.get(
@@ -110,3 +112,6 @@ export const updateAccountEntry = (params?: any) =>
 
 export const deleteAccountEntry = (params: any) =>
   defHttp.delete<any>({ url: Api.AccountOp, params: { ids: [params.userId] } });
+
+export const resetUserPwd = (userId: number, password: string) =>
+  defHttp.put<any>({ url: Api.AccountPwdReset, params: { userId, password } });

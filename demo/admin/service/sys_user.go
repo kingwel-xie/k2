@@ -31,9 +31,24 @@ func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, coun
 	return err
 }
 
+// ListNoCheck 获取SysUser列表, NoCheck
+func (e *SysUser) ListNoCheck(c *dto.SysUserGetPageReq, list *[]models.SysUser, count *int64) error {
+	err := e.Orm.
+		Scopes(
+			service.Permission(models.SysUser{}.TableName(), e.Identity),
+			cDto.MakeCondition(c.GetNeedSearch()),
+		).
+		Select("UserId", "Username", "NickName").
+		Find(list).Limit(-1).Offset(-1).
+		Count(count).Error
+
+	return err
+}
+
 // Get 获取SysUser对象
 func (e *SysUser) Get(d *dto.SysUserById, model *models.SysUser) error {
-	err := e.Orm.Scopes(
+	err := e.Orm.Preload("Dept").Preload("Role").
+		Scopes(
 		service.Permission(model.TableName(), e.Identity),
 	).First(model, d.GetId()).Error
 	return err

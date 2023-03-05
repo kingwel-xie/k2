@@ -45,16 +45,22 @@
         <template v-if="column.key === 'action'">
           <TableAction
             :actions="[
-              {
-                icon: 'ant-design:info-circle-outlined',
-                tooltip: t('common.detailText'),
-                onClick: handleView.bind(null, record),
-              },
+              // {
+              //   icon: 'ant-design:info-circle-outlined',
+              //   tooltip: t('common.detailText'),
+              //   onClick: handleView.bind(null, record),
+              // },
               {
                 icon: 'ant-design:form-outlined',
                 tooltip: t('common.editText'),
                 onClick: handleEdit.bind(null, record),
                 auth: 'admin:sysUser:edit',
+              },
+              {
+                icon: 'ant-design:key-outlined',
+                tooltip: t('common.resetPwdText'),
+                onClick: handleResetPwd.bind(null, record),
+                auth: 'admin:sysUser:resetPassword',
               },
               {
                 icon: 'ant-design:delete-outlined',
@@ -73,145 +79,140 @@
       </template>
     </BasicTable>
     <EditModal @register="registerModal" @success="handleSuccess" />
+    <ModalInput ref="passwordInputRef" title="请输入新密码" label="密码" inputType="Input" />
   </PageWrapper>
 </template>
-<script lang="ts">
-  import { defineComponent, reactive } from 'vue';
+<script lang="ts" setup name="SysUserManage">
+  import { reactive, ref, Ref, unref } from 'vue';
   import { computed } from 'vue';
+  import { cloneDeep } from 'lodash-es';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { Dropdown, DropMenu } from '/@/components/Dropdown';
-  import { deleteAccountEntry, getAccountByKey, getAccountList } from '/@/api/admin/system';
-  import { PageWrapper } from '/@/components/Page';
-  import DeptTree from './DeptTree.vue';
-
+  import { useMessage } from '/@/hooks/web/useMessage';
   import { useModal } from '/@/components/Modal';
-  import EditModal from './EditModal.vue';
-
-  import { columns, excelHeader, searchFormSchema } from './data';
+  import { PageWrapper } from '/@/components/Page';
   import { useGo } from '/@/hooks/web/usePage';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { export2Excel } from '/@/utils/export';
-  import { cloneDeep } from 'lodash-es';
+  import { ModalInput, PromptModalAction } from '/@/views/kobh/components/ModalInput';
+  import DeptTree from './DeptTree.vue';
+  import EditModal from './EditModal.vue';
+  import { columns, excelHeader, searchFormSchema } from './data';
+  import {
+    deleteAccountEntry,
+    getAccountByKey,
+    getAccountList,
+    resetUserPwd,
+  } from '/@/api/admin/system';
 
-  export default defineComponent({
-    name: 'SysUserManage',
-    components: { BasicTable, Dropdown, PageWrapper, DeptTree, EditModal, TableAction },
-    setup() {
-      const { t } = useI18n();
-      const go = useGo();
-      const [registerModal, { openModal }] = useModal();
-      const searchInfo = reactive<Recordable>({});
-      const [
-        registerTable,
-        { reload, updateTableDataRecord, getDataSource, getSelectRows, fetchOnly },
-      ] = useTable({
-        title: '用户账号列表',
-        api: getAccountList,
-        rowKey: 'userId',
-        columns,
-        formConfig: {
-          labelWidth: 100,
-          baseColProps: { span: 6 },
-          schemas: searchFormSchema,
-          autoSubmitOnEnter: true,
-        },
-        useSearchForm: true,
-        showTableSetting: true,
-        bordered: true,
-        handleSearchInfoFn(info) {
-          console.log('handleSearchInfoFn', info);
-          return info;
-        },
-        actionColumn: {
-          width: 120,
-          title: t('common.actionText'),
-          dataIndex: 'action',
-        },
-      });
+  const { t } = useI18n();
+  const go = useGo();
+  const { createMessage } = useMessage();
+  const [registerModal, { openModal }] = useModal();
+  const searchInfo = reactive<Recordable>({});
+  const passwordInputRef: Ref<Nullable<PromptModalAction>> = ref(null);
 
-      const hasSelected = computed<boolean>(() => {
-        try {
-          return getSelectRows().length > 0;
-        } catch {
-          return false;
-        }
-      });
-
-      function handleCreate() {
-        openModal(true, {
-          isUpdate: false,
-        });
-      }
-
-      function handleEdit(record: Recordable) {
-        openModal(true, {
-          record,
-          isUpdate: true,
-        });
-      }
-
-      async function handleDelete(record: Recordable) {
-        await deleteAccountEntry(record);
-        await reload();
-      }
-
-      async function handleSuccess(isUpdate: boolean, record: Recordable) {
-        if (isUpdate) {
-          // 演示不刷新表格直接更新内部数据。
-          // 注意：updateTableDataRecord要求表格的rowKey属性为string并且存在于每一行的record的keys中
-          const data = await getAccountByKey(record.userId);
-          updateTableDataRecord(record.userId, data);
-        } else {
-          await reload();
-        }
-      }
-
-      function handleSelect(deptId = '') {
-        searchInfo.deptId = deptId;
-        reload();
-      }
-
-      function handleView(record: Recordable) {
-        go('/admin/account_detail/' + record.username);
-      }
-
-      function handleMenuEvent(menu: DropMenu) {
-        if (menu.event === 'selected' || menu.event === 'current') {
-          handleExport(menu.event);
-        }
-      }
-
-      async function handleExport(event) {
-        let data = [];
-        switch (event) {
-          case 'selected':
-            data = cloneDeep(getSelectRows());
-            break;
-          case 'current':
-            data = cloneDeep(getDataSource());
-            break;
-          case 'all':
-            data = (await fetchOnly()) || [];
-            break;
-        }
-        export2Excel(excelHeader, columns, data, '用户账号.xlsx');
-      }
-
-      return {
-        registerTable,
-        registerModal,
-        handleCreate,
-        handleEdit,
-        handleDelete,
-        handleSuccess,
-        handleSelect,
-        handleView,
-        searchInfo,
-        t,
-        handleMenuEvent,
-        handleExport,
-        hasSelected,
-      };
+  const [
+    registerTable,
+    { reload, updateTableDataRecord, getDataSource, getSelectRows, fetchOnly },
+  ] = useTable({
+    name: 'SysUserManage.MainTable',
+    title: '用户账号列表',
+    api: getAccountList,
+    rowKey: 'userId',
+    columns,
+    formConfig: {
+      labelWidth: 100,
+      baseColProps: { span: 6 },
+      schemas: searchFormSchema,
+      autoSubmitOnEnter: true,
+    },
+    useSearchForm: true,
+    showTableSetting: true,
+    bordered: true,
+    handleSearchInfoFn(info) {
+      console.log('handleSearchInfoFn', info);
+      return info;
+    },
+    actionColumn: {
+      width: 120,
+      title: t('common.actionText'),
+      dataIndex: 'action',
     },
   });
+
+  const hasSelected = computed<boolean>(() => {
+    try {
+      return getSelectRows().length > 0;
+    } catch {
+      return false;
+    }
+  });
+
+  function handleCreate() {
+    openModal(true, {
+      isUpdate: false,
+    });
+  }
+
+  function handleEdit(record: Recordable) {
+    openModal(true, {
+      record,
+      isUpdate: true,
+    });
+  }
+
+  function handleResetPwd(record: Recordable) {
+    unref(passwordInputRef)?.openModal(async (v) => {
+      await resetUserPwd(record.userId, v.input);
+      createMessage.success('密码重置成功');
+    });
+  }
+
+  async function handleDelete(record: Recordable) {
+    await deleteAccountEntry(record);
+    await reload();
+  }
+
+  async function handleSuccess(isUpdate: boolean, record: Recordable) {
+    if (isUpdate) {
+      // 演示不刷新表格直接更新内部数据。
+      // 注意：updateTableDataRecord要求表格的rowKey属性为string并且存在于每一行的record的keys中
+      const data = await getAccountByKey(record.userId);
+      updateTableDataRecord(record.userId, data);
+    } else {
+      await reload();
+    }
+  }
+
+  function handleSelect(deptId = '') {
+    searchInfo.deptId = deptId;
+    reload();
+  }
+
+  function _handleView(record: Recordable) {
+    go('/admin/account_detail/' + record.username);
+  }
+
+  function handleMenuEvent(menu: DropMenu) {
+    if (menu.event === 'selected' || menu.event === 'current') {
+      handleExport(menu.event);
+    }
+  }
+
+  async function handleExport(event) {
+    let data = [];
+    switch (event) {
+      case 'selected':
+        data = cloneDeep(getSelectRows());
+        break;
+      case 'current':
+        data = cloneDeep(getDataSource());
+        break;
+      case 'all':
+        data = (await fetchOnly()) || [];
+        break;
+    }
+    export2Excel(excelHeader, columns, data, '用户账号.xlsx');
+  }
 </script>

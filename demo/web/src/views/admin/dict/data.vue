@@ -63,6 +63,7 @@
 
   const [registerModal, { openModal }] = useModal();
   const [registerTable, { reload, updateTableDataRecord }] = useTable({
+    name: 'SysDictDataManage.MainTable',
     title: '字典数据列表',
     api: getSysDictDataList,
     columns,

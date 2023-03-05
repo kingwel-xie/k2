@@ -2,7 +2,7 @@
  * @Description:It is troublesome to implement radio button group in the form. So it is extracted independently as a separate component
 -->
 <template>
-  <RadioGroup v-bind="attrs" v-model:value="state" button-style="solid" @change="handleChange">
+  <RadioGroup v-bind="attrs" v-model:value="state" button-style="solid">
     <template v-for="item in getOptions" :key="`${item.value}`">
       <RadioButton v-if="props.isBtn" :value="item.value" :disabled="item.disabled">
         {{ item.label }}
@@ -14,9 +14,8 @@
   </RadioGroup>
 </template>
 <script lang="ts">
-  import { defineComponent, PropType, ref, computed, watch } from 'vue';
+  import { defineComponent, PropType, computed } from 'vue';
   import { Radio } from 'ant-design-vue';
-  import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { toOptions, useDictStoreWithOut } from '/@/store/modules/dictionary';
@@ -43,11 +42,18 @@
     },
     emits: ['change', 'update:value'],
     setup(props, { emit }) {
-      const emitData = ref<any[]>([]);
       const attrs = useAttrs();
       const { t } = useI18n();
       // Embedded in the form, just use the hook binding to perform form verification
-      const [state] = useRuleFormItem(props);
+      const state = computed({
+        get() {
+          return props.value;
+        },
+        set(value) {
+          emit('change', value);
+          emit('update:value', value);
+        },
+      });
 
       const getOptions = computed(() => {
         const { dictName, filter } = props;
@@ -59,18 +65,7 @@
         return toOptions(dict);
       });
 
-      watch(
-        () => state.value,
-        (v) => {
-          emit('update:value', v);
-        },
-      );
-
-      function handleChange(_, ...args) {
-        emitData.value = args;
-      }
-
-      return { state, getOptions, attrs, t, handleChange, props };
+      return { state, getOptions, attrs, t, props };
     },
   });
 </script>

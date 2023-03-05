@@ -26,4 +26,11 @@ export default {
 
   modalAddText: 'Add',
   modalEditText: 'Edit: ',
+  resetPwdText: 'Reset password',
+
+  newMessage: 'New message',
+  sentMessage: 'Message sent',
+  loadMore: 'Load more...',
+  replyMessage: 'Reply message...',
+  copied: `Copied '{0}'`,
 };

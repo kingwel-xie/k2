@@ -31,6 +31,7 @@
   const { t } = useI18n();
   const [registerModal, { openModal }] = useModal();
   const [registerTable, { reload, updateTableDataRecord }] = useTable({
+    name: 'SysApiManage.MainTable',
     title: 'API列表',
     api: getSysApiList,
     columns,

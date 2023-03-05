@@ -137,6 +137,8 @@ export interface TableSetting {
 }
 
 export interface BasicTableProps<T = any> {
+  // unique name, optional, columns configuration in local storage will be enabled if present
+  name?: string;
   // 可编辑
   editable?: boolean;
   // 点击行选中
@@ -431,6 +433,8 @@ export interface BasicColumn extends ColumnProps<Recordable> {
 
   slots?: Recordable;
 
+  // Whether to hide the column by admin, it can be displayed in the column configuration
+  adminHidden?: boolean;
   // Whether to hide the column by default, it can be displayed in the column configuration
   defaultHidden?: boolean;
 

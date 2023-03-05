@@ -1,7 +1,12 @@
 <template>
   <ScrollContainer>
-    <div ref="wrapperRef" :class="prefixCls">
-      <Tabs tab-position="left" :tabBarStyle="tabBarStyle">
+    <div ref="wrapperRef" class="xl:flex">
+      <Tabs
+        tab-position="left"
+        :tabBarStyle="tabBarStyle"
+        class="xl:w-3/4 w-full"
+        :class="prefixCls"
+      >
         <template v-for="item in settingList" :key="item.key">
           <TabPane :tab="item.name">
             <component :is="item.component" />

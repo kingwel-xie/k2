@@ -6,9 +6,8 @@
   </Cascader>
 </template>
 <script lang="ts" setup>
-  import { computed, PropType, ref, unref, watch } from 'vue';
+  import { computed, PropType, watch } from 'vue';
   import { Cascader, Tag } from 'ant-design-vue';
-  import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { toOptions, useDictStoreWithOut } from '/@/store/modules/dictionary';
 
   interface Option {
@@ -32,9 +31,15 @@
   });
   const emit = defineEmits(['change', 'update:value', 'defaultChange']);
 
-  const emitData = ref<any[]>([]);
-  // Embedded in the form, just use the hook binding to perform form verification
-  const [state] = useRuleFormItem(props, 'value', 'change', emitData);
+  const state = computed({
+    get() {
+      return props.value;
+    },
+    set(value) {
+      emit('change', value);
+      emit('update:value', value);
+    },
+  });
 
   const getOptions = computed<Option[]>(() => {
     const { dictName, filter } = props;
@@ -54,17 +59,6 @@
   );
 
   function handleChange(keys, args) {
-    emitData.value = keys;
     emit('defaultChange', keys, args);
-  }
-
-  function handleRenderDisplay({ labels, selectedOptions }) {
-    if (unref(emitData).length === selectedOptions.length) {
-      return labels.join(' / ');
-    }
-    if (props.displayRenderArray) {
-      return props.displayRenderArray.join(' / ');
-    }
-    return '';
   }
 </script>

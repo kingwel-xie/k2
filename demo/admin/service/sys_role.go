@@ -31,6 +31,21 @@ func (e *SysRole) GetPage(c *dto.SysRoleGetPageReq, list *[]models.SysRole, coun
 	return err
 }
 
+// ListNoCheck 获取SysRole列表，NOCHECK
+func (e *SysRole) ListNoCheck(c *dto.SysRoleGetPageReq, list *[]models.SysRole, count *int64) error {
+	var data models.SysRole
+
+	err := e.Orm.Model(&data).
+		Scopes(
+			cDto.MakeCondition(c.GetNeedSearch()),
+		).
+		Select("RoleId", "RoleName", "RoleKey", "Status").
+		Find(list).Limit(-1).Offset(-1).
+		Count(count).Error
+
+	return err
+}
+
 // Get 获取SysRole对象
 func (e *SysRole) Get(d *dto.SysRoleGetReq, model *models.SysRole) error {
 	err := e.Orm.First(model, d.GetId()).Error

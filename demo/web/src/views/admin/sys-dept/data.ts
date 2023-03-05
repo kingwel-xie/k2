@@ -120,6 +120,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '状态',
     field: 'status',
+    defaultValue: '2',
     component: 'DictRadioGroup',
     componentProps: {
       dictName: 'sys_normal_disable',

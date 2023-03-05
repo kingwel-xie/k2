@@ -71,6 +71,7 @@ export default {
     signInFormTitle: 'Sign in',
     signUpFormTitle: 'Sign up',
     forgetFormTitle: 'Reset password',
+    captcha: 'Captcha',
 
     signInTitle: 'Backstage management system',
     signInDesc: 'Enter your personal details and get started!',

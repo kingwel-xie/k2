@@ -251,3 +251,37 @@ func (e SysRole) Update2DataScope(c *gin.Context) {
 	}
 	e.OK(nil, "操作成功")
 }
+
+// GetAll
+// @Summary 角色列表数据
+// @Description Get JSON
+// @Tags 角色/Role
+// @Param roleName query string false "roleName"
+// @Param status query string false "status"
+// @Param roleKey query string false "roleKey"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/role-list [get]
+// @Security Bearer
+func (e SysRole) GetAll(c *gin.Context) {
+	s := service.SysRole{}
+	req := dto.SysRoleGetPageReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.Form).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	list := make([]models.SysRole, 0)
+	var count int64
+
+	err = s.ListNoCheck(&req, &list, &count)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
+}

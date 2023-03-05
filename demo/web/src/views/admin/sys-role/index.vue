@@ -18,7 +18,7 @@
                 icon: 'ant-design:form-outlined',
                 tooltip: t('common.editText'),
                 onClick: handleEdit.bind(null, record),
-                auth: 'admin:sysRole:edit',
+                auth: 'admin:sysRole:update',
               },
               {
                 icon: 'ant-design:delete-outlined',
@@ -55,6 +55,7 @@
       const { t } = useI18n();
       const [registerModal, { openModal }] = useModal();
       const [registerTable, { reload, updateTableDataRecord }] = useTable({
+        name: 'SysRoleManage.MainTable',
         title: '角色列表',
         api: getRoleListByPage,
         columns,

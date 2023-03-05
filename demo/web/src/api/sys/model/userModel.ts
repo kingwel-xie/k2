@@ -33,7 +33,7 @@ export interface GetUserInfoModel {
   // 用户id
   userId: string | number;
   // 用户名
-  username: string;
+  userName: string;
   // 真实名字
   name: string;
   // 头像
@@ -50,3 +50,10 @@ export type SetUserPasswordParams = {
   oldPassword: string;
   newPassword: string;
 };
+
+export interface CaptchaResModel {
+  code: number;
+  data: string;
+  id: string;
+  msg?: string;
+}

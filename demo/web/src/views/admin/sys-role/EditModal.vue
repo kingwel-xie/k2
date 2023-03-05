@@ -82,41 +82,44 @@
     try {
       const values = await validate();
 
-      // 目前被选中的菜单节点, v-model of the 'menu' field
-      const checkedKeys = toRaw(values.menu);
-      // kingwel: have to figure out all halfCheckedKeys, backend needs them
-      const findNode = (items, xx, path) => {
-        for (let i = 0; i < items.length; i++) {
-          if (items[i].children) {
-            path.push(items[i].id);
-            const rr = findNode(items[i].children, xx, path);
-            if (rr) {
-              return true;
-            }
-            path.pop();
-          } else {
-            if (items[i].id === xx) {
-              return true;
+      // 'admin' doesn't have menu, so just ignore the menuIds
+      if (values.menu) {
+        // 目前被选中的菜单节点, v-model of the 'menu' field
+        const checkedKeys = toRaw(values.menu);
+        // kingwel: have to figure out all halfCheckedKeys, backend needs them
+        const findNode = (items, xx, path) => {
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].children) {
+              path.push(items[i].id);
+              const rr = findNode(items[i].children, xx, path);
+              if (rr) {
+                return true;
+              }
+              path.pop();
+            } else {
+              if (items[i].id === xx) {
+                return true;
+              }
             }
           }
-        }
-        return false;
-      };
+          return false;
+        };
 
-      const halfCheckedKeys = [];
-      (checkedKeys as number[]).forEach((id) => {
-        const pp = [];
-        if (findNode(treeData.value, id, pp)) {
-          pp.forEach((pid) => {
-            if (halfCheckedKeys.indexOf(pid) === -1 && checkedKeys.indexOf(pid) === -1) {
-              halfCheckedKeys.push(pid);
-            }
-          });
-        }
-      });
-      // console.log('xxx', halfCheckedKeys, checkedKeys);
-      values.menuIds = halfCheckedKeys.concat(checkedKeys as any);
-      delete values.menu;
+        const halfCheckedKeys = [];
+        (checkedKeys as number[]).forEach((id) => {
+          const pp = [];
+          if (findNode(treeData.value, id, pp)) {
+            pp.forEach((pid) => {
+              if (halfCheckedKeys.indexOf(pid) === -1 && checkedKeys.indexOf(pid) === -1) {
+                halfCheckedKeys.push(pid);
+              }
+            });
+          }
+        });
+        // console.log('xxx', halfCheckedKeys, checkedKeys);
+        values.menuIds = halfCheckedKeys.concat(checkedKeys as any);
+        delete values.menu;
+      }
 
       setModalProps({ confirmLoading: true });
       if (!unref(isUpdate)) {

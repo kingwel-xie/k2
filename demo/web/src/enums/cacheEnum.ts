@@ -29,3 +29,5 @@ export enum CacheTypeEnum {
   SESSION,
   LOCAL,
 }
+
+export const TABLE_COLUMN_CFG_KEY_ = 'TABLE_COLUMN_CFG_KEY__';

@@ -19,7 +19,7 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: 'roleSort',
-    width: 50,
+    width: 70,
   },
   {
     title: '状态',
@@ -104,6 +104,7 @@ export const formSchema: FormSchema[] = [
   {
     label: '状态',
     field: 'status',
+    defaultValue: '2',
     component: 'DictRadioGroup',
     componentProps: {
       dictName: 'sys_normal_disable',

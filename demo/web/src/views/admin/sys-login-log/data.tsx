@@ -42,7 +42,7 @@ export const columns: BasicColumn[] = [
     title: '登录时间',
     dataIndex: 'loginTime',
     width: 180,
-    format: 'datetime|flex',
+    format: 'datetime|full',
   },
   {
     title: '备注',

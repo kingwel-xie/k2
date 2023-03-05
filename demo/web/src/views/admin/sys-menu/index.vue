@@ -58,12 +58,13 @@
   import { useI18n } from '/@/hooks/web/useI18n';
 
   export default defineComponent({
-    name: 'MenuManagement',
+    name: 'SysMenuManage',
     components: { BasicTable, EditDrawer, TableAction },
     setup() {
       const { t } = useI18n();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [registerTable, { reload, expandAll }] = useTable({
+        name: 'SysMenuManage.MainTable',
         title: '菜单列表',
         api: getMenuList,
         columns,
