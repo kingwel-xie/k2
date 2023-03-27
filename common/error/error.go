@@ -82,6 +82,7 @@ func (e bizError) Wrapf(format string, a ...interface{}) *bizError {
 }
 
 func (e bizError) Debugf(format string, a ...interface{}) *bizError {
+	e.debug = true
 	e.err = fmt.Errorf(format, a...)
 	return &e
 }
