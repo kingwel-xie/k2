@@ -40,10 +40,10 @@ func CustomError(c *gin.Context) {
 						"code": statusCode,
 						"msg":  p[2],
 					})
+					return
 				}
-			default:
-				panic(err)
 			}
+			panic(err)
 		}
 	}()
 	c.Next()
