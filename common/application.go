@@ -1,6 +1,7 @@
 package common
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/kingwel-xie/k2/core/storage/cache"
 	"net/http"
 	"sort"
@@ -25,6 +26,7 @@ type Application struct {
 	db      *gorm.DB
 	casbin  *casbin.SyncedEnforcer
 	crontab *cronjob.CronJob
+	mw *jwt.GinJWTMiddleware
 	engine  http.Handler
 	cache   storage.AdapterCache
 	queue   storage.AdapterQueue
@@ -79,6 +81,17 @@ func (e *Application) SetEngine(engine http.Handler) {
 func (e *Application) GetEngine() http.Handler {
 	return e.engine
 }
+
+// SetEngine 设置mw
+func (e *Application) SetMiddleware(mw *jwt.GinJWTMiddleware) {
+	e.mw = mw
+}
+
+// GetEngine 获取mw
+func (e *Application) GetMiddleware() *jwt.GinJWTMiddleware {
+	return e.mw
+}
+
 
 type routerSlice []Router
 
