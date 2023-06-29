@@ -40,6 +40,8 @@ func CustomError(c *gin.Context) {
 						"code": statusCode,
 						"msg":  p[2],
 					})
+				} else {
+					panic(err)
 				}
 			default:
 				panic(err)
