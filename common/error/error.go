@@ -7,37 +7,38 @@ import (
 )
 
 var (
-	ErrBadRequest = New(400, "错误的请求参数", "bad request")
-	ErrInternal = New(500, "系统内部错误", "internal server error")
-	ErrUnimplemented = New(501, "功能尚未实现", "not implemented yet")
-	ErrOssUnavailable = New(505, "OSS不可用", "OSS not available")
-	ErrCodeExisted = New(550, "已存在相同编码", "code existed")
-	ErrCodeNotFound = New(551, "未找到该编码", "code not found")
-	ErrWrongPassword = New(560, "原密码错误", "wrong password")
+	ErrBadRequest       = New(400, "错误的请求参数", "bad request")
+	ErrInternal         = New(500, "系统内部错误", "internal server error")
+	ErrUnimplemented    = New(501, "功能尚未实现", "not implemented yet")
+	ErrOssUnavailable   = New(505, "OSS不可用", "OSS not available")
+	ErrCodeExisted      = New(550, "已存在相同编码", "code existed")
+	ErrCodeNotFound     = New(551, "未找到该编码", "code not found")
+	ErrWrongPassword    = New(560, "原密码错误", "wrong password")
 	ErrMismatchPassword = New(561, "两次输入的密码不匹配", "passwords mismatch")
-	ErrDatabase = New(562, "数据库内部错误", "db error")
-	ErrNoSuchObject = New(563, "对象不存在", "no such object")
+	ErrDatabase         = New(562, "数据库内部错误", "db error")
+	ErrNoSuchObject     = New(563, "对象不存在", "no such object")
 	ErrPermissionDenied = New(564, "对象不存在或无权查看", "no such object or no permission")
 )
 
 type bizError struct {
-	messages map[string]string
-	code int
-	err error
+	messages        map[string]string
+	code            int
+	err             error
+	noDetailsOnProd bool
 }
 
 func New(code int, cnMsg string, enMsg string) *bizError {
 	return &bizError{
 		messages: map[string]string{
 			"__default__": enMsg,
-			"zh-cn": cnMsg,
-			"en": enMsg,
+			"zh-cn":       cnMsg,
+			"en":          enMsg,
 		},
-		code:     code,
+		code: code,
 	}
 }
 
-func (e *bizError) AddMessage(lang, msg string)  {
+func (e *bizError) AddMessage(lang, msg string) {
 	e.messages[lang] = msg
 }
 
@@ -50,7 +51,7 @@ func (e *bizError) Message(mode string, lang string) string {
 	if !ok {
 		msg = e.messages["__default__"]
 	}
-	if mode != utils.ModeProd.String() {
+	if !(e.noDetailsOnProd && mode == utils.ModeProd.String()) {
 		msg = fmt.Sprintf("%s : %d", msg, e.code)
 		if e.err != nil {
 			msg += ": " + e.err.Error()
@@ -70,6 +71,18 @@ func (e bizError) Wrap(err error) *bizError {
 
 func (e bizError) Wrapf(format string, a ...interface{}) *bizError {
 	e.err = fmt.Errorf(format, a...)
+	return &e
+}
+
+func (e bizError) DevWrap(err error) *bizError {
+	e.err = err
+	e.noDetailsOnProd = true
+	return &e
+}
+
+func (e bizError) DevWrapf(format string, a ...interface{}) *bizError {
+	e.err = fmt.Errorf(format, a...)
+	e.noDetailsOnProd = true
 	return &e
 }
 
