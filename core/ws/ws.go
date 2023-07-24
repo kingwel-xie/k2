@@ -4,13 +4,11 @@ import (
 	"context"
 	"net/http"
 	"sync"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
 	"github.com/kingwel-xie/k2/core/logger"
-	"github.com/kingwel-xie/k2/core/utils"
 )
 
 var log = logger.Logger("ws")
@@ -298,7 +296,8 @@ func (manager *Manager) WsClient(c *gin.Context) {
 		return
 	}
 
-	log.Debugf("got token: %s", c.Query("token"))
+	// debug code
+	//log.Debugf("got token: %s", c.Query("token"))
 
 	client := &Client{
 		Id:         c.Param("id"),
@@ -312,9 +311,8 @@ func (manager *Manager) WsClient(c *gin.Context) {
 	manager.RegisterClient(client)
 	go client.Read(ctx)
 	go client.Write(ctx)
-	time.Sleep(time.Second * 1)
-
-	utils.FileMonitoringById(ctx, "tmp/test-ws.log", c.Param("id"), c.Param("channel"), SendOne)
+	//time.Sleep(time.Second * 1)
+	//utils.FileMonitoringById(ctx, "tmp/test-ws.log", c.Param("id"), c.Param("channel"), SendOne)
 }
 
 func (manager *Manager) UnWsClient(c *gin.Context) {
@@ -329,18 +327,18 @@ func (manager *Manager) UnWsClient(c *gin.Context) {
 	})
 }
 
-func SendGroup(msg []byte) {
-	WebsocketManager.SendGroup("leffss", []byte("{\"code\":200,\"data\":"+string(msg)+"}"))
+func SendGroup(group string, msg []byte) {
+	WebsocketManager.SendGroup(group, msg)
 	log.Debug(WebsocketManager.Info())
 }
 
 func SendAll(msg []byte) {
-	WebsocketManager.SendAll([]byte("{\"code\":200,\"data\":" + string(msg) + "}"))
+	WebsocketManager.SendAll(msg)
 	log.Debug(WebsocketManager.Info())
 }
 
 func SendOne(ctx context.Context, id string, group string, msg []byte) {
-	WebsocketManager.Send(ctx, id, group, []byte("{\"code\":200,\"data\":"+string(msg)+"}"))
+	WebsocketManager.Send(ctx, id, group, msg)
 	log.Debug(WebsocketManager.Info())
 }
 
