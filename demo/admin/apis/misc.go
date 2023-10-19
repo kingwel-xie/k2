@@ -9,6 +9,7 @@ import (
 	"admin/models"
 	"admin/service"
 	"admin/service/dto"
+	"net/url"
 )
 
 type TbxMisc struct {
@@ -85,7 +86,7 @@ func (e TbxMisc) LimitedDownload(c *gin.Context) {
 	var extraHeaders map[string]string
 	if len(req.Filename) > 0 {
 		extraHeaders = map[string]string{
-			"Content-Disposition": fmt.Sprintf("attachment; filename=%s", req.Filename),
+			"Content-Disposition": fmt.Sprintf("attachment; filename=%s", url.QueryEscape(req.Filename)),
 		}
 	}
 	e.Context.DataFromReader(200, req.ContentLength, req.ContentType, req.Reader, extraHeaders)

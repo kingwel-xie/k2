@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -139,7 +140,7 @@ func (e File) DownloadFile(c *gin.Context) {
 		var extraHeaders map[string]string
 		if len(req.As) > 0 {
 			extraHeaders = map[string]string{
-				"Content-Disposition": fmt.Sprintf("attachment; filename=%s", req.As),
+				"Content-Disposition": fmt.Sprintf("attachment; filename=%s", url.QueryEscape(req.As)),
 			}
 		}
 		types, ok1 := headers["Content-Type"]
