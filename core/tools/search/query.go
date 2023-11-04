@@ -95,6 +95,8 @@ func ResolveSearchQuery(driver string, q interface{}, condition Condition) {
 			}
 		case "in":
 			condition.SetWhere(fmt.Sprintf("`%s`.`%s` in (?)", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
+		case "not-in":
+			condition.SetWhere(fmt.Sprintf("`%s`.`%s` not in (?)", t.Table, t.Column), []interface{}{qValue.Field(i).Interface()})
 		case "isnull":
 			if !(qValue.Field(i).IsZero() && qValue.Field(i).IsNil()) {
 				condition.SetWhere(fmt.Sprintf("`%s`.`%s` isnull", t.Table, t.Column), make([]interface{}, 0))
