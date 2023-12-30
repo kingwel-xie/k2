@@ -9,13 +9,14 @@ export const columns: BasicColumn[] = [
   {
     title: '菜单名称',
     dataIndex: 'title',
-    width: 180,
+    fixed: 'left',
+    width: 200,
     align: 'left',
   },
   {
     title: '图标',
     dataIndex: 'icon',
-    width: 70,
+    width: 50,
     customRender: ({ record }) => {
       return h(Icon, { icon: record.iconAntd });
     },
@@ -23,7 +24,7 @@ export const columns: BasicColumn[] = [
   {
     title: '排序',
     dataIndex: 'sort',
-    width: 60,
+    width: 50,
   },
   {
     title: '权限标识',
@@ -41,18 +42,24 @@ export const columns: BasicColumn[] = [
     title: '组件路径',
     dataIndex: 'component',
     align: 'left',
-    width: 180,
+    width: 160,
   },
   {
     title: '路由地址',
     dataIndex: 'path',
     align: 'left',
-    width: 180,
+    width: 160,
+  },
+  {
+    title: '重定向',
+    dataIndex: 'redirect',
+    align: 'left',
+    width: 100,
   },
   {
     title: '可见',
     dataIndex: 'visible',
-    width: 80,
+    width: 70,
     customRender: ({ record }) => {
       if (isButton(record.menuType)) return '-';
       const status = record.visible;
@@ -66,17 +73,17 @@ export const columns: BasicColumn[] = [
     title: '缓存',
     dataIndex: 'noCache',
     format: 'bool|否,是',
-    width: 60,
+    width: 50,
   },
   {
     title: '创建时间',
     dataIndex: 'createdAt',
-    width: 180,
+    width: 140,
     format: 'datetime|flex',
   },
 ];
 
-// const isDir = (type: string) => type === 'M';
+const isDir = (type: string) => type === 'M';
 const isMenu = (type: string) => type === 'C';
 const isButton = (type: string) => type === 'F';
 
@@ -172,6 +179,13 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     required: true,
     ifShow: ({ values }) => !isButton(values.menuType),
+  },
+  {
+    field: 'redirect',
+    label: '重定向',
+    helpMessage: '访问此页面将重定向到指定的路径',
+    component: 'Input',
+    ifShow: ({ values }) => isDir(values.menuType),
   },
   {
     field: 'component',

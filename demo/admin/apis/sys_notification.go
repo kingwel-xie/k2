@@ -21,8 +21,9 @@ type SysNotification struct {
 // @Tags 通知
 // @Param targetType query string false "接收人类别"
 // @Param targets query string false "接收人"
-// @Param title query string false "内容"
+// @Param title query string false "标题"
 // @Param content query string false "内容"
+// @Param importance query string false "重要"
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
 // @Success 200 {object} response.Response{data=response.Page{list=[]models.SysNotification}} "{"code": 200, "data": [...]}"

@@ -10,7 +10,6 @@
 			"goField": "Id",
 			"goType": "int",
 			"columnComment": "编号",
-			"gormTag": "size:12",
 			"validator": "",
 			"isPk": true,
 			"autoInc": true,
@@ -48,26 +47,22 @@
 		{
 			"goField": "PoolSize",
 			"goType": "int",
-			"columnComment": "标的个数",
-			"gormTag": "size:12"
+			"columnComment": "标的个数"
 		},
 		{
 			"goField": "ItemLimit",
 			"goType": "int",
-			"columnComment": "每标的数量",
-			"gormTag": "size:12"
+			"columnComment": "每标的数量"
 		},
 		{
 			"goField": "CommissionRate",
 			"goType": "float64",
-			"columnComment": "交易费率",
-			"gormTag": "size:24"
+			"columnComment": "交易费率"
 		},
 		{
 			"goField": "RankingAlgo",
 			"goType": "int",
 			"columnComment": "算法",
-			"gormTag": "size:4",
 			"notOnUpdate": true
 		}
 	]

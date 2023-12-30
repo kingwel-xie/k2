@@ -10,7 +10,7 @@ type SysOutbox struct {
     Receivers    string `json:"receivers" gorm:"column:receiver;comment:收件人"`
     OriginId    int `json:"originId" gorm:"index;column:origin_id;comment:起始Id"`
     Title    string `json:"title" gorm:"size:127;column:title;comment:标题"`
-    Content    string `json:"content" gorm:"size:511;column:content;comment:内容"`
+    Content    string `json:"content" gorm:"column:content;comment:内容"`
     IsDraft    bool `json:"isDraft" gorm:"default:false;column:is_draft;comment:草稿"`
     models.ControlBy
     models.ModelTime

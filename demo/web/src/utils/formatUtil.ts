@@ -1,7 +1,7 @@
 /**
  * Dict tool
  */
-import { LABEL_KEY, useDictStoreWithOut } from '/@/store/modules/dictionary';
+import { useDictStoreWithOut, LABEL_KEY, VALUE_KEY } from '/@/store/modules/dictionary';
 import { formatToDate, formatToDateTime } from '/@/utils/dateUtil';
 import { isNumber } from '/@/utils/is';
 
@@ -16,8 +16,8 @@ export function formatFromDictLabel(label: string | undefined, dictName: string)
   if (!label) return '';
   const dictStore = useDictStoreWithOut();
   const list = dictStore.listRegistry[dictName] || [];
-  const entry = list.find((l) => l.label === label);
-  return (entry && entry.value) || '';
+  const entry = list.find((l) => l[LABEL_KEY] === label);
+  return (entry && entry[VALUE_KEY]) || '';
 }
 
 /**
@@ -33,6 +33,8 @@ export function tryParseJson<T = any>(str: string): T | undefined {
 
 // dict type
 const DICT_FORMAT_PREFIX = 'dict|';
+// dict ext type
+const DICT_VALUE_FORMAT_PREFIX = 'dict0|';
 // date type
 const DATE_FORMAT_PREFIX = 'datetime|';
 // bool type
@@ -47,6 +49,12 @@ export function formatValue(format: string, val: any): string {
       return val;
     }
     return formatToDictLabel(val, dictFormat);
+  } else if (format.startsWith(DICT_VALUE_FORMAT_PREFIX)) {
+    const dictFormat = format.replace(DICT_VALUE_FORMAT_PREFIX, '');
+    if (!dictFormat) {
+      return val;
+    }
+    return val + '/' + formatToDictLabel(val, dictFormat);
   } else if (format.startsWith(BOOL_FORMAT_PREFIX)) {
     const boolFormat = format.replace(BOOL_FORMAT_PREFIX, '');
     let trueOrFalse = boolFormat.split(/[,;/s]/) || [];

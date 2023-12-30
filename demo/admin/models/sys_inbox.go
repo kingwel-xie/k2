@@ -11,7 +11,8 @@ type SysInbox struct {
     Receiver    string `json:"receiver" gorm:"size:63;index;column:receiver;comment:收件人"`
     OriginId    int `json:"originId" gorm:"index;column:origin_id;comment:起始Id"`
     Title    string `json:"title" gorm:"size:127;column:title;comment:标题"`
-    Content    string `json:"content" gorm:"size:511;column:content;comment:内容"`
+    Content    string `json:"content" gorm:"column:content;comment:内容"`
+    Importance    string `json:"importance" gorm:"size:4;column:importance;comment:重要"`
     Read    bool `json:"read" gorm:"default:false;column:read;comment:已读标志"`
     models.ControlBy
     models.ModelTime

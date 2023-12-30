@@ -22,6 +22,7 @@
               },
               {
                 icon: 'ant-design:form-outlined',
+                color: 'warning',
                 tooltip: t('common.editText'),
                 onClick: handleEdit.bind(null, record),
                 auth: 'admin:sysMenu:edit',

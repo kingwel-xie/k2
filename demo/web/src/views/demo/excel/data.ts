@@ -35,6 +35,16 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+export const header = {
+  id: 'id',
+  name: '姓名',
+  age: '年龄',
+  no: '编号.',
+  address: '地址',
+  beginTime: '开始时间',
+  endTime: '结束时间',
+};
+
 export const data: any[] = (() => {
   const arr: any[] = [];
   for (let index = 0; index < 40; index++) {

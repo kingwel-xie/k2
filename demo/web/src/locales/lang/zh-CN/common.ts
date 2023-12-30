@@ -1,6 +1,7 @@
 export default {
   okText: '确认',
   closeText: '关闭',
+  copyText: '复制',
   cancelText: '取消',
   loadingText: '加载中...',
   addText: '新增',
@@ -18,6 +19,8 @@ export default {
   inputText: '请输入',
   chooseText: '请选择',
 
+  loginOmsText: '登录OMS',
+
   redo: '刷新',
   back: '返回',
 
@@ -33,4 +36,13 @@ export default {
   loadMore: '加载更多...',
   replyMessage: '回复消息',
   copied: `复制了 '{0}'`,
+
+  inbox: {
+    markAll: '全部标记为已读',
+    prev: '上一条',
+    next: '下一条',
+    read: '已读',
+    unread: '未读',
+    from: '来自于',
+  },
 };

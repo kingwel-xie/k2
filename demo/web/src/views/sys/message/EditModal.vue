@@ -3,18 +3,22 @@
     v-bind="$attrs"
     @register="registerModal"
     :title="title"
-    width="550px"
+    width="980px"
     @ok="handleSubmit"
   >
     <BasicForm @register="registerForm">
       <!--        <Select v-model:value="model[field]" :options="sysUsers" mode="multiple" />-->
       <!--      </template>-->
+      <template #content="{ model, field }">
+        <Tinymce v-model:modelValue="model[field]" />
+      </template>
     </BasicForm>
   </BasicModal>
 </template>
 <script lang="ts" setup>
   import { ref } from 'vue';
-  import { BasicForm, useForm } from '/@/components/Form/index';
+  import { BasicForm, useForm } from '/@/components/Form';
+  import { Tinymce } from '/@/components/Tinymce';
   import { formSchema } from './data';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';

@@ -9,6 +9,7 @@ export const columns: BasicColumn[] = [
   {
     title: '角色名称',
     dataIndex: 'roleName',
+    fixed: 'left',
     width: 200,
   },
   {

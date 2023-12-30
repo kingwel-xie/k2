@@ -27,6 +27,6 @@ func registerSysDeptRouter(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	r1 := v1.Group("").Use(authMiddleware.MiddlewareFunc())
 	{
 		r1.GET("/deptTree", api.Get2Tree)
+		r1.GET("/dept-list", api.ListNoCheck)
 	}
-
 }

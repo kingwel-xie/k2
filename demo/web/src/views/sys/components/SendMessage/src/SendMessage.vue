@@ -33,7 +33,6 @@
           v-model:value="state.targets"
           :api="listAccountNoCheck"
           allowClear
-          showSearch
           mode="multiple"
           style="width: 100%"
           optionFilterProp="label"
@@ -46,7 +45,6 @@
           v-model:value="state.targets"
           :api="listRoleNoCheck"
           allowClear
-          showSearch
           mode="multiple"
           style="width: 100%"
           optionFilterProp="label"
@@ -59,7 +57,7 @@
         <span>标题：</span>
       </Col>
       <Col :span="21">
-        <Input v-model:value="state.title" showCount :maxlength="128" :disabled="!state.checked" />
+        <Input v-model:value="state.title" showCount :maxlength="127" :disabled="!state.checked" />
       </Col>
       <Col :span="3">
         <span>内容：</span>
@@ -69,7 +67,7 @@
           v-model:value="state.content"
           :rows="3"
           showCount
-          :maxlength="512"
+          :maxlength="511"
           :disabled="!state.checked"
         />
       </Col>

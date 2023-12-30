@@ -113,6 +113,7 @@ func initDB() {
 		}
 		return nil
 	})
+	startDatabaseKeeper(db)
 }
 
 func run() error {
@@ -120,7 +121,6 @@ func run() error {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	initRouter()
-
 	for _, f := range AppRouters {
 		f()
 	}

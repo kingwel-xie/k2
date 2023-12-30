@@ -6,22 +6,50 @@
     :width="720"
     @ok="handleSubmit"
   >
-    <BasicForm @register="registerForm" />
+    <BasicForm @register="registerForm">
+      <template #tokenEnabled="{ model, field }">
+        <Checkbox
+          v-model:checked="model[field]"
+          @change="(e) => handleTokenEnabledChange(e.target.checked, model, field)"
+          >启用 API Token
+        </Checkbox>
+      </template>
+    </BasicForm>
+    <Row v-if="isUpdate" :gutter="10">
+      <Col :offset="4" :span="1.5">
+        <a-button
+          :disabled="resetButtonDisabled"
+          preIcon="ant-design:alert-outlined"
+          color="warning"
+          @click="handleResetToken"
+        >
+          重置Token
+        </a-button>
+      </Col>
+    </Row>
   </BasicModal>
 </template>
 <script lang="ts" setup>
-  import { ref, unref } from 'vue';
+  import { h, ref, unref } from 'vue';
+  import { Row, Col, Checkbox } from 'ant-design-vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form';
   import { accountFormSchema } from './data';
-  import { addAccountEntry, updateAccountEntry, isAccountExist } from '/@/api/admin/system';
+  import {
+    addAccountEntry,
+    updateAccountEntry,
+    isAccountExist,
+    resetUserToken,
+  } from '/@/api/admin/system';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const { t } = useI18n();
   const emit = defineEmits(['success', 'register']);
 
   const isUpdate = ref(true);
   const title = ref('');
+  const resetButtonDisabled = ref(false);
 
   const [registerForm, { setFieldsValue, updateSchema, resetFields, validate }] = useForm({
     labelWidth: 100,
@@ -37,7 +65,9 @@
     await resetFields();
     isUpdate.value = !!data?.isUpdate;
 
+    resetButtonDisabled.value = !data.record?.token;
     if (unref(isUpdate)) {
+      data.record.tokenEnabled = !!data.record.token;
       await setFieldsValue({
         ...data.record,
       });
@@ -94,5 +124,31 @@
     } finally {
       setModalProps({ confirmLoading: false });
     }
+  }
+
+  function handleTokenEnabledChange(val, model, _field) {
+    if (!val) {
+      model['token'] = undefined;
+      resetButtonDisabled.value = true;
+    } else {
+      resetButtonDisabled.value = false;
+    }
+  }
+
+  function handleResetToken() {
+    const { createConfirm, createMessage } = useMessage();
+    createConfirm({
+      iconType: 'warning',
+      title: () => h('span', '警告'),
+      content: () => h('span', '重新生成 API Token 可能会影响正在使用的，是否继续？'),
+      onOk: async () => {
+        const values = await validate();
+        const newToken = await resetUserToken(values.userId);
+        await setFieldsValue({
+          token: newToken,
+        });
+        createMessage.success('Token重置成功');
+      },
+    });
   }
 </script>

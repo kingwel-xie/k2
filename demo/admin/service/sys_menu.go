@@ -301,7 +301,7 @@ func RebuildMenuPathsIfNeeded(tx *gorm.DB, menuIds ...int) (err error) {
 func (e *SysMenu) Remove(d *dto.SysMenuDeleteReq) error {
 	return e.Orm.Transaction(func(tx *gorm.DB) error {
 		var list []models.SysMenu
-		err := tx.Model(&models.SysMenu{}).Preload("SysApi").
+		err := tx.Model(&models.SysMenu{}).
 			Find(&list, "menu_id in ?", d.GetId()).Error
 		if err != nil {
 			return k2Error.ErrDatabase.Wrap(err)
@@ -324,6 +324,7 @@ func (e *SysMenu) GetList(c *dto.SysMenuGetPageReq, list *[]models.SysMenu) erro
 
 	err := e.Orm.Model(&data).
 		Scopes(
+			cDto.OrderDest("sort", false),
 			cDto.MakeCondition(c.GetNeedSearch()),
 		).
 		Find(list).Error
@@ -433,7 +434,7 @@ func menuCall(menuList *[]models.SysMenu, menu models.SysMenu) models.SysMenu {
 		mi.Icon = list[j].Icon
 		mi.Path = list[j].Path
 		mi.MenuType = list[j].MenuType
-		mi.Action = list[j].Action
+		mi.Redirect = list[j].Redirect
 		mi.Permission = list[j].Permission
 		mi.ParentId = list[j].ParentId
 		mi.NoCache = list[j].NoCache

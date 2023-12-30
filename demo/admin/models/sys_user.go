@@ -14,13 +14,14 @@ type SysUser struct {
 	Phone    string   `json:"phone" gorm:"size:11;comment:手机号"`
 	RoleId   int      `json:"roleId" gorm:"size:20;comment:角色ID"`
 	Salt     string   `json:"-" gorm:"size:255;comment:加盐"`
-	Avatar   string   `json:"avatar" gorm:"comment:头像"`
+	Avatar   string   `json:"-" gorm:"comment:头像"`
 	Sex      string   `json:"sex" gorm:"size:255;comment:性别"`
 	Email    string   `json:"email" gorm:"size:128;comment:邮箱"`
 	DeptId   int      `json:"deptId" gorm:"size:20;comment:部门"`
 	PostId   int      `json:"postId" gorm:"size:20;comment:岗位"`
 	Remark   string   `json:"remark" gorm:"size:255;comment:备注"`
 	Status   string   `json:"status" gorm:"size:4;comment:状态"`
+	Token    string   `json:"token" gorm:"size:128;comment:Token"`
 	DeptIds  []int    `json:"deptIds" gorm:"-"`
 	PostIds  []int    `json:"postIds" gorm:"-"`
 	RoleIds  []int    `json:"roleIds" gorm:"-"`

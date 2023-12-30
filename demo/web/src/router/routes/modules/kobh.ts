@@ -1,8 +1,9 @@
 import type { AppRouteModule } from '/@/router/types';
 import { LAYOUT } from '/@/router/constant';
 import { t } from '/@/hooks/web/useI18n';
+import { RoleEnum } from '/@/enums/roleEnum';
 
-const dashboardKobh: AppRouteModule = {
+const homepageKobh: AppRouteModule = {
   path: '/dashboard',
   name: 'Dashboard',
   component: LAYOUT,
@@ -16,7 +17,7 @@ const dashboardKobh: AppRouteModule = {
     {
       path: 'analysis',
       name: 'Analysis',
-      component: () => import('/@/views/dashboard/analysis/index.vue'),
+      component: () => import('/@/views/kobh/dashboard/analysis/index.vue'),
       meta: {
         // affix: true,
         title: t('routes.dashboard.analysis'),
@@ -27,7 +28,7 @@ const dashboardKobh: AppRouteModule = {
     {
       path: 'index',
       name: 'Workbench',
-      component: () => import('/@/views/dashboard/workbench/index.vue'),
+      component: () => import('/@/views/kobh/dashboard/workbench/index.vue'),
       meta: {
         // affix: true,
         title: t('routes.dashboard.workbench'),
@@ -52,4 +53,4 @@ const dashboardKobh: AppRouteModule = {
   ],
 };
 
-export default dashboardKobh;
+export default homepageKobh;

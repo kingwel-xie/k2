@@ -7,7 +7,9 @@
     @menu-event="handleMenuEvent"
   >
     <div :class="`${prefixCls}__info`" @contextmenu="handleContext" v-if="getIsTabs">
-      <span class="ml-1">{{ getTitle }}</span>
+      <span :class="hasQuery ? 'ml-1 italic' : 'ml-1'">
+        {{ getTitle }} {{ hasQuery ? '*' : '' }}
+      </span>
     </div>
     <span :class="`${prefixCls}__extra-quick`" v-else @click="handleContext">
       <Icon icon="ion:chevron-down" />
@@ -27,6 +29,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useTabDropdown } from '../useTabDropdown';
+  import { isEmpty } from '/@/utils/is';
 
   export default defineComponent({
     name: 'TabContent',
@@ -45,6 +48,11 @@
       const getTitle = computed(() => {
         const { tabItem: { meta } = {} } = props;
         return meta && t(meta.title as string);
+      });
+
+      const hasQuery = computed(() => {
+        const { tabItem: { query } = {} } = props;
+        return query ? !isEmpty(query) : false;
       });
 
       const getIsTabs = computed(() => !props.isExtra);
@@ -70,6 +78,7 @@
         getTrigger,
         getIsTabs,
         getTitle,
+        hasQuery,
       };
     },
   });

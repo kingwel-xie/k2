@@ -6,6 +6,7 @@ export const columns: BasicColumn[] = [
   {
     title: '编号',
     dataIndex: 'id',
+    fixed: 'left',
     width: 50,
     ifShow: false,
   },
@@ -21,7 +22,7 @@ export const columns: BasicColumn[] = [
       return (
         <div>
           <Tooltip title={<Icon icon={color[1]} size={32} />} color="gray">
-            <Tag color={color[0]}>{() => record.path}</Tag>
+            <Tag color={color[0]}>{() => record.title}</Tag>
           </Tooltip>
         </div>
       );
@@ -31,7 +32,7 @@ export const columns: BasicColumn[] = [
   {
     title: 'handle',
     dataIndex: 'handle',
-    width: 140,
+    width: 180,
   },
   {
     title: '方法与路径',
@@ -51,7 +52,7 @@ export const columns: BasicColumn[] = [
         </div>
       );
     },
-    width: 230,
+    width: 180,
   },
   {
     title: '类型',
@@ -62,7 +63,7 @@ export const columns: BasicColumn[] = [
   {
     title: '创建时间',
     dataIndex: 'createdAt',
-    width: 180,
+    width: 140,
     format: 'datetime|flex',
   },
   {
@@ -73,7 +74,7 @@ export const columns: BasicColumn[] = [
   {
     title: '更新时间',
     dataIndex: 'updatedAt',
-    width: 180,
+    width: 140,
     format: 'datetime|flex',
   },
   {

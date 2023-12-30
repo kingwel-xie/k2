@@ -253,3 +253,17 @@ func deptLabelCall(deptList *[]models.SysDept, dept dto.DeptLabel) dto.DeptLabel
 	dept.Children = min
 	return dept
 }
+
+// ListNoCheck 获取SysDept列表, NoCheck
+func (e *SysDept) ListNoCheck(c *dto.SysDeptGetPageReq, list *[]models.SysDept) error {
+	var data models.SysDept
+
+	err := e.Orm.Model(&data).
+		Scopes(
+			cDto.MakeCondition(c.GetNeedSearch()),
+		).
+		Select("DeptId", "DeptName", "ParentId", "DeptPath").
+		Find(list).Error
+
+	return err
+}

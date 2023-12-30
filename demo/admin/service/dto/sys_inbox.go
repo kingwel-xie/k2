@@ -11,6 +11,9 @@ type SysInboxGetPageReq struct {
     Type string `form:"type"  search:"type:exact;column:type;table:sys_inbox" comment:"消息类型"`
     Sender string `form:"sender"  search:"type:exact;column:sender;table:sys_inbox" comment:"发件人"`
     Receiver string `form:"receiver"  search:"type:exact;column:receiver;table:sys_inbox" comment:"收件人"`
+    Title string `form:"title"  search:"type:contains;column:title;table:sys_inbox" comment:"标题"`
+    Content string `form:"content"  search:"type:contains;column:content;table:sys_inbox" comment:"内容"`
+    Importance string `form:"importance"  search:"type:exact;column:importance;table:sys_inbox" comment:"重要"`
     Unread bool `form:"unread"  search:"type:not-exact;column:read;table:sys_inbox" comment:"未读标志"`
     BeginTime      string `form:"beginTime" search:"type:gte;column:createdAt;table:sys_inbox" comment:"起始时间"`
     EndTime        string `form:"endTime" search:"type:lte;column:createdAt;table:sys_inbox" comment:"截止时间"`
@@ -96,5 +99,6 @@ type SysInboxSendMessageReq struct {
     Targets string `json:"targets" comment:"接收人"`
     Title string `json:"title" comment:"标题"`
     Content string `json:"content" comment:"内容"`
+    Importance string `json:"importance" comment:"重要"`
 }
 

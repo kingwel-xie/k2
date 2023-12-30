@@ -61,11 +61,14 @@
                 </div>
               </template>
               <template #description>
-                <TParagraph
-                  type="secondary"
-                  :content="item.content"
-                  :ellipsis="{ rows: 2, expandable: true, symbol: 'more' }"
-                />
+                <ShowContent :value="item.content" />
+                <div v-if="false" style="white-space: pre-wrap">
+                  <TParagraph
+                    type="secondary"
+                    :content="item.content"
+                    :ellipsis="{ rows: 2, expandable: true, symbol: 'more' }"
+                  />
+                </div>
               </template>
             </ListItemMeta>
           </Skeleton>
@@ -90,13 +93,13 @@
   import { CollapseContainer } from '/@/components/Container';
   import { Icon } from '/@/components/Icon';
   import { formatToDateTime } from '/@/utils/dateUtil';
-  import { tryParseJson } from '/@/utils/formatUtil';
   import {
     deleteSysOutboxEntry,
     deleteSysOutboxMany,
     getSysOutboxList,
   } from '/@/api/admin/sys-outbox';
-  import Receivers from "/@/views/sys/message/Receivers.vue";
+  import Receivers from '/@/views/sys/message/Receivers.vue';
+  import ShowContent from '/@/views/sys/message/ShowContent.vue';
 
   const { t } = useI18n();
 
@@ -165,6 +168,5 @@
 <style lang="less" scoped>
   .container-setting {
     margin: 12px;
-    background-color: @component-background;
   }
 </style>

@@ -3,7 +3,7 @@
     v-bind="$attrs"
     @register="registerModal"
     :title="title"
-    width="550px"
+    width="980px"
     @ok="handleSubmit"
   >
     <BasicForm @register="registerForm">
@@ -42,13 +42,17 @@
           valueField="roleKey"
         />
       </template>
+      <template #content="{ model, field }">
+        <Tinymce v-model:modelValue="model[field]" />
+      </template>
     </BasicForm>
   </BasicModal>
 </template>
 <script lang="ts" setup>
   import { ref, unref } from 'vue';
   import { TreeSelect } from 'ant-design-vue';
-  import { BasicForm, useForm } from '/@/components/Form/index';
+  import { BasicForm, useForm } from '/@/components/Form';
+  import { Tinymce } from '/@/components/Tinymce';
   import { formSchema, TargetTypeOptionData } from './data';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import ApiSelect from '/@/components/Form/src/components/ApiSelect.vue';
@@ -118,6 +122,10 @@
       },
     ]);
   });
+
+  function handleChange(value: string) {
+    //console.log(value);
+  }
 
   async function handleSubmit() {
     try {

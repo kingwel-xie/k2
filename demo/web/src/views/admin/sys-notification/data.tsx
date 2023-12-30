@@ -1,6 +1,7 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { DescItem } from '/@/components/Description';
 import { tryParseJson } from '/@/utils/formatUtil';
+import ShowContent from './ShowContent.vue';
 
 function formatMultiLabel(data: string, separator = ', ') {
   return (tryParseJson(data) || []).join(separator);
@@ -21,6 +22,7 @@ export const columns: BasicColumn[] = [
   {
     title: 'ID',
     dataIndex: 'id',
+    fixed: 'left',
   },
   {
     title: '接收人类别',
@@ -50,6 +52,14 @@ export const columns: BasicColumn[] = [
   {
     title: '内容',
     dataIndex: 'content',
+    customRender: ({ record }) => {
+      return <ShowContent title={record.title} value={record.content} />;
+    },
+  },
+  {
+    title: '重要',
+    dataIndex: 'importance',
+    format: 'dict|sys_yes_no',
   },
   {
     title: '备注',
@@ -68,6 +78,12 @@ export const searchFormSchema: FormSchema[] = [
     label: '接收人类别',
     component: 'DictSelect',
     componentProps: { dictName: 'sys_notification_target_type' },
+  },
+  {
+    field: 'importance',
+    label: '重要',
+    component: 'DictSelect',
+    componentProps: { dictName: 'sys_yes_no' },
   },
   {
     field: 'targets',
@@ -108,6 +124,7 @@ export const formSchema: FormSchema[] = [
       };
     },
     required: true,
+    colProps: { span: 12 },
   },
   {
     field: 'targets',
@@ -116,6 +133,7 @@ export const formSchema: FormSchema[] = [
     helpMessage: '接收人，由接收人类别决定：角色/用户/部门',
     component: 'Select',
     required: true,
+    colProps: { span: 12 },
     ifShow: ({ values }) => ['role', 'dept', 'user'].includes(values.targetType),
   },
   {
@@ -127,16 +145,25 @@ export const formSchema: FormSchema[] = [
       maxlength: 127,
     },
     required: true,
+    colProps: { span: 19 },
+  },
+  {
+    field: 'importance',
+    label: '重要',
+    helpMessage: '重要通知将会以弹窗显示。',
+    component: 'DictRadioGroup',
+    componentProps: {
+      dictName: 'sys_yes_no',
+      isBtn: true,
+    },
+    defaultValue: 'Y',
+    colProps: { span: 5 },
   },
   {
     field: 'content',
+    slot: 'content',
     label: '内容',
     component: 'InputTextArea',
-    componentProps: {
-      showCount: true,
-      maxlength: 511,
-      rows: 4,
-    },
     required: true,
   },
   {

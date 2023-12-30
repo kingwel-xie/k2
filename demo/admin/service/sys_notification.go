@@ -57,6 +57,7 @@ func (e *SysNotification) Insert(c *dto.SysNotificationInsertReq) error {
 			Targets: data.Targets,
 			Title: data.Title,
 			Content: data.Content,
+			Importance: data.Importance,
 		}
 		return SendMessage(tx, &sendMessage, e.Identity.Username)
 	})

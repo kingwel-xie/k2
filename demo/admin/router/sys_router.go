@@ -1,6 +1,7 @@
 package router
 
 import (
+	"kobh/utils"
 	"mime"
 	"net/http"
 
@@ -76,7 +77,7 @@ func sysCheckRoleRouterInit(r *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddle
 	}
 	info := r.Group("/server-monitor").Use(authMiddleware.MiddlewareFunc())
 	{
-		info.GET("", middleware.ServerInfo)
+		info.GET("", middleware.ServerInfo(utils.AppMonitor))
 	}
 
 	v1 := r.Group("/api/v1")

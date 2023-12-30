@@ -15,7 +15,7 @@ export function generateModifyVars(dark = false) {
     primaryColorObj[`primary-${index + 1}`] = palettes[index];
   }
 
-  const modifyVars = getThemeVariables({ dark });
+  const modifyVars = getThemeVariables({ compact: true, dark });
   return {
     ...modifyVars,
     // Used for global import to avoid the need to import each style file separately

@@ -16,7 +16,8 @@ type SysNotification struct {
     TargetType    string `json:"targetType" gorm:"size:63;column:target_type;comment:接收人类别"`
     Targets    string `json:"targets" gorm:"size:63;column:targets;comment:接收人"`
     Title    string `json:"title" gorm:"size:127;column:title;comment:标题"`
-    Content    string `json:"content" gorm:"size:511;column:content;comment:内容"`
+    Content    string `json:"content" gorm:"column:content;comment:内容"`
+    Importance    string `json:"importance" gorm:"size:4;column:importance;comment:重要"`
     Remark    string `json:"remark" gorm:"column:remark;comment:备注"`
     models.ControlBy
     models.ModelTimeHardDelete

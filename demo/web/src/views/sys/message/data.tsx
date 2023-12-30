@@ -6,6 +6,7 @@ export const columns: BasicColumn[] = [
   {
     title: 'ID',
     dataIndex: 'id',
+    fixed: 'left',
   },
   {
     title: '类型',
@@ -100,7 +101,6 @@ export const formSchema: FormSchema[] = [
     component: 'ApiSelect',
     componentProps: {
       api: listAccountNoCheck,
-      showSearch: true,
       allClear: true,
       mode: 'multiple',
       optionFilterProp: 'label',
@@ -123,13 +123,9 @@ export const formSchema: FormSchema[] = [
   },
   {
     field: 'content',
+    slot: 'content',
     label: '内容',
     component: 'InputTextArea',
-    componentProps: {
-      showCount: true,
-      maxlength: 511,
-      rows: 4,
-    },
     required: true,
   },
 ];

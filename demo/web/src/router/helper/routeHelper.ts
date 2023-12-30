@@ -75,7 +75,7 @@ export function transformMenuToRoute(menuList: RouteItem[]): AppRouteRecordRaw[]
       path: m.path,
       name: m.menuName,
       component: m.component,
-      redirect: undefined,
+      redirect: m.redirect,
       meta: {
         hideMenu: m.visible === '1',
         orderNo: m.sort,

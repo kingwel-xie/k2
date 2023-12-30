@@ -71,7 +71,6 @@
 		{
 			"goField": "DisplaySort",
 			"goType": "int",
-			"gormTag": "size:16",
 			"columnComment": "显示排序"
 		},
 		{

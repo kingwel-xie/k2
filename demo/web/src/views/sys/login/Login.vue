@@ -24,10 +24,13 @@
               class="w-1/2 -mt-16 -enter-x"
             />
             <div class="mt-10 font-medium text-white -enter-x">
-              <span class="inline-block mt-4 text-3xl"> {{ t('sys.login.signInTitle') }}</span>
+              <span class="inline-block mt-4 text-3xl"> {{ tenantName }}</span>
             </div>
             <div class="mt-5 font-normal text-white dark:text-gray-500 -enter-x">
-              {{ t('sys.login.signInDesc') }}
+              {{ tenantVision }}
+            </div>
+            <div class="mt-5 font-normal text-white dark:text-gray-500 -enter-x">
+              {{ tenantProfile }}
             </div>
           </div>
         </div>
@@ -37,10 +40,12 @@
             class="relative w-full px-5 py-8 mx-auto my-auto rounded-md shadow-md xl:ml-16 xl:bg-transparent sm:px-8 xl:p-4 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto enter-x"
           >
             <LoginForm />
+            <!--
             <ForgetPasswordForm />
             <RegisterForm />
             <MobileForm />
             <QrCodeForm />
+            -->
           </div>
         </div>
       </div>
@@ -52,10 +57,10 @@
   import { AppLogo } from '/@/components/Application';
   import { AppLocalePicker, AppDarkModeToggle } from '/@/components/Application';
   import LoginForm from './LoginForm.vue';
-  import ForgetPasswordForm from './ForgetPasswordForm.vue';
-  import RegisterForm from './RegisterForm.vue';
-  import MobileForm from './MobileForm.vue';
-  import QrCodeForm from './QrCodeForm.vue';
+  // import ForgetPasswordForm from './ForgetPasswordForm.vue';
+  // import RegisterForm from './RegisterForm.vue';
+  // import MobileForm from './MobileForm.vue';
+  // import QrCodeForm from './QrCodeForm.vue';
   import { useGlobSetting } from '/@/hooks/setting';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
@@ -73,6 +78,9 @@
   const localeStore = useLocaleStore();
   const showLocale = localeStore.getShowPicker;
   const title = computed(() => globSetting?.title ?? '');
+  const tenantName = computed(() => globSetting?.tenant.name ?? t('sys.login.signInTitle'));
+  const tenantVision = computed(() => globSetting?.tenant.vision ?? t('sys.login.signInDesc'));
+  const tenantProfile = computed(() => globSetting?.tenant.profile ?? t('sys.login.signInDesc2'));
 </script>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-login';

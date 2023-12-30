@@ -71,6 +71,9 @@ declare global {
     VITE_LEGACY: boolean;
     VITE_USE_IMAGEMIN: boolean;
     VITE_GENERATE_UI: string;
+    VITE_GLOB_TENANT_NAME: string;
+    VITE_GLOB_TENANT_VISION: string;
+    VITE_GLOB_TENANT_PROFILE: string;
   }
 
   declare function parseInt(s: string | number, radix?: number): number;

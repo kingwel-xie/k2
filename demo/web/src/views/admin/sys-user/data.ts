@@ -9,7 +9,9 @@ export const columns: BasicColumn[] = [
   {
     title: '用户名',
     dataIndex: 'username',
+    fixed: 'left',
     width: 100,
+    sorter: true,
   },
   {
     title: '昵称',
@@ -19,7 +21,7 @@ export const columns: BasicColumn[] = [
   {
     title: '手机',
     dataIndex: 'phone',
-    width: 140,
+    width: 110,
   },
   {
     title: '邮箱',
@@ -28,18 +30,33 @@ export const columns: BasicColumn[] = [
   },
   {
     title: '部门',
-    dataIndex: ['dept', 'deptName'],
-    width: 80,
+    //dataIndex: ['dept', 'deptName'],
+    dataIndex: 'deptId',
+    width: 120,
+    sorter: true,
+    customRender: ({ record }) => {
+      return record.dept?.deptName || '-';
+    },
   },
   {
     title: '角色',
-    dataIndex: ['role', 'roleName'],
-    width: 80,
+    // dataIndex: ['role', 'roleName'],
+    dataIndex: 'roleId',
+    width: 110,
+    sorter: true,
+    customRender: ({ record }) => {
+      return record.role?.roleName || '-';
+    },
+  },
+  {
+    title: 'API Token',
+    dataIndex: 'token',
+    width: 210,
   },
   {
     title: '状态',
     dataIndex: 'status',
-    width: 120,
+    width: 100,
     format: 'dict|sys_normal_disable',
     customRender: ({ record }) => {
       if (!Reflect.has(record, 'pendingStatus')) {
@@ -73,11 +90,13 @@ export const columns: BasicColumn[] = [
     title: '创建时间',
     dataIndex: 'createdAt',
     format: 'datetime|flex',
-    width: 200,
+    width: 140,
+    sorter: true,
   },
   {
     title: '备注',
     dataIndex: 'remark',
+    width: 110,
   },
 ];
 
@@ -91,6 +110,19 @@ export const searchFormSchema: FormSchema[] = [
     field: 'nickName',
     label: '昵称',
     component: 'Input',
+  },
+  {
+    field: 'roleKey',
+    label: '角色',
+    component: 'ApiSelect',
+    componentProps: {
+      api: listRoleNoCheck,
+      resultField: 'list',
+      labelField: 'roleName',
+      valueField: 'roleKey',
+      mode: 'multiple',
+      getPopupContainer: () => document.body,
+    },
   },
 ];
 
@@ -175,6 +207,24 @@ export const accountFormSchema: FormSchema[] = [
     label: '备注',
     field: 'remark',
     component: 'InputTextArea',
+  },
+  {
+    label: 'API Token',
+    field: 'token',
+    component: 'InputTextArea',
+    dynamicDisabled: true,
+    componentProps: { rows: 3 },
+    colProps: { span: 18 },
+    ifShow: ({ values }) => values.userId > 0,
+  },
+  {
+    label: ' ',
+    labelWidth: '8px',
+    field: 'tokenEnabled',
+    slot: 'tokenEnabled',
+    component: 'Checkbox',
+    colProps: { span: 6 },
+    ifShow: ({ values }) => values.userId > 0,
   },
 ];
 

@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type { ErrorLogInfo } from '/#/store';
 
 import { defineStore } from 'pinia';
@@ -31,7 +32,7 @@ export const useErrorLogStore = defineStore({
     addErrorLogInfo(info: ErrorLogInfo) {
       const item = {
         ...info,
-        time: formatToDateTime(new Date()),
+        time: formatToDateTime(dayjs()),
       };
       this.errorLogInfoList = [item, ...(this.errorLogInfoList || [])];
       this.errorLogListCount += 1;

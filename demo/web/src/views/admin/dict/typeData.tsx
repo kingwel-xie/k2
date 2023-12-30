@@ -4,6 +4,7 @@ export const columns: BasicColumn[] = [
   {
     title: '字典编号',
     dataIndex: 'id',
+    fixed: 'left',
     width: 50,
     sorter: true,
   },

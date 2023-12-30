@@ -18,6 +18,7 @@ enum Api {
   SysInboxOpUnread = '/v1/inbox/unread',
   SysInboxOpRead = '/v1/inbox/read',
   UpdatePassword = '/v1/user/pwd/set',
+  RegenerateToken = '/v1/user/token',
   TestRetry = '/testRetry',
 }
 
@@ -58,6 +59,10 @@ export function doLogout() {
 
 export function updatePassword(params: SetUserPasswordParams) {
   return defHttp.put({ url: Api.UpdatePassword, params });
+}
+
+export function regenerateToken() {
+  return defHttp.put({ url: Api.RegenerateToken });
 }
 
 export function testRetry() {

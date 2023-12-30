@@ -232,3 +232,36 @@ func (e SysDept) GetDeptTreeRoleSelect(c *gin.Context) {
 		"checkedKeys": menuIds,
 	}, "")
 }
+
+// ListNoCheck
+// @Summary 部门列表数据
+// @Description Get JSON
+// @Tags 部门
+// @Param roleName query string false "roleName"
+// @Param status query string false "status"
+// @Param roleKey query string false "roleKey"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/role-list [get]
+// @Security Bearer
+func (e SysDept) ListNoCheck(c *gin.Context) {
+	s := service.SysDept{}
+	req := dto.SysDeptGetPageReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.Form).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	list := make([]models.SysDept, 0)
+
+	err = s.ListNoCheck(&req, &list)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	e.PageOK(list, len(list), 1, len(list), "查询成功")
+}

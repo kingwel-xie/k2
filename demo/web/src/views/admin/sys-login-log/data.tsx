@@ -5,6 +5,7 @@ export const columns: BasicColumn[] = [
   {
     title: '编号',
     dataIndex: 'id',
+    fixed: 'left',
     width: 50,
   },
   {

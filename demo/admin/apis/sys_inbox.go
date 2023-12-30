@@ -22,11 +22,14 @@ type SysInbox struct {
 // @Param type query string false "消息类型"
 // @Param sender query string false "发件人"
 // @Param receiver query string false "收件人"
+// @Param title query string false "标题"
+// @Param content query string false "内容"
+// @Param importance query string false "重要"
 // @Param unread query bool false "未读标志"
 // @Param pageSize query int false "页条数"
 // @Param pageIndex query int false "页码"
 // @Success 200 {object} response.Response{data=response.Page{list=[]models.SysInbox}} "{"code": 200, "data": [...]}"
-// @Router /api/v1/message [get]
+// @Router /api/v1/inbox [get]
 // @Security Bearer
 func (e SysInbox) GetPage(c *gin.Context) {
     s := service.SysInbox{}
@@ -58,7 +61,7 @@ func (e SysInbox) GetPage(c *gin.Context) {
 // @Tags 消息
 // @Param id path string false "ID"
 // @Success 200 {object} response.Response{data=models.SysInbox} "{"code": 200, "data": [...]}"
-// @Router /api/v1/message/{id} [get]
+// @Router /api/v1/inbox/{id} [get]
 // @Security Bearer
 func (e SysInbox) Get(c *gin.Context) {
 	s := service.SysInbox{}
@@ -90,7 +93,7 @@ func (e SysInbox) Get(c *gin.Context) {
 // @Product application/json
 // @Param data body dto.SysInboxInsertReq true "data"
 // @Success 200 {object} response.Response	"{"code": 200, "message": "创建成功", "data": id}"
-// @Router /api/v1/message [post]
+// @Router /api/v1/inbox [post]
 // @Security Bearer
 func (e SysInbox) Insert(c *gin.Context) {
     s := service.SysInbox{}
@@ -120,7 +123,7 @@ func (e SysInbox) Insert(c *gin.Context) {
 // @Param id path string true "ID"
 // @Param data body dto.SysInboxUpdateReq true "body"
 // @Success 200 {object} response.Response	"{"code": 200, "message": "更新成功", "data": id}"
-// @Router /api/v1/message/{id} [put]
+// @Router /api/v1/inbox/{id} [put]
 // @Security Bearer
 func (e SysInbox) Update(c *gin.Context) {
     s := service.SysInbox{}
@@ -147,7 +150,7 @@ func (e SysInbox) Update(c *gin.Context) {
 // @Tags 消息
 // @Param data body dto.SysInboxDeleteReq true "body"
 // @Success 200 {object} response.Response	"{"code": 200, "message": "删除成功", "data": [...]}"
-// @Router /api/v1/message [delete]
+// @Router /api/v1/inbox [delete]
 // @Security Bearer
 func (e SysInbox) Delete(c *gin.Context) {
     s := service.SysInbox{}

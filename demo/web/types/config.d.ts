@@ -141,12 +141,19 @@ export interface GlobConfig {
   title: string;
   // Service interface url
   apiUrl: string;
+  // Websocket url
+  wsUrl?: string;
   // Upload url
   uploadUrl?: string;
   //  Service interface url prefix
   urlPrefix?: string;
   // Project abbreviation
   shortName: string;
+  tenant: {
+    name: string;
+    vision: string;
+    profile: string;
+  };
 }
 export interface GlobEnvConfig {
   // Site title
@@ -154,9 +161,13 @@ export interface GlobEnvConfig {
   // Service interface url
   VITE_GLOB_API_URL: string;
   // Service interface url prefix
+  VITE_GLOB_WS_URL: string;
   VITE_GLOB_API_URL_PREFIX?: string;
   // Project abbreviation
   VITE_GLOB_APP_SHORT_NAME: string;
   // Upload url
   VITE_GLOB_UPLOAD_URL?: string;
+  VITE_GLOB_TENANT_NAME: string;
+  VITE_GLOB_TENANT_VISION: string;
+  VITE_GLOB_TENANT_PROFILE: string;
 }

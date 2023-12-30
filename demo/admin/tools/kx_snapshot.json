@@ -12,7 +12,6 @@
 			"goType": "int",
 			"goField": "Id",
 			"columnComment": "编号",
-			"gormTag": "size:12",
 			"isPk": true,
 			"autoInc": true
 		},
@@ -20,7 +19,6 @@
 			"goType": "int",
 			"goField": "RotationId",
 			"columnComment": "策略标识",
-			"gormTag": "size:12",
 			"queryable": true,
 			"sortable": true,
 			"notOnUpdate": true
@@ -29,7 +27,6 @@
 			"goType": "int",
 			"goField": "Round",
 			"columnComment": "轮次",
-			"gormTag": "size:12",
 			"queryable": true,
 			"sortable": true,
 			"notOnUpdate": true

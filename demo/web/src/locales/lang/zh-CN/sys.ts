@@ -71,8 +71,11 @@ export default {
     forgetFormTitle: '重置密码',
     captcha: '验证码',
 
-    signInTitle: '开箱即用的中后台管理系统',
-    signInDesc: '输入您的个人详细信息开始使用！',
+    signInTitle: '猫头鹰供应链有限公司',
+    signInDesc:
+      '激情使命问鼎模范型跨境物流企业！诚信·敬业·务实·创新，坦荡胸襟和眼界，延伸跨境物流人的精神。',
+    signInDesc2:
+      '猫头鹰供应链有限公司是一家专为跨境电商卖家提供物流解决方案的供应商，业务范围包括美国、欧洲、印度的跨境电商卖家提供优质的物流服务。',
     policy: '我同意xxx隐私政策',
     scanSign: `扫码后点击"确认"，即可完成登录`,
 

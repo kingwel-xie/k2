@@ -15,9 +15,7 @@ import (
 	"admin/service/dto"
 )
 
-
 var (
-	passwordModificationFailedErr = cerr.New(403, "密码修改失败", "password modification failed")
 	loginFailedErr = cerr.New(403, "登录失败", "login failed")
 )
 
@@ -263,6 +261,66 @@ func (e SysUser) ResetPwd(c *gin.Context) {
 	e.OK(req.GetId(), "更新成功")
 }
 
+// ResetApiToken 重置User API token
+// @Summary 重置User API token
+// @Description 获取JSON
+// @Tags 用户
+// @Accept  application/json
+// @Product application/json
+// @Param data body dto.ResetSysUserTokenReq true "body"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/sys-user/token/reset [put]
+// @Security Bearer
+func (e SysUser) ResetApiToken(c *gin.Context) {
+	s := service.SysUser{}
+	req := dto.ResetSysUserTokenReq{}
+	err := e.MakeContext(c).
+		Bind(&req, binding.JSON).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	req.Token = utils.GenerateToken()
+	err = s.ResetToken(&req)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+	e.OK(req.Token, "更新成功")
+}
+
+// RegenerateApiToken 重新生成API token
+// @Summary 重新生成API token
+// @Description 获取JSON
+// @Tags 客户
+// @Accept  application/json
+// @Product application/json
+// @Param data body dto.RegenerateApiTokenReq true "body"
+// @Success 200 {object} response.Response "{"code": 200, "data": [...]}"
+// @Router /api/v1/user/token [put]
+// @Security Bearer
+func (e SysUser) RegenerateApiToken(c *gin.Context) {
+	s := service.SysUser{}
+	err := e.MakeContext(c).
+		MakeService(&s.Service).
+		Errors
+	if err != nil {
+		e.Error(err)
+		return
+	}
+
+	req := dto.ResetSysUserTokenReq{ UserId: s.Identity.UserId, Token: utils.GenerateToken() }
+	err = s.ResetToken(&req)
+	if err != nil {
+		e.Error(err)
+		return
+	}
+	e.OK(req.Token, "更新成功")
+}
+
 // UpdatePwd
 // @Summary 重置密码
 // @Description 获取JSON
@@ -287,7 +345,7 @@ func (e SysUser) UpdatePwd(c *gin.Context) {
 
 	err = s.UpdatePwd(s.Identity.UserId, req.OldPassword, req.NewPassword)
 	if err != nil {
-		e.Error(passwordModificationFailedErr.Wrap(err))
+		e.Error(err)
 		return
 	}
 	e.OK(nil, "密码修改成功")
@@ -475,13 +533,12 @@ func (e SysUser) ListNoCheck(c *gin.Context) {
 	}
 
 	list := make([]models.SysUser, 0)
-	var count int64
 
-	err = s.ListNoCheck(&req, &list, &count)
+	err = s.ListNoCheck(&req, &list)
 	if err != nil {
 		e.Error(err)
 		return
 	}
 
-	e.PageOK(list, int(count), req.GetPageIndex(), req.GetPageSize(), "查询成功")
+	e.PageOK(list, len(list), 1, len(list), "查询成功")
 }

@@ -17,20 +17,20 @@ export const settingList = [
     component: 'BaseSetting',
   },
   {
-    key: '2',
-    name: '安全设置',
-    component: 'SecureSetting',
+    key: '11',
+    name: '修改密码',
+    component: 'ChangePassword',
   },
-  {
-    key: '3',
-    name: '账号绑定',
-    component: 'AccountBind',
-  },
-  {
-    key: '4',
-    name: '新消息通知',
-    component: 'MsgNotify',
-  },
+  // {
+  //   key: '3',
+  //   name: '账号绑定',
+  //   component: 'AccountBind',
+  // },
+  // {
+  //   key: '4',
+  //   name: '新消息通知',
+  //   component: 'MsgNotify',
+  // },
 ];
 
 // 基础设置 form
@@ -49,7 +49,7 @@ export const baseSetschemas: FormSchema[] = [
     colProps: { span: 18 },
   },
   {
-    field: 'introduction',
+    field: 'remark',
     component: 'InputTextArea',
     label: '个人简介',
     colProps: { span: 18 },

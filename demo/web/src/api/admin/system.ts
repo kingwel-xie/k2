@@ -1,5 +1,6 @@
 import {
   AccountParams,
+  DeptParams,
   MenuParams,
   RoleParams,
   RolePageParams,
@@ -12,6 +13,9 @@ import {
   DeptTreeGetResultModel,
   MenuTreeGetResultModel,
   RoleListItem,
+  DeptListGetResultModel2,
+  DeptListItem,
+  MenuListItem,
 } from './model/system';
 import { defHttp } from '/@/utils/http/axios';
 
@@ -19,6 +23,7 @@ enum Api {
   AccountOp = '/v1/sys-user',
   setAccountStatus = '/v1/sys-user/status',
   AccountPwdReset = '/v1/sys-user/pwd/reset',
+  AccountTokenReset = '/v1/sys-user/token/reset',
   IsAccountExist = '/v1/check-existence',
   DeptOp = '/v1/dept',
   DeptTree = '/v1/deptTree',
@@ -27,6 +32,7 @@ enum Api {
   MenuTree = '/v1/roleMenuTreeSelect/0',
   RoleOp = '/v1/role',
   ListRoleNoCheckOp = '/v1/role-list',
+  ListDeptNoCheckOp = '/v1/dept-list',
   ListAccountNoCheckOp = '/v1/user/list',
 }
 
@@ -37,9 +43,13 @@ export const getDeptList = (params?: DeptPageParams) =>
 export const getDeptTree = (params?: DeptPageParams) =>
   defHttp.get<DeptTreeGetResultModel>({ url: Api.DeptTree, params });
 
+export const listDeptNoCheck = (params?: DeptParams) =>
+  defHttp.get<DeptListGetResultModel2>({ url: Api.ListDeptNoCheckOp, params });
+
 export const addDeptEntry = (params: any) => defHttp.post<any>({ url: Api.DeptOp, params });
 
-export const getDeptByKey = (deptId: any) => defHttp.get<any>({ url: Api.DeptOp + '/' + deptId });
+export const getDeptByKey = (deptId: any) =>
+  defHttp.get<DeptListItem>({ url: Api.DeptOp + '/' + deptId });
 
 export const updateDeptEntry = (params: any) =>
   defHttp.put<any>({ url: Api.DeptOp + '/' + params.deptId, params });
@@ -56,7 +66,8 @@ export const getMenuTree = (params?: MenuParams) =>
 
 export const addMenuEntry = (params: any) => defHttp.post<any>({ url: Api.MenuOp, params });
 
-export const getMenuByKey = (menuId: any) => defHttp.get<any>({ url: Api.MenuOp + '/' + menuId });
+export const getMenuByKey = (menuId: any) =>
+  defHttp.get<MenuListItem>({ url: Api.MenuOp + '/' + menuId });
 
 export const updateMenuEntry = (params: any) =>
   defHttp.put<any>({ url: Api.MenuOp + '/' + params.menuId, params });
@@ -115,3 +126,6 @@ export const deleteAccountEntry = (params: any) =>
 
 export const resetUserPwd = (userId: number, password: string) =>
   defHttp.put<any>({ url: Api.AccountPwdReset, params: { userId, password } });
+
+export const resetUserToken = (userId: number) =>
+  defHttp.put<any>({ url: Api.AccountTokenReset, params: { userId } });

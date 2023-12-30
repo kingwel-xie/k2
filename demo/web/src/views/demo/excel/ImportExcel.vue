@@ -1,8 +1,8 @@
 <template>
   <PageWrapper title="excel数据导入示例">
-    <ImpExcel @success="loadDataSuccess" dateFormat="YYYY-MM-DD">
+    <ImpExcel2 @success="loadDataSuccess" dateFormat="YYYY-MM-DD">
       <a-button class="m-3"> 导入Excel </a-button>
-    </ImpExcel>
+    </ImpExcel2>
     <BasicTable
       v-for="(table, index) in tableListRef"
       :key="index"
@@ -15,12 +15,12 @@
 <script lang="ts">
   import { defineComponent, ref } from 'vue';
 
-  import { ImpExcel, ExcelData } from '/@/components/Excel';
+  import { ImpExcel2, ImportedExcelData } from '/@/components/Excel2';
   import { BasicTable, BasicColumn } from '/@/components/Table';
   import { PageWrapper } from '/@/components/Page';
 
   export default defineComponent({
-    components: { BasicTable, ImpExcel, PageWrapper },
+    components: { BasicTable, ImpExcel2, PageWrapper },
 
     setup() {
       const tableListRef = ref<
@@ -31,20 +31,16 @@
         }[]
       >([]);
 
-      function loadDataSuccess(excelDataList: ExcelData[]) {
+      function loadDataSuccess(excelDataList: ImportedExcelData) {
         tableListRef.value = [];
         console.log(excelDataList);
-        for (const excelData of excelDataList) {
-          const {
-            header,
-            results,
-            meta: { sheetName },
-          } = excelData;
+        for (const sheet of excelDataList.sheets) {
+          const { header, results, name } = sheet;
           const columns: BasicColumn[] = [];
           for (const title of header) {
             columns.push({ title, dataIndex: title });
           }
-          tableListRef.value.push({ title: sheetName, dataSource: results, columns });
+          tableListRef.value.push({ title: name, dataSource: results, columns });
         }
       }
 

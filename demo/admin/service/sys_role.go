@@ -181,9 +181,9 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 		}
 	}()
 
-	var model = models.SysRole{}
-	tx.Preload("SysMenu").Preload("SysDept").First(&model, c.GetId())
-	db := tx.Select(clause.Associations).Delete(&model)
+	var list []models.SysRole
+	tx.Find(&list, c.GetId())
+	db := tx.Select(clause.Associations).Delete(&list)
 	err = db.Error
 
 	if err != nil {
@@ -195,9 +195,11 @@ func (e *SysRole) Remove(c *dto.SysRoleDeleteReq) error {
 
 	// setup casbin with the TX
 	cb := casbin.Setup(tx)
-	_, err = cb.RemoveFilteredPolicy(0, model.RoleKey)
-	if err != nil {
-		return err
+	for _, model := range list {
+		_, err = cb.RemoveFilteredPolicy(0, model.RoleKey)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -66,9 +66,8 @@ export interface MenuListItem {
 export interface RoleListItem {
   roleId: number;
   roleName: string;
-  roleValue: string;
+  roleKey: string;
   status: string;
-  admin: number;
   dataScope?: string;
   roleSort: string;
   createdAt: string;
@@ -80,6 +79,8 @@ export interface RoleListItem {
 export type AccountListGetResultModel = BasicFetchResult<AccountListItem>;
 
 export type DeptListGetResultModel = DeptListItem[];
+
+export type DeptListGetResultModel2 = BasicFetchResult<DeptListItem>;
 
 export type DeptTreeGetResultModel = GenericTreeItem[];
 

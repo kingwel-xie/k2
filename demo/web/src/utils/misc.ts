@@ -103,6 +103,17 @@ export function floatClose(x, y): boolean {
  * @param {Object} n, 需要返回的字符长度
  * @returns {string}
  */
-export function prefixInteger(num, n) {
+function prefixInteger(num, n) {
   return (Array(n).join('0') + num).slice(-n);
+}
+
+/**
+ * @param {mark} string, FBA Mark
+ * @param {index} num, 序号
+ * @param {width} num, 位数
+ * @param {Object} n, 需要返回的字符长度
+ * @returns {string}
+ */
+export function expandFbaBoxNo(mark: string, index: number, width = 6): string {
+  return mark + 'U' + prefixInteger(index, width);
 }

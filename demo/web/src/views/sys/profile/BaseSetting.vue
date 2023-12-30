@@ -64,11 +64,11 @@
         return avatar || headerImg;
       });
 
-      function updateAvatar({ source, data }) {
+      function updateAvatar({ source /*, data */ }) {
         const userinfo = userStore.getUserInfo;
         userinfo.avatar = source;
         userStore.setUserInfo(userinfo);
-        console.log('data', data, source);
+        // console.log('data', data, source);
       }
 
       async function handleSubmit() {

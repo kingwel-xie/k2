@@ -11,6 +11,7 @@ export interface DescItem {
   labelMinWidth?: number;
   contentMinWidth?: number;
   labelStyle?: CSSProperties;
+  contentStyle?: CSSProperties;
   field: string;
   label: string | VNode | JSX.Element;
   // Merge column

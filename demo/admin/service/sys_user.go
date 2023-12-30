@@ -11,11 +11,11 @@ import (
 	"admin/service/dto"
 )
 
+const RoleIdAdmin = 1
+
 type SysUser struct {
 	service.Service
 }
-
-const RoleIdAdmin = 1
 
 // GetPage 获取SysUser列表
 func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, count *int64) error {
@@ -32,15 +32,14 @@ func (e *SysUser) GetPage(c *dto.SysUserGetPageReq, list *[]models.SysUser, coun
 }
 
 // ListNoCheck 获取SysUser列表, NoCheck
-func (e *SysUser) ListNoCheck(c *dto.SysUserGetPageReq, list *[]models.SysUser, count *int64) error {
+func (e *SysUser) ListNoCheck(c *dto.SysUserGetPageReq, list *[]models.SysUser) error {
 	err := e.Orm.
 		Scopes(
 			service.Permission(models.SysUser{}.TableName(), e.Identity),
 			cDto.MakeCondition(c.GetNeedSearch()),
 		).
 		Select("UserId", "Username", "NickName").
-		Find(list).Limit(-1).Offset(-1).
-		Count(count).Error
+		Find(list).Error
 
 	return err
 }
@@ -190,6 +189,34 @@ func (e *SysUser) ResetPwd(c *dto.ResetSysUserPwdReq) error {
 	return nil
 }
 
+// ResetToken 重置用户Token
+func (e *SysUser) ResetToken(c *dto.ResetSysUserTokenReq) error {
+	var model models.SysUser
+	err := e.Orm.Scopes(
+		service.Permission(model.TableName(), e.Identity),
+	).Select("UserId", "Token").First(&model, c.GetId()).Error
+	if err != nil {
+		return err
+	}
+
+	c.Generate(&model)
+	if err != nil {
+		return k2Error.ErrInternal
+	}
+	model.SetUpdateBy(e.Identity.Username)
+	db := e.Orm.Select("Token", ).Save(&model)
+	if db.Error != nil {
+		return db.Error
+	}
+	if db.RowsAffected == 0 {
+		return k2Error.ErrPermissionDenied
+	}
+
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
+	return nil
+}
+
 // Remove 删除SysUser
 func (e *SysUser) Remove(c *dto.SysUserById) error {
 	var data models.SysUser
@@ -217,12 +244,12 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 		service.Permission(c.TableName(), e.Identity),
 	).Select("UserId", "Password", "Salt").First(c, id).Error
 	if err != nil {
-		return err
+		return k2Error.ErrDatabase.Wrap(err)
 	}
 	var ok bool
 	ok, err = utils.CompareHashAndPassword(c.Password, oldPassword)
 	if err != nil {
-		return k2Error.ErrInternal
+		return k2Error.ErrWrongPassword
 	}
 	if !ok {
 		return k2Error.ErrWrongPassword
@@ -235,7 +262,7 @@ func (e *SysUser) UpdatePwd(id int, oldPassword, newPassword string) error {
 	}
 	db := e.Orm.Select("Password", "Salt").Save(c)
 	if db.Error != nil {
-		return db.Error
+		return k2Error.ErrDatabase.Wrap(db.Error)
 	}
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
@@ -259,6 +286,7 @@ func (e *SysUser) UpdateProfile(id int, req *dto.SysUserUpdateProfileReq) error 
 	c.Email = req.Email
 	c.Phone = req.Phone
 	c.Sex = req.Sex
+	c.Remark = req.Remark
 
 	// update the profile, only the specified fields
 	db := e.Orm.Select("NickName", "Email", "Phone", "Sex", "UpdateBy").Save(c)

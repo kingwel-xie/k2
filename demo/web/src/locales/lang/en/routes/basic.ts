@@ -3,4 +3,6 @@ export default {
   errorLogList: 'Error Log',
   profile: 'Profile',
   message: 'Message',
+  backlog: 'Backlog',
+  help: 'Help',
 };

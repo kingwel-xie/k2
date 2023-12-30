@@ -5,3 +5,7 @@ import (
 )
 
 var log = logger.Logger("model")
+
+type ModelTable interface {
+	TableName() string
+}

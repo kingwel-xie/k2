@@ -97,6 +97,7 @@ func (e *SysInbox) Insert(c *dto.SysInboxInsertReq) error {
 			data.Sender = e.Identity.Username
 			data.Type = "message"
 			data.Read = false
+			data.Importance = "N"
 			list = append(list, data)
 		}
 		err = tx.Create(&list).Error
@@ -242,6 +243,7 @@ func SendMessage(db *gorm.DB, req *dto.SysInboxSendMessageReq, from string) erro
 			Receiver: user.Username,
 			Title: req.Title,
 			Content: req.Content,
+			Importance: req.Importance,
 			Read: false,
 		}
 		m.SetCreateBy(from)

@@ -28,6 +28,7 @@
   import SecureSetting from './SecureSetting.vue';
   import AccountBind from './AccountBind.vue';
   import MsgNotify from './MsgNotify.vue';
+  import ChangePassword from './ChangePassword.vue';
 
   export default defineComponent({
     components: {
@@ -38,6 +39,7 @@
       SecureSetting,
       AccountBind,
       MsgNotify,
+      ChangePassword,
     },
     setup() {
       return {

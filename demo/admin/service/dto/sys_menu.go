@@ -21,11 +21,12 @@ type SysMenuInsertReq struct {
 	MenuName   string          `form:"menuName" comment:"菜单name"` //菜单name
 	Title      string          `form:"title" comment:"显示名称"`      //显示名称
 	Icon       string          `form:"icon" comment:"图标"`         //图标
+	IconAntd   string          `form:"iconAntd" comment:"图标"`         //图标
 	Path       string          `form:"path" comment:"路径"`         //路径
 	Paths      string          `form:"paths" comment:"id路径"`      //id路径
 	MenuType   string          `form:"menuType" comment:"菜单类型"`   //菜单类型
 	Apis       []int           `form:"apis"`
-	Action     string          `form:"action" comment:"请求方式"`      //请求方式
+	Redirect   string          `form:"redirect" comment:"重定向路径"`    //重定向路径
 	Permission string          `form:"permission" comment:"权限编码"`  //权限编码
 	ParentId   int             `form:"parentId" comment:"上级菜单"`    //上级菜单
 	NoCache    bool            `form:"noCache" comment:"是否缓存"`     //是否缓存
@@ -42,10 +43,11 @@ func (s *SysMenuInsertReq) Generate(model *models.SysMenu) {
 	model.MenuName = s.MenuName
 	model.Title = s.Title
 	model.Icon = s.Icon
+	model.IconAntd = s.IconAntd
 	model.Path = s.Path
 	model.Paths = s.Paths
 	model.MenuType = s.MenuType
-	model.Action = s.Action
+	model.Redirect = s.Redirect
 	model.Permission = s.Permission
 	model.ParentId = s.ParentId
 	model.NoCache = s.NoCache
@@ -64,11 +66,12 @@ type SysMenuUpdateReq struct {
 	MenuName   string          `form:"menuName" comment:"菜单name"` //菜单name
 	Title      string          `form:"title" comment:"显示名称"`      //显示名称
 	Icon       string          `form:"icon" comment:"图标"`         //图标
+	IconAntd   string          `form:"iconAntd" comment:"图标"`         //图标
 	Path       string          `form:"path" comment:"路径"`         //路径
 	Paths      string          `form:"paths" comment:"id路径"`      //id路径
 	MenuType   string          `form:"menuType" comment:"菜单类型"`   //菜单类型
 	Apis       []int           `form:"apis"`
-	Action     string          `form:"action" comment:"请求方式"`      //请求方式
+	Redirect   string          `form:"redirect" comment:"重定向路径"`    //重定向路径
 	Permission string          `form:"permission" comment:"权限编码"`  //权限编码
 	ParentId   int             `form:"parentId" comment:"上级菜单"`    //上级菜单
 	NoCache    bool            `form:"noCache" comment:"是否缓存"`     //是否缓存
@@ -85,10 +88,11 @@ func (s *SysMenuUpdateReq) Generate(model *models.SysMenu) {
 	model.MenuName = s.MenuName
 	model.Title = s.Title
 	model.Icon = s.Icon
+	model.IconAntd = s.IconAntd
 	model.Path = s.Path
 	model.Paths = s.Paths
 	model.MenuType = s.MenuType
-	model.Action = s.Action
+	model.Redirect = s.Redirect
 	model.Permission = s.Permission
 	model.ParentId = s.ParentId
 	model.NoCache = s.NoCache

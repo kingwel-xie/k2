@@ -31,3 +31,7 @@ export enum CacheTypeEnum {
 }
 
 export const TABLE_COLUMN_CFG_KEY_ = 'TABLE_COLUMN_CFG_KEY__';
+
+export const TABLE_EXPORT_CFG_KEY_ = 'TABLE_EXPORT_CFG_KEY__';
+
+export const SHORTCUT_LIST_CFG_KEY_ = 'SHORTCUT_LIST_CFG_KEY__';

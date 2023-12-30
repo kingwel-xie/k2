@@ -5,8 +5,10 @@ export interface LoginParams {
   username: string;
   password: string;
   // kingwel, for verification
-  code: string;
-  uuid: string;
+  code?: string;
+  uuid?: string;
+  // as customer
+  role?: string;
 }
 
 export interface RoleInfo {

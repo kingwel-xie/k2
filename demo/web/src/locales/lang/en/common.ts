@@ -1,6 +1,7 @@
 export default {
   okText: 'OK',
   closeText: 'Close',
+  copyText: 'Copy',
   cancelText: 'Cancel',
   loadingText: 'Loading...',
   addText: 'Add',
@@ -18,6 +19,8 @@ export default {
   inputText: 'Please enter',
   chooseText: 'Please choose',
 
+  loginOmsText: 'Login OMS',
+
   redo: 'Refresh',
   back: 'Back',
 
@@ -33,4 +36,13 @@ export default {
   loadMore: 'Load more...',
   replyMessage: 'Reply message...',
   copied: `Copied '{0}'`,
+
+  inbox: {
+    markAll: 'All marked as read',
+    prev: 'Prev',
+    next: 'Next',
+    read: 'Read',
+    unread: 'Unread',
+    from: 'From',
+  },
 };

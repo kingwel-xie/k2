@@ -271,6 +271,12 @@ export const defHttp = createAxios({
   },
 });
 
+export const sysHttp = createAxios({
+  requestOptions: {
+    apiUrl: '/sys',
+  },
+});
+
 // other api url
 export const otherHttp = createAxios({
   requestOptions: {

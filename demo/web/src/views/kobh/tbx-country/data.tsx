@@ -5,6 +5,7 @@ export const columns: BasicColumn[] = [
   {
     title: '代码',
     dataIndex: 'code',
+    fixed: 'left',
   },
   {
     title: '三字符代码',

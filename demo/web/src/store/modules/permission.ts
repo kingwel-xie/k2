@@ -27,7 +27,6 @@ import { getMenuRoleList } from '/@/api/sys/menu';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { PageEnum } from '/@/enums/pageEnum';
 import { RoleEnum } from '/@/enums/roleEnum';
-import homepageKobh from '/@/router/routes/modules/kobh';
 // TODO: remove below in future
 // import dashboard from '/@/router/routes/modules/dashboard';
 import comp from '/@/router/routes/modules/demo/comp';
@@ -196,6 +195,8 @@ export const usePermissionStore = defineStore({
           routes = filter(asyncRoutes, routeFilter);
           // 对一级路由再次根据角色权限过滤
           routes = routes.filter(routeFilter);
+          if (isDevMode()) routes.unshift(charts, comp, flow, feat, page, setup);
+
           // 将路由转换成菜单
           const menuList = transformRouteToMenu(routes, true);
           // 移除掉 ignoreRoute: true 的路由 非一级路由
@@ -238,7 +239,6 @@ export const usePermissionStore = defineStore({
           // Dynamically introduce components
           // 动态引入组件
           routeList = transformObjToRoute(routeList);
-          routeList.unshift(homepageKobh);
           if (isDevMode()) routeList.unshift(charts, comp, flow, feat, page, setup);
 
           //  Background routing to menu structure

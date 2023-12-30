@@ -99,7 +99,7 @@
   import { useDrawer } from '/@/components/Drawer';
   import { Dropdown, DropMenu } from '/@/components/Dropdown';
   import { cloneDeep } from 'lodash-es';
-  import { export2Excel } from '/@/utils/export';
+  import { export2ExcelV2 } from '/@/utils/export2';
   import { columns, excelHeader, searchFormSchema, TargetTypeOptionData } from './data';
   import EditModal from './EditModal.vue';
   import DetailDrawer from './DetailDrawer.vue';
@@ -108,7 +108,7 @@
     getSysNotificationList,
     getSysNotificationByKey,
   } from '/@/api/admin/sys-notification';
-  import { getAccountList, getDeptList, getRoleListByPage } from '/@/api/admin/system';
+  import { listAccountNoCheck, listDeptNoCheck, listRoleNoCheck } from '/@/api/admin/system';
   import { tryParseJson } from '/@/utils/formatUtil';
 
   const { t } = useI18n();
@@ -120,16 +120,15 @@
   });
 
   onMounted(async () => {
-    const params = { pageIndex: 1, pageSize: -1 };
-    optionData.sysUsers = (await getAccountList(params)).list.map((x) => ({
+    optionData.sysUsers = (await listAccountNoCheck()).list.map((x) => ({
       label: x.username,
       value: x.username,
     }));
-    optionData.sysRoles = (await getRoleListByPage(params)).list.map((x) => ({
+    optionData.sysRoles = (await listRoleNoCheck()).list.map((x) => ({
       label: x.roleName,
-      value: x.roleId,
+      value: x.roleKey,
     }));
-    optionData.sysDeptList = (await getDeptList(params)).map((x) => ({
+    optionData.sysDeptList = (await listDeptNoCheck()).list.map((x) => ({
       label: x.deptName,
       value: x.deptId,
     }));
@@ -248,6 +247,6 @@
         data = (await fetchOnly()) || [];
         break;
     }
-    export2Excel(excelHeader, columns, data, '通知.xlsx');
+    export2ExcelV2(excelHeader, columns, data, '通知.xlsx');
   }
 </script>

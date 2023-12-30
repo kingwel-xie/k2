@@ -93,8 +93,8 @@
   import { PageWrapper } from '/@/components/Page';
   import { useGo } from '/@/hooks/web/usePage';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { export2Excel } from '/@/utils/export';
-  import { ModalInput, PromptModalAction } from '/@/views/kobh/components/ModalInput';
+  import { export2ExcelV2 } from '/@/utils/export2';
+  import { ModalInput, PromptModalAction } from '/@/components/ModalInput';
   import DeptTree from './DeptTree.vue';
   import EditModal from './EditModal.vue';
   import { columns, excelHeader, searchFormSchema } from './data';
@@ -213,6 +213,6 @@
         data = (await fetchOnly()) || [];
         break;
     }
-    export2Excel(excelHeader, columns, data, '用户账号.xlsx');
+    export2ExcelV2(excelHeader, columns, data, '用户账号.xlsx');
   }
 </script>

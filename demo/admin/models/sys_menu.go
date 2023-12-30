@@ -11,7 +11,7 @@ type SysMenu struct {
 	Path       string    `json:"path" gorm:"size:128;"`
 	Paths      string    `json:"paths" gorm:"size:128;"`
 	MenuType   string    `json:"menuType" gorm:"size:1;"`
-	Action     string    `json:"action" gorm:"size:16;"`
+	Redirect     string  `json:"redirect" gorm:"size:128;"`
 	Permission string    `json:"permission" gorm:"size:255;"`
 	ParentId   int       `json:"parentId" gorm:"size:11;"`
 	NoCache    bool      `json:"noCache" gorm:"size:8;"`

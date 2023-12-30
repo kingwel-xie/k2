@@ -14,7 +14,7 @@
       />
     </template>
     <template #action>
-      <span class="mr-20">
+      <span class="mr-4">
         <span>过滤条件：</span>
         <DictSelect
           size="small"
@@ -26,6 +26,9 @@
           @change="page = 1"
         />
       </span>
+      <span class="mr-20">
+        <Checkbox size="small" v-model:checked="model.showUnreadOnly">只看未读</Checkbox>
+      </span>
       <a-button type="primary" size="small" @click="handleNewMessage" class="mr-2">
         写新消息
       </a-button>
@@ -35,7 +38,7 @@
         :disabled="filteredList.filter((item) => !item.read).length === 0"
         @click="handleReadAll"
       >
-        全部已读
+        {{ t('common.inbox.markAll') }}
       </a-button>
     </template>
     <List :loading="initLoading" :dataSource="filteredList">
@@ -52,8 +55,8 @@
           <template #actions>
             <Switch
               v-model:checked="item.read"
-              checked-children="已读"
-              un-checked-children="未读"
+              :checked-children="t('common.inbox.read')"
+              :un-checked-children="t('common.inbox.unread')"
               @change="(val) => handleReadOne(item, val)"
             />
             <Popover :content="t('common.replyMessage')">
@@ -94,7 +97,7 @@
                     <TTitle v-else :level="5" :delete="item.read" :content="item.title" />
                   </div>
                   <div class="text-secondary">
-                    来自于
+                    {{ t('common.inbox.from') }}
                     <span class="mx-1 cursor-pointer underline" @click="handleReply(item)">
                       {{ item.sender }}
                     </span>
@@ -105,7 +108,8 @@
                 </div>
               </template>
               <template #description>
-                <div style="white-space: pre-wrap">
+                <ShowContent :value="item.content" />
+                <div v-if="false" style="white-space: pre-wrap">
                   <TParagraph
                     type="secondary"
                     :content="item.content"
@@ -131,6 +135,7 @@
     Skeleton,
     Switch,
     Tag,
+    Checkbox,
     // TypographyText as TText,
     TypographyTitle as TTitle,
     TypographyParagraph as TParagraph,
@@ -145,6 +150,7 @@
   import EditModal from './EditModal.vue';
   import { useUserStoreWithOut } from '/@/store/modules/user';
   import { getMessageUnreadApi, readMessageApi } from '/@/api/sys/user';
+  import ShowContent from './ShowContent.vue';
 
   const { t } = useI18n();
 
@@ -153,13 +159,21 @@
   });
 
   const filteredList = computed(() => {
-    return model.type
+    const list = model.type
       ? unref(messageList).filter((x) => x.type === model.type)
       : unref(messageList);
+    const list2 = model.showUnreadOnly ? list.filter((x) => !x.read) : list;
+    return list2;
   });
 
   async function reload() {
-    const params = { pageIndex: unref(page), pageSize: 10, type: model.type };
+    page.value = 1;
+    const params = {
+      pageIndex: unref(page),
+      pageSize: 10,
+      type: model.type,
+      unread: model.showUnreadOnly,
+    };
     const res = await getSysInboxList(params);
     initLoading.value = false;
     messageList.value = res.list;
@@ -180,7 +194,12 @@
     );
 
     page.value += 1;
-    const params = { pageIndex: unref(page), pageSize: 10, type: model.type };
+    const params = {
+      pageIndex: unref(page),
+      pageSize: 10,
+      type: model.type,
+      unread: model.showUnreadOnly,
+    };
     const res = await getSysInboxList(params);
     messageList.value = original.concat(res.list);
     totalMessages.value = res['count'];
@@ -201,6 +220,7 @@
   const messageList = ref<Recordable[]>([]);
   const model = reactive({
     type: undefined,
+    showUnreadOnly: false,
   });
 
   const [registerModal, { openModal }] = useModal();
@@ -251,7 +271,11 @@
 
   function itemIcon(item: any) {
     if (item.type === 'notification') {
-      return item.read ? 'ic:outline-notifications-off' : 'ic:outline-notifications';
+      return item.read
+        ? 'ic:outline-notifications-off'
+        : item.importance === 'Y'
+        ? 'ic:outline-notifications-active'
+        : 'ic:outline-notifications';
     } else {
       return item.read ? 'ic:outline-mark-email-read' : 'ic:outline-email';
     }
@@ -259,7 +283,7 @@
 
   function itemColor(item: any) {
     if (item.type === 'notification') {
-      return item.read ? 'lightgray' : 'red';
+      return item.read ? 'lightgray' : item.importance === 'Y' ? 'red' : 'blue';
     } else {
       return item.read ? 'lightgray' : 'blue';
     }
@@ -269,7 +293,6 @@
 <style lang="less" scoped>
   .inbox-setting {
     margin: 12px;
-    background-color: @component-background;
   }
   .extra {
     float: right;

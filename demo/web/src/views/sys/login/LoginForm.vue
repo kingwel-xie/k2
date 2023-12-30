@@ -24,6 +24,25 @@
         :placeholder="t('sys.login.password')"
       />
     </FormItem>
+    <FormItem name="code" class="enter-x">
+      <Input
+        size="large"
+        v-model:value="formData.code"
+        :placeholder="t('sys.login.captcha')"
+        class="captcha"
+      >
+        <template #addonAfter>
+          <Spin :spinning="loadingCaptcha">
+            <Tooltip placement="bottom">
+              <template #title>
+                <span>点击更换验证码</span>
+              </template>
+              <img :alt="t('sys.login.captcha')" :src="captcha" @click="doGetCaptcha" />
+            </Tooltip>
+          </Spin>
+        </template>
+      </Input>
+    </FormItem>
 
     <ARow class="enter-x">
       <ACol :span="12">
@@ -34,14 +53,18 @@
           </Checkbox>
         </FormItem>
       </ACol>
+      <!--
       <ACol :span="12">
         <FormItem :style="{ 'text-align': 'right' }">
-          <!-- No logic, you need to deal with it yourself -->
+        -->
+      <!-- No logic, you need to deal with it yourself -->
+      <!--
           <Button type="link" size="small" @click="setLoginState(LoginStateEnum.RESET_PASSWORD)">
             {{ t('sys.login.forgetPassword') }}
           </Button>
         </FormItem>
       </ACol>
+      -->
     </ARow>
 
     <FormItem class="enter-x">
@@ -52,6 +75,7 @@
         {{ t('sys.login.registerButton') }}
       </Button> -->
     </FormItem>
+    <!--
     <ARow class="enter-x">
       <ACol :md="8" :xs="24">
         <Button block @click="setLoginState(LoginStateEnum.MOBILE)">
@@ -79,19 +103,20 @@
       <GoogleCircleFilled />
       <TwitterCircleFilled />
     </div>
+    -->
   </Form>
 </template>
 <script lang="ts" setup>
   import { reactive, ref, unref, computed } from 'vue';
 
-  import { Checkbox, Form, Input, Row, Col, Button, Divider } from 'ant-design-vue';
-  import {
-    GithubFilled,
-    WechatFilled,
-    AlipayCircleFilled,
-    GoogleCircleFilled,
-    TwitterCircleFilled,
-  } from '@ant-design/icons-vue';
+  import { Checkbox, Form, Input, Row, Col, Button, Spin, Tooltip } from 'ant-design-vue';
+  // import {
+  //   GithubFilled,
+  //   WechatFilled,
+  //   AlipayCircleFilled,
+  //   GoogleCircleFilled,
+  //   TwitterCircleFilled,
+  // } from '@ant-design/icons-vue';
   import LoginFormTitle from './LoginFormTitle.vue';
 
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -100,6 +125,7 @@
   import { useUserStore } from '/@/store/modules/user';
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '/@/hooks/web/useDesign';
+  import { getCaptcha } from '/@/api/sys/user';
   //import { onKeyStroke } from '@vueuse/core';
 
   const ACol = Col;
@@ -111,7 +137,7 @@
   const { prefixCls } = useDesign('login');
   const userStore = useUserStore();
 
-  const { setLoginState, getLoginState } = useLoginState();
+  const { getLoginState } = useLoginState();
   const { getFormRules } = useFormRules();
 
   const formRef = ref();
@@ -119,8 +145,9 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: 'admin',
-    password: '123456',
+    account: '',
+    password: '',
+    code: '',
   });
 
   const { validForm } = useFormValid(formRef);
@@ -128,6 +155,27 @@
   //onKeyStroke('Enter', handleLogin);
 
   const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
+
+  const captcha = ref('');
+  const captchaId = ref('');
+  const loadingCaptcha = ref(false);
+
+  async function doGetCaptcha() {
+    loadingCaptcha.value = true;
+    const res = await getCaptcha();
+    if (res.code != 200) {
+      createErrorModal({
+        title: t('sys.api.errorTip'),
+        content: res.msg || t('sys.api.networkExceptionMsg'),
+        getContainer: () => document.body.querySelector(`.${prefixCls}`) || document.body,
+      });
+    }
+    captcha.value = res.data;
+    captchaId.value = res.id;
+    loadingCaptcha.value = false;
+  }
+
+  doGetCaptcha();
 
   async function handleLogin() {
     const data = await validForm();
@@ -137,8 +185,8 @@
       const userInfo = await userStore.login({
         password: data.password,
         username: data.account,
-        code: 'fake',
-        uuid: '-',
+        code: data.code,
+        uuid: unref(captchaId),
         mode: 'none', //不要默认的错误提示
       });
       if (userInfo) {
@@ -149,6 +197,7 @@
         });
       }
     } catch (error) {
+      doGetCaptcha();
       createErrorModal({
         title: t('sys.api.errorTip'),
         content: (error as unknown as Error).message || t('sys.api.networkExceptionMsg'),
@@ -159,3 +208,20 @@
     }
   }
 </script>
+<style lang="less">
+  .captcha {
+    .ant-input {
+      min-width: 200px !important;
+    }
+    .ant-input-group-addon {
+      background: transparent;
+      border: 0;
+      min-width: 142px !important;
+      padding: 0 2px 0 20px;
+    }
+    img {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+    }
+  }
+</style>
