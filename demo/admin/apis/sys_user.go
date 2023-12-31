@@ -1,6 +1,7 @@
 package apis
 
 import (
+	"admin/utils"
 	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -472,7 +473,6 @@ func (e SysUser) GetProfile(c *gin.Context) {
 // @Router /api/v1/getinfo [get]
 // @Security Bearer
 func (e SysUser) GetInfo(c *gin.Context) {
-	req := dto.SysUserById{}
 	s := service.SysUser{}
 	r := service.SysRole{}
 	err := e.MakeContext(c).

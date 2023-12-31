@@ -1,7 +1,7 @@
 package router
 
 import (
-	"kobh/utils"
+	"admin/utils"
 	"mime"
 	"net/http"
 

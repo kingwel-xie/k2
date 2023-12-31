@@ -1,6 +1,7 @@
 package service
 
 import (
+	"admin/x/backlog"
 	cDto "github.com/kingwel-xie/k2/common/dto"
 	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
@@ -72,6 +73,9 @@ func (e *TbxCountry) Insert(c *dto.TbxCountryInsertReq) error {
 	    return k2Error.ErrDatabase.Wrap(err)
 	}
 	c.Code = data.Code
+
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
 	return nil
 }
 
@@ -93,6 +97,9 @@ func (e *TbxCountry) Update(c *dto.TbxCountryUpdateReq) error {
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
 	}
+
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
     return nil
 }
 
@@ -107,5 +114,9 @@ func (e *TbxCountry) Remove(d *dto.TbxCountryDeleteReq) error {
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
 	}
+
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
 	return nil
 }
+

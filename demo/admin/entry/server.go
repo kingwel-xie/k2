@@ -1,6 +1,7 @@
 package entry
 
 import (
+	"admin/x/backlog"
 	"context"
 	"fmt"
 	"gorm.io/gorm"
@@ -79,6 +80,7 @@ func setup() {
 	// DEV tool for convenience, we can quickly add/modify database...
 	initDB()
 
+	backlog.InitCache()
 	logger.Info(`starting admin server...`)
 }
 

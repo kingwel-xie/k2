@@ -1,9 +1,9 @@
 package entry
 
 import (
+	"admin/models"
 	"github.com/kingwel-xie/k2/common"
 	"gorm.io/gorm"
-	"kobh/models"
 	"time"
 )
 

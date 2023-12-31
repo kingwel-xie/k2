@@ -1,6 +1,7 @@
 package service
 
 import (
+	"admin/x/backlog"
 	cDto "github.com/kingwel-xie/k2/common/dto"
 	k2Error "github.com/kingwel-xie/k2/common/error"
 	"github.com/kingwel-xie/k2/common/service"
@@ -40,6 +41,8 @@ func (e *SysDictData) Insert(c *dto.SysDictDataInsertReq) error {
 	data.SetCreateBy(e.Identity.Username)
 	err := e.Orm.Create(data).Error
 
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
 	return err
 }
 
@@ -59,6 +62,8 @@ func (e *SysDictData) Update(c *dto.SysDictDataUpdateReq) error {
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
 	}
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
 	return nil
 }
 
@@ -73,6 +78,8 @@ func (e *SysDictData) Remove(c *dto.SysDictDataDeleteReq) error {
 	if db.RowsAffected == 0 {
 		return k2Error.ErrPermissionDenied
 	}
+	// refresh cache, as data changed
+	backlog.ReloadCacheAsync()
 	return nil
 }
 
