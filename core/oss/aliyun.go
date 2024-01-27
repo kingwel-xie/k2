@@ -9,14 +9,15 @@ import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"hash"
 	"io"
+	"strings"
 	"time"
 )
 
-type AliyunOSS struct{
-	client          *oss.Client
-	bucket			*oss.Bucket
-	BucketName      string
-	BucketUrl       string
+type AliyunOSS struct {
+	client     *oss.Client
+	bucket     *oss.Bucket
+	BucketName string
+	BucketUrl  string
 }
 
 func (e *AliyunOSS) Name() string {
@@ -35,7 +36,20 @@ func NewAliyun(endpoint, accessKeyId, accessKeySecret, bucketName string, bucket
 	if err != nil {
 		panic(err)
 	}
-	return &AliyunOSS{ client: client, bucket: bucket, BucketName: bucketName, BucketUrl: bucketUrl}
+	return &AliyunOSS{client: client, bucket: bucket, BucketName: bucketName, BucketUrl: bucketUrl}
+}
+
+func (e *AliyunOSS) IsFileExists(filename string) (bool, error) {
+	return e.bucket.IsObjectExist(filename)
+}
+
+func (e *AliyunOSS) SignTemporaryExternalUrl(filename string, expiredInSec int64) (string, error) {
+	signedUrl, err := e.bucket.SignURL(filename, oss.HTTPGet, expiredInSec)
+	if err != nil {
+		return "", err
+	}
+	// 在服务器上会使用内网域名访问
+	return strings.Replace(signedUrl, "-internal", "", -1), nil
 }
 
 func (e *AliyunOSS) GetFileMeta(filename string) (map[string][]string, error) {
@@ -95,19 +109,19 @@ func get_gmt_iso8601(expireEnd int64) string {
 	return tokenExpire
 }
 
-type ConfigStruct struct{
-	Expiration string `json:"expiration"`
+type ConfigStruct struct {
+	Expiration string     `json:"expiration"`
 	Conditions [][]string `json:"conditions"`
 }
 
-type PolicyToken struct{
+type PolicyToken struct {
 	AccessKeyId string `json:"accessid"`
-	Host string `json:"host"`
-	Expire int64 `json:"expire"`
-	Signature string `json:"signature"`
-	Policy string `json:"policy"`
-	Directory string `json:"dir"`
-	Callback string `json:"callback"`
+	Host        string `json:"host"`
+	Expire      int64  `json:"expire"`
+	Signature   string `json:"signature"`
+	Policy      string `json:"policy"`
+	Directory   string `json:"dir"`
+	Callback    string `json:"callback"`
 }
 
 func (e *AliyunOSS) GeneratePresignedToken(uploadDir, filename string, expireSeconds int64) (interface{}, error) {
@@ -146,4 +160,3 @@ func (e *AliyunOSS) GeneratePresignedToken(uploadDir, filename string, expireSec
 
 	return &policyToken, nil
 }
-

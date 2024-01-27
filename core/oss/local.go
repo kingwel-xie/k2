@@ -9,7 +9,7 @@ import (
 	"github.com/kingwel-xie/k2/core/utils"
 )
 
-type Local struct{
+type Local struct {
 	Path string
 }
 
@@ -23,7 +23,19 @@ func (l *Local) GeneratePresignedToken(directory string, filename string, i int6
 
 func NewLocal(path string) Oss {
 	_ = utils.IsNotExistMkDir(path)
-	return &Local{ Path: path }
+	return &Local{Path: path}
+}
+
+func (l *Local) IsFileExists(filename string) (bool, error) {
+	_, err := os.Stat(path.Join(l.Path, filename))
+	if err == nil || os.IsNotExist(err) {
+		return err == nil, nil
+	}
+	return false, err
+}
+
+func (l *Local) SignTemporaryExternalUrl(filename string, expiredInSec int64) (string, error) {
+	return path.Join(l.Path, filename), nil
 }
 
 func (l *Local) UpLoadLocalFile(objectName string, localFile string) error {

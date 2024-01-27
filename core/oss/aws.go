@@ -13,15 +13,15 @@ import (
 	"path"
 )
 
-type S3 struct{
-	client          *s3.Client
-	uploader 		*manager.Uploader
-	downloader 		*manager.Downloader
+type S3 struct {
+	client     *s3.Client
+	uploader   *manager.Uploader
+	downloader *manager.Downloader
 	//Region        	string
 	//AccessKeyId     string
 	//AccessKeySecret string
-	BucketName      string
-	BucketUrl       string
+	BucketName string
+	BucketUrl  string
 }
 
 func (e *S3) Name() string {
@@ -33,21 +33,29 @@ func (e *S3) UpLoadLocalFile(objectName string, localFile string) error {
 	if err != nil {
 		return err
 	}
-	_, err = e.uploader.Upload(context.TODO(), &s3.PutObjectInput {
+	_, err = e.uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: &e.BucketName,
-		Key: &objectName,
-		Body: file,
+		Key:    &objectName,
+		Body:   file,
 	})
 	return err
 }
 
 func (e *S3) UploadFile(file io.Reader, filename string) (string, error) {
-	_, err := e.uploader.Upload(context.TODO(), &s3.PutObjectInput {
+	_, err := e.uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: &e.BucketName,
-		Key: &filename,
-		Body: file,
+		Key:    &filename,
+		Body:   file,
 	})
 	return "", err
+}
+
+func (e *S3) IsFileExists(filename string) (bool, error) {
+	panic("implement me")
+}
+
+func (e *S3) SignTemporaryExternalUrl(filename string, expiredInSec int64) (string, error) {
+	panic("implement me")
 }
 
 func (e *S3) DownloadFile(filename string) (io.ReadCloser, error) {
@@ -78,16 +86,16 @@ func NewS3(region, accessKeyId, accessKeySecret, bucketName string, bucketUrl st
 
 	ss := s3.NewFromConfig(cfg)
 	return &S3{
-		client: ss,
-		uploader: manager.NewUploader(ss),
+		client:     ss,
+		uploader:   manager.NewUploader(ss),
 		downloader: manager.NewDownloader(ss),
 		//Region: region,
 		BucketName: bucketName,
-		BucketUrl: bucketUrl,
+		BucketUrl:  bucketUrl,
 	}
 }
 
-func (e * S3) GeneratePresignedToken(directory string, filename string, exp int64) (interface{}, error) {
+func (e *S3) GeneratePresignedToken(directory string, filename string, exp int64) (interface{}, error) {
 	presignClient := s3.NewPresignClient(e.client)
 
 	presignResult, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{

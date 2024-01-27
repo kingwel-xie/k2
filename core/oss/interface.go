@@ -8,7 +8,6 @@ import (
 
 var log = logger.Logger("oss")
 
-
 type Oss interface {
 	Name() string
 	UpLoadLocalFile(objectName string, localFile string) error
@@ -17,6 +16,6 @@ type Oss interface {
 	GetFileMeta(filename string) (map[string][]string, error)
 	DeleteFile(filename string) error
 	GeneratePresignedToken(directory string, filename string, i int64) (interface{}, error)
+	IsFileExists(filename string) (bool, error)
+	SignTemporaryExternalUrl(filename string, expiredInSec int64) (string, error)
 }
-
-
