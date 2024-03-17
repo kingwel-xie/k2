@@ -113,3 +113,10 @@ func (l *Logger) LogPolicy(policy map[string][][]string) {
 		log2.Infow("LogPolicy", "policy", policy)
 	}
 }
+
+// LogError log info related to errors.
+func (l *Logger) LogError(err error, msg ...string) {
+	if l.IsEnabled() {
+		log2.Errorw("LogError", msg, err)
+	}
+}
