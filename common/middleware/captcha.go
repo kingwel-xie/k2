@@ -14,7 +14,7 @@ import (
 // @Success 200 {object} response.Response{data=string,id=string,msg=string} "{"code": 200, "data": [...]}"
 // @Router /api/v1/captcha [get]
 func GenerateCaptchaHandler(c *gin.Context) {
-	id, b64s, err := captcha.DriverDigitFunc()
+	id, b64s, _, err := captcha.DriverDigitFunc()
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
 			"code": 500,
