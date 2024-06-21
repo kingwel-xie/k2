@@ -8,7 +8,7 @@ import (
 var log = logger.Logger("email")
 
 type Email interface {
-	SendSimple(from, to, subject, content string) error
-	Send(from string, to []string, subject, templateFilename string, content map[string]any) error
-	SendWithAttachment(from string, to []string, subject, templateFilename string, content map[string]any, r io.Reader, filename string, contentType string) error
+	SendText(from string, to []string, subject, content string) error
+	SendHtml(from string, to []string, subject, content string) error
+	SendAttachment(from string, to []string, subject, content string, r io.Reader, filename string, contentType string) error
 }

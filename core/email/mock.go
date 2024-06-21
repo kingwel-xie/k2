@@ -5,17 +5,17 @@ import "io"
 type Mock struct {
 }
 
-func (m Mock) SendSimple(from, to, subject, content string) error {
+func (m Mock) SendText(from string, to []string, subject, content string) error {
 	log.Debugf("MOCK: sending email to %s...", to)
 	return nil
 }
 
-func (m Mock) Send(from string, to []string, subject, templateFilename string, content map[string]any) error {
+func (m Mock) SendHtml(from string, to []string, subject, content string) error {
 	log.Debugf("MOCK: sending email to %s...", to)
 	return nil
 }
 
-func (m Mock) SendWithAttachment(from string, to []string, subject, templateFilename string, content map[string]any, r io.Reader, filename string, contentType string) error {
+func (m Mock) SendAttachment(from string, to []string, subject, content string, r io.Reader, filename string, contentType string) error {
 	log.Debugf("MOCK: sending email to %s...", to)
 	return nil
 }
