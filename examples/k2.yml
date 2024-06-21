@@ -54,3 +54,4 @@ settings:
       username: 13825207150@139.com
       password: xxx
       host: smtp.139.com
+      sender: 13825207150@139.com

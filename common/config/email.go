@@ -17,6 +17,7 @@ type Smtp struct {
 	Username string `mapstructure:"username" json:"username" yaml:"username"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	Host     string `mapstructure:"host" json:"host" yaml:"host"`
+	Sender   string `mapstructure:"sender" json:"sender" yaml:"sender"`
 }
 
 func (e Email) Setup() email.Email {
@@ -24,7 +25,7 @@ func (e Email) Setup() email.Email {
 	case "mock":
 		return email.NewMock()
 	case "smtp":
-		return email.NewSmtpEmail(e.Smtp.Address, e.Smtp.Identity, e.Smtp.Username, e.Smtp.Password, e.Smtp.Host)
+		return email.NewSmtpEmail(e.Smtp.Address, e.Smtp.Identity, e.Smtp.Username, e.Smtp.Password, e.Smtp.Host, e.Smtp.Sender)
 	default:
 		return email.NewMock()
 	}

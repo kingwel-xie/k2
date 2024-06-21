@@ -9,12 +9,14 @@ import (
 
 type SmtpEmail struct {
 	Address string
+	Sender  string
 	Auth    smtp.Auth
 }
 
-func NewSmtpEmail(address string, identity, username, password, host string) Email {
+func NewSmtpEmail(address string, identity, username, password, host, sender string) Email {
 	return SmtpEmail{
 		Address: address,
+		Sender:  sender,
 		Auth:    smtp.PlainAuth(identity, username, password, host),
 	}
 }
@@ -22,7 +24,11 @@ func NewSmtpEmail(address string, identity, username, password, host string) Ema
 func (s SmtpEmail) SendText(from string, to []string, subject, content string) error {
 	e := email.NewEmail()
 
-	e.From = from
+	if from != "" {
+		e.From = from
+	} else {
+		e.From = s.Sender
+	}
 	e.To = to
 	e.Subject = subject
 	e.Text = []byte(content)
@@ -34,7 +40,11 @@ func (s SmtpEmail) SendText(from string, to []string, subject, content string) e
 func (s SmtpEmail) SendHtml(from string, to []string, subject, content string) error {
 	e := email.NewEmail()
 
-	e.From = from
+	if from != "" {
+		e.From = from
+	} else {
+		e.From = s.Sender
+	}
 	e.To = to
 	e.Subject = subject
 	e.HTML = []byte(content)
@@ -46,7 +56,11 @@ func (s SmtpEmail) SendHtml(from string, to []string, subject, content string) e
 func (s SmtpEmail) SendAttachment(from string, to []string, subject, content string, r io.Reader, filename string, contentType string) error {
 	e := email.NewEmail()
 
-	e.From = from
+	if from != "" {
+		e.From = from
+	} else {
+		e.From = s.Sender
+	}
 	e.To = to
 	e.Subject = subject
 	e.HTML = []byte(content)
