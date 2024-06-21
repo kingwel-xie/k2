@@ -2,6 +2,7 @@ package common
 
 import (
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/kingwel-xie/k2/core/email"
 	"github.com/kingwel-xie/k2/core/storage/cache"
 	"net/http"
 	"sort"
@@ -26,21 +27,20 @@ type Application struct {
 	db      *gorm.DB
 	casbin  *casbin.SyncedEnforcer
 	crontab *cronjob.CronJob
-	mw *jwt.GinJWTMiddleware
+	mw      *jwt.GinJWTMiddleware
 	engine  http.Handler
 	cache   storage.AdapterCache
 	queue   storage.AdapterQueue
 	locker  storage.AdapterLocker
 	oss     oss.Oss
 	sms     sms.Sms
+	email   email.Email
 	routers []Router
 }
 
 type Router struct {
 	HttpMethod, RelativePath, Handler string
 }
-
-
 
 type Routers struct {
 	List []Router
@@ -91,7 +91,6 @@ func (e *Application) SetMiddleware(mw *jwt.GinJWTMiddleware) {
 func (e *Application) GetMiddleware() *jwt.GinJWTMiddleware {
 	return e.mw
 }
-
 
 type routerSlice []Router
 
@@ -199,6 +198,18 @@ func (e *Application) GetStreamMessage(id, stream string, value map[string]inter
 	message.SetStream(stream)
 	message.SetValues(value)
 	return message, nil
+}
+
+func (e *Application) GetEmail() email.Email {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	return e.email
+}
+
+func (e *Application) SetEmail(email email.Email) {
+	e.mux.Lock()
+	defer e.mux.Unlock()
+	e.email = email
 }
 
 // SetupRuntimeForTest for test purpose

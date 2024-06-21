@@ -46,3 +46,11 @@ settings:
       access-key-secret: S32H9EOm1V2HuLLEFWSo9eqxnGkY0d
       bucket-name: kobh-test
       bucket-url: yourBucketUrl
+  email:
+    which: smtp
+    smtp:
+      address: smtp.139.com:25
+      identity:
+      username: 13825207150@139.com
+      password: xxx
+      host: smtp.139.com

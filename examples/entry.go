@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,6 +17,7 @@ import (
 	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/common/cronjob"
 	"github.com/kingwel-xie/k2/common/database"
+	"github.com/kingwel-xie/k2/common/email"
 	"github.com/kingwel-xie/k2/common/global"
 	"github.com/kingwel-xie/k2/common/middleware"
 	"github.com/kingwel-xie/k2/common/oss"
@@ -26,6 +26,7 @@ import (
 	"github.com/kingwel-xie/k2/core/logger"
 	"github.com/kingwel-xie/k2/core/utils"
 	"github.com/kingwel-xie/k2/core/ws"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 var (
@@ -55,7 +56,7 @@ func init() {
 
 func setup() {
 	// 注入配置扩展项
-	//config.ExtendConfig = 
+	//config.ExtendConfig =
 	//1. 读取配置
 	config.Setup(
 		configYml,
@@ -64,6 +65,7 @@ func setup() {
 		cronjob.Setup,
 		oss.Setup,
 		sms.Setup,
+		email.Setup,
 		ws.Setup,
 	)
 	//注册监听函数
@@ -87,18 +89,18 @@ func initDB() {
 	_ = db.Transaction(func(tx *gorm.DB) error {
 		tx.DisableForeignKeyConstraintWhenMigrating = true
 		err := tx.Migrator().AutoMigrate(
-			//new(models.SysDept),
-			//new(models.SysConfig),
-			//new(models.SysMenu),
-			//new(models.SysLoginLog),
-			//new(models.SysOperaLog),
-			//new(models.SysUser),
-			//new(models.SysRole),
-			//new(models.SysPost),
-			//new(models.SysDictData),
-			//new(models.SysDictType),
-			//new(models.SysConfig),
-			//new(models.SysApi),
+		//new(models.SysDept),
+		//new(models.SysConfig),
+		//new(models.SysMenu),
+		//new(models.SysLoginLog),
+		//new(models.SysOperaLog),
+		//new(models.SysUser),
+		//new(models.SysRole),
+		//new(models.SysPost),
+		//new(models.SysDictData),
+		//new(models.SysDictType),
+		//new(models.SysConfig),
+		//new(models.SysApi),
 		)
 		if err != nil {
 			logger.Fatalf("cannot migrate DB, %v", err)
