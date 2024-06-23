@@ -21,7 +21,7 @@ func NewSmtpEmail(address string, identity, username, password, host, sender str
 	}
 }
 
-func (s SmtpEmail) SendText(from string, to []string, subject, content string) error {
+func (s SmtpEmail) Send(from string, to []string, cc []string, bcc []string, subject, content string, isHtml bool) error {
 	e := email.NewEmail()
 
 	if from != "" {
@@ -30,14 +30,19 @@ func (s SmtpEmail) SendText(from string, to []string, subject, content string) e
 		e.From = s.Sender
 	}
 	e.To = to
+	e.Cc = cc
+	e.Bcc = bcc
 	e.Subject = subject
-	e.Text = []byte(content)
-
+	if isHtml {
+		e.HTML = []byte(content)
+	} else {
+		e.Text = []byte(content)
+	}
 	// just send
 	return e.Send(s.Address, s.Auth)
 }
 
-func (s SmtpEmail) SendHtml(from string, to []string, subject, content string) error {
+func (s SmtpEmail) SendAttachment(from string, to []string, cc []string, bcc []string, subject, content string, r io.Reader, filename string, contentType string) error {
 	e := email.NewEmail()
 
 	if from != "" {
@@ -46,22 +51,8 @@ func (s SmtpEmail) SendHtml(from string, to []string, subject, content string) e
 		e.From = s.Sender
 	}
 	e.To = to
-	e.Subject = subject
-	e.HTML = []byte(content)
-
-	// just send
-	return e.Send(s.Address, s.Auth)
-}
-
-func (s SmtpEmail) SendAttachment(from string, to []string, subject, content string, r io.Reader, filename string, contentType string) error {
-	e := email.NewEmail()
-
-	if from != "" {
-		e.From = from
-	} else {
-		e.From = s.Sender
-	}
-	e.To = to
+	e.Cc = cc
+	e.Bcc = bcc
 	e.Subject = subject
 	e.HTML = []byte(content)
 
