@@ -1,6 +1,7 @@
 package email
 
 import (
+	"crypto/tls"
 	"io"
 	"net/smtp"
 
@@ -9,14 +10,14 @@ import (
 
 type SmtpEmail struct {
 	Address string
-	Sender  string
+	Host    string
 	Auth    smtp.Auth
 }
 
-func NewSmtpEmail(address string, identity, username, password, host, sender string) Email {
+func NewSmtpEmail(address string, identity, username, password, host string) Email {
 	return SmtpEmail{
 		Address: address,
-		Sender:  sender,
+		Host:    host,
 		Auth:    smtp.PlainAuth(identity, username, password, host),
 	}
 }
@@ -24,11 +25,7 @@ func NewSmtpEmail(address string, identity, username, password, host, sender str
 func (s SmtpEmail) Send(from string, to []string, cc []string, bcc []string, subject, content string, isHtml bool) error {
 	e := email.NewEmail()
 
-	if from != "" {
-		e.From = from
-	} else {
-		e.From = s.Sender
-	}
+	e.From = from
 	e.To = to
 	e.Cc = cc
 	e.Bcc = bcc
@@ -39,17 +36,15 @@ func (s SmtpEmail) Send(from string, to []string, cc []string, bcc []string, sub
 		e.Text = []byte(content)
 	}
 	// just send
-	return e.Send(s.Address, s.Auth)
+	return e.SendWithTLS(s.Address, s.Auth, &tls.Config{
+		ServerName: s.Host,
+	})
 }
 
 func (s SmtpEmail) SendAttachment(from string, to []string, cc []string, bcc []string, subject, content string, r io.Reader, filename string, contentType string) error {
 	e := email.NewEmail()
 
-	if from != "" {
-		e.From = from
-	} else {
-		e.From = s.Sender
-	}
+	e.From = from
 	e.To = to
 	e.Cc = cc
 	e.Bcc = bcc
@@ -61,5 +56,7 @@ func (s SmtpEmail) SendAttachment(from string, to []string, cc []string, bcc []s
 	if err != nil {
 		return err
 	}
-	return e.Send(s.Address, s.Auth)
+	return e.SendWithTLS(s.Address, s.Auth, &tls.Config{
+		ServerName: s.Host,
+	})
 }
