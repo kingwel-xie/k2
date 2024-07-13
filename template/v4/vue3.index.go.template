@@ -89,17 +89,19 @@
     </BasicTable>
     <EditModal @register="registerModal" @success="handleSuccess" />
     <DetailDrawer @register="registerDrawer" />
+    <GenericExport ref="genericExportRef" :headers="excelHeader" />
   </div>
 </template>
 <script lang="ts" setup name="{{.ClassName}}">
   import { useI18n } from '/@/hooks/web/useI18n';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { computed } from 'vue';
+  import { computed, ref, unref } from 'vue';
+  import { GenericExport, GenericExportModalAction } from '/@/components/GenericExport';
   import { useModal } from '/@/components/Modal';
   import { useDrawer } from '/@/components/Drawer';
   import { Dropdown, DropMenu } from '/@/components/Dropdown';
   import { cloneDeep } from 'lodash-es';
-  import { export2Excel } from '/@/utils/export';
+  import { export2ExcelV2 } from '/@/utils/export2';
   import { columns, excelHeader, searchFormSchema } from './data';
   import EditModal from './EditModal.vue';
   import DetailDrawer from './DetailDrawer.vue';
@@ -110,6 +112,7 @@
   } from '/@/api/{{.PackageName}}/{{.ModuleFrontName}}';
 
   const { t } = useI18n();
+  const genericExportRef = ref<Nullable<GenericExportModalAction>>(null);
   const [registerDrawer, { openDrawer }] = useDrawer();
   const [registerModal, { openModal }] = useModal();
   const [
@@ -186,8 +189,14 @@
     }
   }
 
-  async function handleExport(event) {
-    let data = [];
+  function handleExport(event) {
+    unref(genericExportRef)?.openModal(async (v) => {
+      await _handleExport(event, v);
+    }, '{{.ClassName}}.MainTable');
+  }
+
+  async function _handleExport(event, filteredHeaders: Recordable) {
+    let data: any[] = [];
     switch (event) {
       case 'selected':
         data = cloneDeep(getSelectRows());
@@ -199,6 +208,6 @@
         data = (await fetchOnly()) || [];
         break;
     }
-    export2Excel(excelHeader, columns, data, '{{.TableComment}}.xlsx');
+    export2ExcelV2(filteredHeaders, columns, data, '{{.TableComment}}.xlsx');
   }
 </script>
