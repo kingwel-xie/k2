@@ -2,6 +2,7 @@ package jwtauth
 
 import (
 	"errors"
+	"github.com/kingwel-xie/k2/common/config"
 	"github.com/kingwel-xie/k2/core/utils"
 	"gorm.io/gorm"
 )
@@ -16,7 +17,8 @@ type Login struct {
 	Role     string `form:"Role" json:"role"`
 }
 
-func (u *Login) GetUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
+func (u *Login) getUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
+
 	userTableName := "sys_user"
 	roleTableName := "sys_role"
 	err = tx.Table(userTableName).Where("username = ?  and status = 2", u.Username).First(&user).Error
@@ -37,4 +39,13 @@ func (u *Login) GetUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
 		return
 	}
 	return
+}
+
+func (u *Login) GetUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
+	// when Entra is enabled
+	if config.EntraConfig.Enable {
+		return u.getUserEntraId(tx)
+	} else {
+		return u.getUser(tx)
+	}
 }

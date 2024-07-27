@@ -52,6 +52,7 @@ type Config struct {
 	Sms         *Sms         `yaml:"sms"`
 	File        *File        `yaml:"file"`
 	Email       *Email       `yaml:"email"`
+	Entra       *Entra       `yaml:"entra"`
 }
 
 // Setup 载入配置文件
@@ -71,6 +72,7 @@ func Setup(configFile string,
 			Sms:         SmsConfig,
 			File:        FileConfig,
 			Email:       EmailConfig,
+			Entra:       EntraConfig,
 		},
 		Extend:    ExtendConfig,
 		callbacks: fs,

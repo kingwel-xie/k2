@@ -14,7 +14,7 @@ var log = logger.Logger("helper")
 
 var client = &http.Client{Timeout: 30 * time.Second}
 
-// JsonResponse returns a json reponse from remote server
+// JsonResponse returns a json response from remote server
 func JsonResponse(method string, url string, headers map[string]string, body []byte) ([]byte, error) {
 
 	log.Infof("Do request: method=%v, url=%v, body=%v", method, url, string(body))
