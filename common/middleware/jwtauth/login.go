@@ -15,6 +15,7 @@ type Login struct {
 	Code     string `form:"Code" json:"code" binding:"required"`
 	UUID     string `form:"UUID" json:"uuid" binding:"required"`
 	Role     string `form:"Role" json:"role"`
+	Token    string `form:"Token" json:"token"`
 }
 
 func (u *Login) getUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
@@ -43,7 +44,7 @@ func (u *Login) getUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
 
 func (u *Login) GetUser(tx *gorm.DB) (user SysUser, role SysRole, err error) {
 	// when Entra is enabled
-	if config.EntraConfig.Enable {
+	if u.Role != "customer" && config.EntraConfig.Enable {
 		return u.getUserEntraId(tx)
 	} else {
 		return u.getUser(tx)

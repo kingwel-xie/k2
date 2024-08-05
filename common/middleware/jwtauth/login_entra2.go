@@ -3,6 +3,8 @@ package jwtauth
 import (
 	"context"
 	"fmt"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/kingwel-xie/k2/common/config"
 	msgraph "github.com/microsoftgraph/msgraph-sdk-go"
@@ -15,18 +17,32 @@ func wrapError(err any) error {
 }
 
 func (u *Login) getUserEntraId(tx *gorm.DB) (user SysUser, role SysRole, err error) {
-	if !strings.Contains(u.Username, "@") {
-		u.Username = u.Username + "@" + config.EntraConfig.Realm
-	}
-	cred, _ := azidentity.NewUsernamePasswordCredential(
-		config.EntraConfig.TenantId,
-		config.EntraConfig.ClientId,
-		u.Username,
-		u.Password,
-		nil,
-	)
+	var cred azcore.TokenCredential
 
-	graphClient, _ := msgraph.NewGraphServiceClientWithCredentials(cred, []string{"User.Read"})
+	if len(u.Token) > 0 {
+		cred = NewSimpleCredentials(u.Token)
+	} else {
+		if !strings.Contains(u.Username, "@") {
+			u.Username = u.Username + "@" + config.EntraConfig.Realm
+		}
+		cred, err = azidentity.NewUsernamePasswordCredential(
+			config.EntraConfig.TenantId,
+			config.EntraConfig.ClientId,
+			u.Username,
+			u.Password,
+			nil,
+		)
+		if err != nil {
+			err = wrapError(err)
+			return
+		}
+	}
+
+	graphClient, err := msgraph.NewGraphServiceClientWithCredentials(cred, []string{"User.Read"})
+	if err != nil {
+		err = wrapError(err)
+		return
+	}
 	account, err := graphClient.Me().Get(context.TODO(), nil)
 	if err != nil {
 		err = wrapError(err)
@@ -40,10 +56,26 @@ func (u *Login) getUserEntraId(tx *gorm.DB) (user SysUser, role SysRole, err err
 		return
 	}
 	user = toSysUser(account, role.RoleId)
-	err = tx.FirstOrCreate(&user, "username = ?", u.Username).Error
+	err = tx.FirstOrCreate(&user, "username = ?", user.Username).Error
 	if err != nil {
-		err = wrapError("invalid sysUser: " + u.Username)
+		err = wrapError("invalid sysUser: " + user.Username)
 		return
 	}
 	return
+}
+
+func NewSimpleCredentials(token string) *SimpleCredentials {
+	return &SimpleCredentials{
+		TokenValue: token,
+	}
+}
+
+type SimpleCredentials struct {
+	TokenValue string
+}
+
+func (m *SimpleCredentials) GetToken(context.Context, policy.TokenRequestOptions) (azcore.AccessToken, error) {
+	return azcore.AccessToken{
+		Token: m.TokenValue,
+	}, nil
 }
