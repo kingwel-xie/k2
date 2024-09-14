@@ -1,13 +1,9 @@
 package jwtauth
 
 import (
-	"context"
 	"fmt"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/kingwel-xie/k2/common/config"
-	msgraph "github.com/microsoftgraph/msgraph-sdk-go"
+	"github.com/kingwel-xie/k2/core/utils"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -17,39 +13,28 @@ func wrapError(err any) error {
 }
 
 func (u *Login) getUserEntraId(tx *gorm.DB) (user SysUser, role SysRole, err error) {
-	var cred azcore.TokenCredential
 
-	if len(u.Token) > 0 {
-		cred = NewSimpleCredentials(u.Token)
-	} else {
+	ac := utils.NewAzureLightClientWithDefaultHttp(config.EntraConfig.TenantId, config.EntraConfig.ClientId)
+
+	token := u.Token
+	if len(token) == 0 {
 		if !strings.Contains(u.Username, "@") {
 			u.Username = u.Username + "@" + config.EntraConfig.Realm
 		}
-		cred, err = azidentity.NewUsernamePasswordCredential(
-			config.EntraConfig.TenantId,
-			config.EntraConfig.ClientId,
-			u.Username,
-			u.Password,
-			nil,
-		)
+		token, err = ac.AcquireTokenByUsernamePassword(u.Username, u.Password, "User.Read")
 		if err != nil {
 			err = wrapError(err)
 			return
 		}
 	}
 
-	graphClient, err := msgraph.NewGraphServiceClientWithCredentials(cred, []string{"User.Read"})
-	if err != nil {
-		err = wrapError(err)
-		return
-	}
-	account, err := graphClient.Me().Get(context.TODO(), nil)
+	account, err := ac.Me(token)
 	if err != nil {
 		err = wrapError(err)
 		return
 	}
 
-	roleKey := *account.GetJobTitle()
+	roleKey := account.JobTitle
 	err = tx.Where("role_key = ? ", roleKey).First(&role).Error
 	if err != nil {
 		err = wrapError("invalid roleKey/JobTitle")
@@ -62,20 +47,4 @@ func (u *Login) getUserEntraId(tx *gorm.DB) (user SysUser, role SysRole, err err
 		return
 	}
 	return
-}
-
-func NewSimpleCredentials(token string) *SimpleCredentials {
-	return &SimpleCredentials{
-		TokenValue: token,
-	}
-}
-
-type SimpleCredentials struct {
-	TokenValue string
-}
-
-func (m *SimpleCredentials) GetToken(context.Context, policy.TokenRequestOptions) (azcore.AccessToken, error) {
-	return azcore.AccessToken{
-		Token: m.TokenValue,
-	}, nil
 }

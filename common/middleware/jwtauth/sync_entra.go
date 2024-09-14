@@ -1,16 +1,10 @@
 package jwtauth
 
 import (
-	"context"
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/kingwel-xie/k2/common"
 	"github.com/kingwel-xie/k2/common/config"
-	msgraph "github.com/microsoftgraph/msgraph-sdk-go"
-	msgraphcore "github.com/microsoftgraph/msgraph-sdk-go-core"
-	"github.com/microsoftgraph/msgraph-sdk-go/models"
+	"github.com/kingwel-xie/k2/core/utils"
 )
-
-var deltaToken string
 
 func SyncUpEntra() error {
 	// start a cron job to sync up EntraId, every day at 0:01am
@@ -40,26 +34,13 @@ func syncUpEntra() error {
 		roleIdMap[r.RoleKey] = r.RoleId
 	}
 
-	cred, _ := azidentity.NewClientSecretCredential(
-		config.EntraConfig.TenantId,
-		config.EntraConfig.ClientId,
-		config.EntraConfig.Mgmt.SecretKey,
-		nil,
-	)
-
-	graphClient, _ := msgraph.NewGraphServiceClientWithCredentials(cred, []string{"https://graph.microsoft.com/.default"})
-	delta, err := graphClient.Users().Delta().GetAsDeltaGetResponse(context.TODO(), nil)
-	if err != nil {
-		return err
-	}
-	// Use PageIterator to iterate through all users
-	pageIterator, err := msgraphcore.NewPageIterator[models.Userable](delta, graphClient.GetAdapter(), models.CreateUserCollectionResponseFromDiscriminatorValue)
+	ac := utils.NewAzureLightClientWithDefaultHttp(config.EntraConfig.TenantId, config.EntraConfig.ClientId)
 
 	var listEntra []*SysUser
-	err = pageIterator.Iterate(context.Background(), func(user models.Userable) bool {
+	err = ac.EnumUsersDelta(config.EntraConfig.Mgmt.SecretKey, func(user *utils.AzureUser) bool {
 		var jobTitle string
-		if user.GetJobTitle() != nil {
-			jobTitle = *user.GetJobTitle()
+		if len(user.JobTitle) > 0 {
+			jobTitle = user.JobTitle
 		}
 		roleId, ok := roleIdMap[jobTitle]
 		if ok {
@@ -68,9 +49,8 @@ func syncUpEntra() error {
 		}
 		return true
 	})
-
-	if pageIterator.GetOdataDeltaLink() != nil {
-		deltaToken = *pageIterator.GetOdataDeltaLink()
+	if err != nil {
+		return err
 	}
 
 	// cross-reference between listLocal & listEntra
@@ -91,35 +71,24 @@ func syncUpEntra() error {
 		return err
 	}
 
-	//requestSkiptoken := "oEBwdSP6uehIAxQOWq_3Ksh_TLol6KIm3stvdc6hGhZRi1hQ7Spe__dpvm3U4zReE4CYXC2zOtaKdi7KHlUtC2CbRiBIUwOxPKLa"
-	//requestParameters := &msgraphusers.UsersDeltaWithRequestBuilderGetQueryParameters{
-	//	Skiptoken: &requestSkiptoken,
-	//}
-	//configuration := &msgraphusers.UsersDeltaWithRequestBuilderGetRequestConfiguration{
-	//	QueryParameters: requestParameters,
-	//}
-
-	// TODO: handle deltaToken
-	//fmt.Println(delta.GetOdataDeltaLink(), delta.GetOdataNextLink())
-
 	return nil
 }
 
-func toSysUser(user models.Userable, roleId int) SysUser {
+func toSysUser(user *utils.AzureUser, roleId int) SysUser {
 	var nickname, phone, email string
-	if user.GetDisplayName() != nil {
-		nickname = *user.GetDisplayName()
+	if len(user.DisplayName) > 0 {
+		nickname = user.DisplayName
 	}
-	if user.GetMobilePhone() != nil {
-		phone = *user.GetMobilePhone()
+	if len(user.MobilePhone) > 0 {
+		phone = user.MobilePhone
 	}
-	if user.GetMail() != nil {
-		email = *user.GetMail()
+	if len(user.Mail) > 0 {
+		email = user.Mail
 	}
 
 	return SysUser{
 		UserId:   0,
-		Username: *user.GetUserPrincipalName(),
+		Username: user.UserPrincipalName,
 		NickName: nickname,
 		RoleId:   roleId,
 		Phone:    phone,
