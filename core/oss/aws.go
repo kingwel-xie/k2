@@ -11,6 +11,8 @@ import (
 	"io"
 	"os"
 	"path"
+	"strconv"
+	"time"
 )
 
 type S3 struct {
@@ -51,23 +53,68 @@ func (e *S3) UploadFile(file io.Reader, filename string) (string, error) {
 }
 
 func (e *S3) IsFileExists(filename string) (bool, error) {
-	panic("implement me")
+	_, err := e.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+		Bucket: aws.String(e.BucketName),
+		Key:    aws.String(filename),
+	})
+	if err != nil {
+		return false, err // 错误
+	}
+	return true, nil // 文件存在
 }
 
 func (e *S3) SignTemporaryExternalUrl(filename string, expiredInSec int64) (string, error) {
-	panic("implement me")
+	presignClient := s3.NewPresignClient(e.client)
+	presignResult, err := presignClient.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(e.BucketName),
+		Key:    aws.String(filename),
+	}, s3.WithPresignExpires(time.Duration(expiredInSec)*time.Second))
+	if err != nil {
+		return "", fmt.Errorf("couldn't get presigned URL for GetObject")
+	}
+	return presignResult.URL, nil
 }
 
 func (e *S3) DownloadFile(filename string) (io.ReadCloser, error) {
-	panic("implement me")
+	w, err := os.CreateTemp("", "s3-*.tmp")
+	if err != nil {
+		return nil, err
+	}
+	_, err = e.downloader.Download(context.TODO(), w, &s3.GetObjectInput{
+		Bucket: &e.BucketName,
+		Key:    &filename,
+	})
+	return w, err
 }
 
 func (e *S3) GetFileMeta(filename string) (map[string][]string, error) {
-	panic("implement me")
+	resp, err := e.client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+		Bucket: &e.BucketName,
+		Key:    &filename,
+	})
+	if err != nil {
+		return nil, err
+	}
+	metadata := map[string][]string{
+		"Content-Type":   {aws.ToString(resp.ContentType)},
+		"Content-Length": {strconv.FormatInt(*resp.ContentLength, 10)},
+		"Last-Modified":  {resp.LastModified.Format(time.RFC3339)},
+		"ETag":           {aws.ToString(resp.ETag)},
+	}
+
+	// 合并用户自定义元数据
+	for k, v := range resp.Metadata {
+		metadata[k] = []string{v}
+	}
+	return metadata, nil
 }
 
 func (e *S3) DeleteFile(filename string) error {
-	panic("implement me")
+	_, err := e.client.DeleteObject(context.TODO(), &s3.DeleteObjectInput{
+		Bucket: aws.String(e.BucketName),
+		Key:    aws.String(filename),
+	})
+	return err
 }
 
 func NewS3(region, accessKeyId, accessKeySecret, bucketName string, bucketUrl string) *S3 {
