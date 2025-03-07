@@ -14,19 +14,12 @@ import (
 func AuthInit() (*jwt.GinJWTMiddleware, error) {
 	timeout := time.Hour
 	sendCookie := false
-	if config.ApplicationConfig.Mode == utils.ModeDev.String() {
+	if config.ApplicationConfig.Mode  == utils.ModeDev.String() {
 		timeout = time.Duration(876010) * time.Hour
 		sendCookie = true
 	} else {
 		if config.JwtConfig.Timeout != 0 {
 			timeout = time.Duration(config.JwtConfig.Timeout) * time.Second
-		}
-	}
-	// extra initialization for using EntraId
-	if config.EntraConfig.Enable && config.EntraConfig.Mgmt.SecretKey != "" {
-		err := jwtauth.SyncUpEntra()
-		if err != nil {
-			log.Warnf("failed to sync-up SysUser with EntraId, %v", err)
 		}
 	}
 	return jwt.New(&jwt.GinJWTMiddleware{

@@ -24,13 +24,6 @@ settings:
     secret: k2
     # token 过期时间 单位：秒
     timeout: 3600
-  entra:
-    enable:
-    tenant-id:
-    client-id:
-    realm: xxx.onmicrosoft.com
-    mgmt:
-      secret-key:
   database:
     driver: sqlite
     source: kx.db
