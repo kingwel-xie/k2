@@ -58,7 +58,7 @@ func (j *CronJob) AddJob(name string, expression string, exec func()) error {
 	return nil
 }
 
-func (j *CronJob) removeJob(name string) error {
+func (j *CronJob) RemoveJob(name string) error {
 	cmd, b := j.jobList[name]
 	if !b {
 		return fmt.Errorf("job %s not exists", name)
