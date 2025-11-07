@@ -2,6 +2,7 @@ package jwtauth
 
 import (
 	"errors"
+
 	"github.com/kingwel-xie/k2/core/utils"
 	"gorm.io/gorm"
 )
@@ -9,10 +10,11 @@ import (
 var ErrMismatchRoleKey = errors.New("mismatch role key")
 
 type Login struct {
-	Username string `form:"UserName" json:"username" binding:"required"`
-	Password string `form:"Password" json:"password" binding:"required"`
-	Code     string `form:"Code" json:"code" binding:"required"`
-	UUID     string `form:"UUID" json:"uuid" binding:"required"`
+	Username string `form:"UserName" json:"username" binding:"omitempty"`
+	Password string `form:"Password" json:"password" binding:"omitempty"`
+	Code     string `form:"Code" json:"code" binding:"omitempty"`
+	UUID     string `form:"UUID" json:"uuid" binding:"omitempty"`
+	WechatId string `form:"WechatId" json:"wechat_id"`
 	Role     string `form:"Role" json:"role"`
 }
 
