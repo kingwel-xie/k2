@@ -73,6 +73,45 @@ func Authenticator(c *gin.Context) (interface{}, error) {
 
 		return nil, jwt.ErrMissingLoginValues
 	}
+
+	if loginVals.WechatId != "" {
+		var user SysUser
+		// 尝试通过微信ID查找用户
+		err := db.Table("sys_user").Where("wechat_id = ? and status = 2", loginVals.WechatId).First(&user).Error
+		if err == nil {
+			// 已绑定微信ID的用户，直接登录
+			var role SysRole
+			db.Table("sys_role").Where("role_id = ?", user.RoleId).First(&role)
+			username = user.Username
+			msg = "微信登录成功"
+			log.Infow(msg, "user", username)
+			return map[string]interface{}{"user": user, "role": role}, nil
+		}
+
+		// 校验用户名密码
+		user, role, e := loginVals.GetUser(db)
+		if e != nil {
+			msg = "用户名或密码错误"
+			status = "1"
+			log.Warnw(msg, "user", loginVals.Username, "error", e)
+			return nil, jwt.ErrFailedAuthentication
+		}
+
+		// 绑定微信ID
+		err = db.Model(&user).Update("wechat_id", loginVals.WechatId).Error
+		if err != nil {
+			msg = "绑定微信ID失败"
+			status = "1"
+			log.Warnw(msg, "user", user.Username, "error", err)
+			return nil, errors.New("绑定微信ID失败")
+		}
+
+		username = user.Username
+		msg = "微信绑定并登录成功"
+		log.Infow(msg, "user", username)
+		return map[string]interface{}{"user": user, "role": role}, nil
+	}
+
 	if config.ApplicationConfig.Mode != utils.ModeDev.String() {
 		if !captcha.Verify(loginVals.UUID, loginVals.Code, true) {
 			username = loginVals.Username
